@@ -1,0 +1,30 @@
+{
+  "name": "tracker",
+  "version": "1.0.0",
+  "description": "Angular tracking application!",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test",
+    "server": "node ./server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brutusn/Tracker.git"
+  },
+  "keywords": [
+    "angular",
+    "tracking",
+    "geo",
+    "fun"
+  ],
+  "author": "Bart Niessen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Brutusn/Tracker/issues"
+  },
+  "homepage": "https://github.com/Brutusn/Tracker#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
+  }
+}
