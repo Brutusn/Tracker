@@ -1,0 +1,61 @@
+ul {
+  --accent-color: #757575;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  padding: .5em;
+  background-color: white;
+  border-bottom: 1px solid var(--accent-color);
+  border-radius: 3px;
+}
+
+li:not(:last-of-type) {
+  margin-bottom: .5em;
+}
+
+p {
+  margin: 0;
+}
+
+.primary {
+  font-weight: bold;
+  margin-bottom: .5em;
+  padding-left: 25px;
+  position: relative;
+}
+
+/* making a pin */
+.primary:after {
+  content: '';
+  background: var(--accent-color);
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  border-radius: 50% 50% 50% 0%;
+  transform: rotate(-45deg);
+}
+.primary:hover:after {
+  background: #2c82c9;
+}
+
+.primary:before {
+  content: '';
+  background: white;
+  width: 6px;
+  position: absolute;
+  height: 6px;
+  left: 5px;
+  border-radius: 50%;
+  top: 7px;
+  z-index: 1;
+}
+
+.secondary {
+  font-size: 75%;
+  color: var(--accent-color);
+}

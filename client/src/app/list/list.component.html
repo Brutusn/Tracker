@@ -1,0 +1,10 @@
+<ul>
+  <li *ngIf="listData.length === 0">No connected users.</li>
+
+  <li *ngFor="let position of listData">
+    <div>
+      <p class="primary">{{position.name}}</p>
+      <p class="secondary">Last update: {{position.date | date: 'ss-MM-yy HH:mm:ss'}}</p>
+    </div>
+  </li>
+</ul>
