@@ -43,6 +43,8 @@ app.post('/api/send-position', ({ params: { body }}, res) => {
     return res.status(400).send('Incomplete object. Send new like { name: "", position: [] }');
   }
 
+  body.date = new Date();
+
   io.sockets.emit('new-position', body);
   positions.addPosition(body);
 
