@@ -31,6 +31,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Basic API token validation.
+app.use((req, res, next) => {
+  const providedToken = req.get('Authorization');
+
+  if (providedToken !== `Bearer ${config.api_key}`) {
+    return res.status(401).send('Wrong token.');
+  }
+
+  next();
+});
+
 // The rest endpoints
 // Simple ping
 app.all('/api/ping', (req, res) => {
@@ -58,10 +69,19 @@ app.post('/api/byebye/:name', ({ params: { name }}, res) => {
   res.send({ confirmed: name });
 });
 
-// For now, security is not that important. Let everyone connect.
-io.on('connection', (socket) => {
-  console.log('A socket connected', socket.id);
+io
+// Only users with the correct token are allowed to connect.
+  .use((socket, next) => {
+    if (socket.handshake.query.token === config.ws_key) {
+      return next();
+    }
 
-  // Send the last n amount of positions to the front-end
-  socket.emit('initial-positions', positions.getAll());
-});
+    console.log('A socket could not be connected.');
+    next(new Error('Unable to authenticate.'))
+  })
+  .on('connection', (socket) => {
+    console.log('A socket connected', socket.id);
+
+    // Send the last n amount of positions to the front-end
+    socket.emit('initial-positions', positions.getAll());
+  });

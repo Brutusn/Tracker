@@ -2,4 +2,19 @@ header {
   background-color: rgba(1, 50, 67, 1);
   color: var(--light-text);
   overflow: hidden;
+  
+  grid-row: 1;
+  grid-area: header;
+}
+
+app-side-bar {
+  grid-row: 2;
+  grid-area: sidebar;
+  overflow: auto;
+}
+
+app-map {
+  grid-row: 2;
+  grid-area: map;
+  position: relative;
 }

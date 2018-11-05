@@ -1,10 +1,10 @@
 <ul>
-  <li *ngIf="listData.length === 0">No connected users.</li>
+  <li *ngIf="objectKeys(listData).length === 0">No connected users.</li>
 
-  <li *ngFor="let position of listData">
+  <li *ngFor="let position of objectKeys(listData)" [ngClass]="{'off-line': listData[position].online === false}">
     <div>
-      <p class="primary">{{position.name}}</p>
-      <p class="secondary">Last update: {{position.date | date: 'ss-MM-yy HH:mm:ss'}}</p>
+      <p class="primary">{{listData[position].name}}</p>
+      <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}</p>
     </div>
   </li>
 </ul>

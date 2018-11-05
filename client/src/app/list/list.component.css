@@ -1,5 +1,6 @@
 ul {
   --accent-color: #757575;
+  --off-line: #F22613;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -16,6 +17,10 @@ li:not(:last-of-type) {
   margin-bottom: .5em;
 }
 
+.off-line {
+  border-bottom: 2px solid var(--off-line);
+}
+
 p {
   margin: 0;
 }
@@ -25,6 +30,10 @@ p {
   margin-bottom: .5em;
   padding-left: 25px;
   position: relative;
+}
+
+.off-line .primary {
+  color: var(--off-line);
 }
 
 /* making a pin */
@@ -41,6 +50,10 @@ p {
 }
 .primary:hover:after {
   background: #2c82c9;
+}
+
+.off-line .primary:after {
+  background: var(--off-line);
 }
 
 .primary:before {

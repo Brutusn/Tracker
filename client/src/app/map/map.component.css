@@ -1,3 +1,17 @@
-p {
-  background-color: tomato;
+#tracker-map {
+  height: 100%;
+}
+
+.auto-zoom {
+  position: absolute;
+  left: .5em;
+  bottom: .5em;
+  background-color: var(--light-text);
+  border: 1px solid var(--dark-text);
+  border-radius: 3px;
+
+
+  padding: .5em;
+
+  z-index: 9999;
 }

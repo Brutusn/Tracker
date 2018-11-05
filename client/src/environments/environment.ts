@@ -2,8 +2,13 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import * as config from '../../../config/client';
+
 export const environment = {
-  production: false
+  production: false,
+  ws_url: 'http://localhost:8080',
+  map_url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  ws_key: config.ws_key
 };
 
 /*
