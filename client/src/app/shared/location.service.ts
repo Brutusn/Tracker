@@ -22,18 +22,16 @@ export class LocationService {
     });
   }
 
-  mapPositions (pos: Position | Position[]): PositionMapped {
-    const newObject:PositionMapped = {};
-    const mapper = (p: Position) => {
+  mapPositions (pos: Position): PositionMapped {
+    let newObject: PositionMapped = {};
+    const mapper = (p: Position): PositionMapped => {
       newObject[p.name] = p;
       newObject[p.name].online = true;
+
+      return newObject;
     }
 
-    if (Array.isArray(pos)) {
-      pos.forEach(mapper);
-    } else {
-      mapper(pos);
-    }
+    newObject = mapper(pos);
 
     // Merges the new data so no dubplicates come in..
     return Object.assign(this.mappedPositions, newObject);
@@ -42,8 +40,9 @@ export class LocationService {
   getLocations (): Observable<PositionMapped> {
     return new Observable<PositionMapped>((observer) => {
       return this.ws.onEvent('initial-positions')
-        .subscribe((positions: Position[]) => {
-          observer.next(this.mapPositions(positions));
+        .subscribe((positions: PositionMapped) => {
+          // This will retrieve a list from the back-end as is...
+          observer.next(Object.assign(this.mappedPositions, positions));
         });
     });
   }

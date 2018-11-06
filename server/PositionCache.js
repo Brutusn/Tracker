@@ -1,24 +1,26 @@
 //@ts-check
 // Simple position class
 module.exports = class PositionCache {
-  constructor (options) {
-    this.limit = options.positionLimit;
-    this.positions = [];
+  constructor () {
+    this.positions = {};
   }
 
-  getAll () {
+  get getAll () {
+    // This is the fallback name.. doesn't need to be send to the front...
+    delete this.positions.__nameless__;
+
     return this.positions;
   }
 
-  checkLength () {
-    if (this.positions.length > this.limit) {
-      this.positions.shift();
-      this.checkLength();
+  userOffline (user) {
+    if (this.positions[user]) {
+      this.positions[user].online = false;
     }
   }
 
   addPosition (pos) {
-    this.positions.push(pos);
-    this.checkLength();
+    // will add or update the position.
+    this.positions[pos.name] = pos;
+    this.positions[pos.name].online = true;
   }
 };

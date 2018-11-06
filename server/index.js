@@ -23,7 +23,7 @@ server.listen(config.port);
 console.log('Server listening on port:', config.port);
 
 ///////////////////////////////////////////////////////////////////////////////
-const positions = new PosCache({ positionLimit: 50 });
+const positions = new PosCache();
 
 const sendPosition = (data, errorFn) => {
   if (!data.name || !Array.isArray(data.position)) {
@@ -37,6 +37,7 @@ const sendPosition = (data, errorFn) => {
 }
 
 const userLeft = (name = '__nameless__') => {
+  positions.userOffline(name);
   io.sockets.emit('user-left', name);
 }
 
@@ -92,7 +93,7 @@ io
 
     // Send the last n amount of positions to the front-end
     if (socket.handshake.requestPositions) {
-      socket.emit('initial-positions', positions.getAll());
+      socket.emit('initial-positions', positions.getAll);
     }
 
     socket.on('send-position', (data) => {
