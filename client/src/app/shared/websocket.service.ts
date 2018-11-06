@@ -9,11 +9,17 @@ export class SocketService {
     private socket;
 
     public initSocket(): void {
-        this.socket = socketIo(environment.ws_url, {
-          query: {
-            token: environment.ws_key
-          }
-        });
+      this.socket = socketIo(environment.ws_url, {
+        query: {
+          token: environment.ws_key,
+          requestPositions: true
+        }
+      });
+
+      this.socket.on('connect_error', (error: Error) => {
+        console.error(error);
+        alert(error.message);
+      });
     }
 
     public onEvent(event: string): Observable<any> {

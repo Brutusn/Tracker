@@ -23,7 +23,22 @@ server.listen(config.port);
 console.log('Server listening on port:', config.port);
 
 ///////////////////////////////////////////////////////////////////////////////
-const positions = new PosCache({ positionLimit: 10 });
+const positions = new PosCache({ positionLimit: 50 });
+
+const sendPosition = (data, errorFn) => {
+  if (!data.name || !Array.isArray(data.position)) {
+    return errorFn('Incomplete object. Send new like { name: "", position: [] }');
+  }
+
+  data.date = new Date();
+
+  io.sockets.emit('new-position', data);
+  positions.addPosition(data);
+}
+
+const userLeft = (name = '__nameless__') => {
+  io.sockets.emit('user-left', name);
+}
 
 // Simple request logger, just to see some activity.
 app.use((req, res, next) => {
@@ -35,7 +50,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const providedToken = req.get('Authorization');
 
-  if (providedToken !== `Bearer ${config.api_key}`) {
+  if (providedToken !== `Bearer ${config.ws_key}`) {
     return res.status(401).send('Wrong token.');
   }
 
@@ -50,21 +65,14 @@ app.all('/api/ping', (req, res) => {
 
 // POST /api/send-position
 app.post('/api/send-position', ({ params: { body }}, res) => {
-  if (!body.name || !Array.isArray(body.position)) {
-    return res.status(400).send('Incomplete object. Send new like { name: "", position: [] }');
-  }
-
-  body.date = new Date();
-
-  io.sockets.emit('new-position', body);
-  positions.addPosition(body);
+  sendPosition(body, res.status(400).send);
 
   res.send('Ok thanks!');
 });
 
 // POST /api/byebye/:name
 app.post('/api/byebye/:name', ({ params: { name }}, res) => {
-  io.sockets.emit('user-left', name);
+  userLeft(name);
 
   res.send({ confirmed: name });
 });
@@ -83,5 +91,17 @@ io
     console.log('A socket connected', socket.id);
 
     // Send the last n amount of positions to the front-end
-    socket.emit('initial-positions', positions.getAll());
+    if (socket.handshake.requestPositions) {
+      socket.emit('initial-positions', positions.getAll());
+    }
+
+    socket.on('send-position', (data) => {
+      const errorFn = (msg) => socket.emit('growl', msg);
+
+      sendPosition(data, errorFn);
+    });
+    
+    socket.on('disconnect', () => {
+      userLeft(socket.handshake.name);
+    });
   });

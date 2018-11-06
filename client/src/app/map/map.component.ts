@@ -16,10 +16,11 @@ export class MapComponent implements OnInit {
 
   private map;
   private markerLayer = L.featureGroup();
+  private blokhut: any = [51.6267702062721, 5.522872209548951];
 
   private onlineCirle = {
     radius: 8,
-    fillOpacity: 0.5,
+    fillOpacity: 0.75,
   };
   private offLineCircle = {
     ...this.onlineCirle,
@@ -37,7 +38,7 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     // Base coordinates go to the blokhut of Scouting Veghel
-    this.map = L.map('tracker-map').setView([51.6267702062721, 5.522872209548951], 15);
+    this.map = L.map('tracker-map').setView(this.blokhut, 15);
 
     L.tileLayer(environment.map_url, {
         attribution: 'S5 StamTour Tracker'
@@ -45,6 +46,13 @@ export class MapComponent implements OnInit {
 
     this.markerLayer.addTo(this.map);
     this.markerLayer.on('click', (e) => this.markerClick(e));
+
+    L.circleMarker(this.blokhut, {
+      ...this.onlineCirle,
+      color: '#2e3131',
+    })
+      .bindTooltip('Blokhut')
+      .addTo(this.map);
 
     this.listenToPositions();
   }
