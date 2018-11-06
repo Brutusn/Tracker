@@ -16,7 +16,7 @@ const io = socket(server);
 
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
-  app.use(express.static('../client/dist'));
+  app.use(express.static('../client/dist/tracker-client'));
 }
 
 server.listen(config.port);
