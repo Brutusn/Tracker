@@ -25,6 +25,22 @@ console.log('Server listening on port:', config.port);
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PosCache();
 
+const nonLimitSocket = (socket, next) => {
+  const { token } = socket.handshake.query;
+
+  if (token === config.ws_key) {
+    return next();
+  }
+
+  next(new Error('No access.'));
+};
+
+const broadcast = (event, data) => {
+  io
+    .use(nonLimitSocket)
+    .emit(event, data);
+}
+
 const sendPosition = (data, errorFn) => {
   if (!data.name || !Array.isArray(data.position)) {
     return errorFn('Incomplete object. Send new like { name: "", position: [] }');
@@ -32,13 +48,13 @@ const sendPosition = (data, errorFn) => {
 
   data.date = new Date();
 
-  io.sockets.emit('new-position', data);
+  broadcast('new-position', data);
   positions.addPosition(data);
 }
 
 const userLeft = (name = '__nameless__') => {
   positions.userOffline(name);
-  io.sockets.emit('user-left', name);
+  broadcast('user-left', name);
 }
 
 // Simple request logger, just to see some activity.
@@ -78,21 +94,46 @@ app.post('/api/byebye/:name', ({ params: { name }}, res) => {
   res.send({ confirmed: name });
 });
 
+const connectedNames = [];
+// Returns a new name based on the connected versions of it.
+const handleName = (name, suffix = 0) => {
+  if (connectedNames.includes(name)) {
+    const n = name.includes('~') ? name.split('~')[0] : name;
+
+    const suf = suffix === 0 ? '' : `~${suffix}`;
+    const newName = n + suf;
+
+    return handleName(newName, suffix + 1);
+  }
+
+  connectedNames.push(name);
+
+  return name;
+}
+
 io
 // Only users with the correct token are allowed to connect.
   .use((socket, next) => {
-    if (socket.handshake.query.token === config.ws_key) {
+    const { token } = socket.handshake.query;
+
+    if (token === config.ws_key || token === config.ws_key_lim) {
       return next();
     }
 
     console.log('A socket could not be connected.');
-    next(new Error('Unable to authenticate.'))
+    next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
     console.log('A socket connected', socket.id);
 
+    let name = socket.handshake.query.name;
+
+    if (name) {
+      handleName(name);
+    }
+
     // Send the last n amount of positions to the front-end
-    if (socket.handshake.requestPositions) {
+    if (socket.handshake.query.requestPositions) {
       socket.emit('initial-positions', positions.getAll);
     }
 
@@ -103,6 +144,6 @@ io
     });
     
     socket.on('disconnect', () => {
-      userLeft(socket.handshake.name);
+      userLeft(name);
     });
   });

@@ -20,11 +20,19 @@ export class SocketService {
         console.error(error);
         alert(error.message);
       });
+
+      this.socket.on('growl', (msg) => {
+        console.warn('GROWL:', msg);
+        alert(msg);
+      });
     }
 
     public onEvent(event: string): Observable<any> {
       return new Observable<Object>((observer) => {
-        this.socket.on(event, (data: any) => observer.next(data));
+        this.socket.on(event, (data: any) => {
+          console.debug('Got message on:', event);
+          return observer.next(data);
+        });
       });
     }
 }
