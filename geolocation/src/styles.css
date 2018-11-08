@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  --dark-text: #202020;
+  --light-text: #bdc3c7;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000000;
+  color: var(--light-text);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}

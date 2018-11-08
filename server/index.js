@@ -1,6 +1,7 @@
 // Simple server that receives a location via a REST API and has a connected socket!
 //@ts-check
-const http = require('http');
+const http = require('https');
+const fs = require('fs');
 
 const express = require('express');
 const socket = require('socket.io');
@@ -9,14 +10,20 @@ const config = require('../config/server.js');
 
 const PosCache = require('./PositionCache.js');
 
+const rf = fs.readFileSync;
 // Set up
 const app = express();
-const server = http.Server(app);
+const server = http.createServer({
+  key: rf('../cert/SSLprivatekey.key'),
+  cert: rf('../cert/SSLcertificate.crt'),
+  ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')]
+}, app);
 const io = socket(server);
 
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
-  app.use(express.static('../client/dist/tracker-client'));
+  //app.use(express.static('../client/dist/tracker-client'));
+  app.use(express.static('../geolocation/dist/geolocation'));
 }
 
 server.listen(config.port);
@@ -25,19 +32,9 @@ console.log('Server listening on port:', config.port);
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PosCache();
 
-const nonLimitSocket = (socket, next) => {
-  const { token } = socket.handshake.query;
-
-  if (token === config.ws_key) {
-    return next();
-  }
-
-  next(new Error('No access.'));
-};
-
 const broadcast = (event, data) => {
   io
-    .use(nonLimitSocket)
+    .to('super-secret')
     .emit(event, data);
 }
 
@@ -125,15 +122,22 @@ io
   })
   .on('connection', (socket) => {
     console.log('A socket connected', socket.id);
-
+    
+    const { token, requestPositions } = socket.handshake.query;
     let name = socket.handshake.query.name;
 
     if (name) {
-      handleName(name);
+      name = handleName(name);
+
+      process.nextTick(() => socket.emit('final-name', name));
+    }
+
+    if (token === config.ws_key) {
+      socket.join('super-secret');
     }
 
     // Send the last n amount of positions to the front-end
-    if (socket.handshake.query.requestPositions) {
+    if (requestPositions && token === config.ws_key) {
       socket.emit('initial-positions', positions.getAll);
     }
 

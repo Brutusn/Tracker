@@ -2,3 +2,5 @@
 
 /config/server.js
 /config/client.ts
+
+/cert/*.*

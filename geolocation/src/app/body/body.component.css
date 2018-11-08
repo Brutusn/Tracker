@@ -1,0 +1,63 @@
+.centered {
+  padding: 1em;
+  font-size: 14pt;
+}
+
+.centered input, .centered button {
+  font-size: inherit;
+}
+
+.names p:first-of-type {
+  margin-top: 0;
+}
+
+p.error {
+  color: #f22613;
+  border: 1px solid #f22613;
+  padding: 0.5em;
+}
+
+.dot-container {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  height: 60vh;
+}
+
+.dot-container p {
+  margin-top: 5em;
+}
+
+.dot {
+  background-color: #000000;
+
+  height: 5em;
+  width: 5em;
+
+  border-radius: 50%;
+
+  border-left: 1em solid #ecf0f1;
+  border-top: 1em solid #f22613;
+  border-right: 1em solid #eeeeee;
+  border-bottom: 1em solid #f22613;
+
+}
+
+.dot-animation {
+  animation: rotator 3s ease 0s infinite;
+}
+
+@keyframes rotator {
+  80% {
+    transform: rotate(0deg);
+    box-shadow: 0 0 0 0 var(--light-text);
+  }
+
+  100% {
+    transform: rotate(360deg);
+    box-shadow: 0 0 200px 0 var(--light-text);
+  }
+}
