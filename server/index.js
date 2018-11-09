@@ -50,6 +50,7 @@ const sendPosition = (data, errorFn) => {
 }
 
 const userLeft = (name = '__nameless__') => {
+  console.log('User left:', name);
   positions.userOffline(name);
   broadcast('user-left', name);
 }
