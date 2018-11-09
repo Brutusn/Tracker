@@ -23,7 +23,7 @@ export class SocketService {
 
     this.onEvent('connect_error').subscribe((error: Error) => {
       console.error(error);
-      alert(error.message);
+      alert(error);
     });
 
     this.onEvent('growl').subscribe((msg) => {

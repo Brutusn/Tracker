@@ -20,6 +20,11 @@ export class BodyComponent implements OnInit {
   ngOnInit() {
   }
 
+  geoError (error) {
+    console.error(error);
+    this.error = error;
+  }
+
   start() {
     if (this.username.length < 4) {
       this.error = 'Naam moet minimaal 3 karakters lang zijn!';
@@ -34,9 +39,16 @@ export class BodyComponent implements OnInit {
     this.ws.onEvent('final-name').subscribe((name) => {
       this.handleName(name);
 
-      this.geo.watchPosition().subscribe(({ coords }) => {
+      console.log('name');
+
+      this.geo.watch().subscribe(({ coords }) => {
+        console.log('base location');
+        this.error = '';
         this.tracking = true;
-      });
+      }, 
+      (error) => this.geoError(error));
+
+      console.log('go on');
       
       this.displayLocation();
       this.sendPosition();
@@ -50,18 +62,22 @@ export class BodyComponent implements OnInit {
   }
 
   sendPosition () {
-    this.geo.watchPosition().subscribe(({ coords }) => {
+    this.geo.watch().subscribe(({ coords }) => {
+      this.error = '';
       this.ws.emit('send-position', {
         name: this.username,
         position: [coords.latitude, coords.longitude],
       });
-    });
+    }, 
+    (error) => this.geoError(error));
   }
 
   displayLocation () {
-    this.geo.watchPosition().subscribe(({ coords }) => {
+    this.geo.watch().subscribe(({ coords }) => {
+      this.error = '';
       this.currentPosition = `lat: ${coords.latitude}, lng: ${coords.longitude}`;
-    });
+    }, 
+    (error) => this.geoError(error));
   }
 
 }

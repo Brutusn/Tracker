@@ -129,6 +129,7 @@ io
     if (name) {
       name = handleName(name);
 
+      console.log('User joined:', name);
       process.nextTick(() => socket.emit('final-name', name));
     }
 

@@ -7,26 +7,31 @@ import { Observable, Observer } from 'rxjs';
 })
 export class GeoService {
 
-  private geo;
-  private watcher;
-
-  constructor(private ws: SocketService) { 
-    this.init();
+  private geoOpts = {
+    enableHighAccuracy: true,
+    maximumAge: 300000
   }
 
-  init () {
-    if ('geolocation' in navigator) {
-      this.geo = navigator.geolocation;
-    } else {
-      alert('Geolocation not available.');
-    }
+  constructor() { 
   }
 
-  watchPosition ():Observable<any> {
+  watch ():Observable<any> {
     return new Observable<object>((observer) => {
-      this.watcher = this.geo.watchPosition((position) => {
-        return observer.next(position);
-      });
+      let watchId;
+
+      if ('geolocation' in navigator) {
+        watchId = navigator.geolocation.watchPosition(
+          (position) => observer.next(position), 
+          (error) => observer.error(error),
+          this.geoOpts
+        );
+      } else {
+        observer.error('Geolocation not available.');
+      }
+
+      return { unsubscribe() { 
+        navigator.geolocation.clearWatch(watchId); 
+      }};
     });
   }
 }

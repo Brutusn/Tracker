@@ -18,7 +18,7 @@ export class SocketService {
 
       this.socket.on('connect_error', (error: Error) => {
         console.error(error);
-        alert(error.message);
+        alert(error);
       });
 
       this.socket.on('growl', (msg) => {

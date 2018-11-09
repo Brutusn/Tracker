@@ -3,11 +3,11 @@
     <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server. Op de blokhut zien mensen waar je dan bent. De locatie word niet opgeslagen.</p>
     <input type="text" name="username" [(ngModel)]='username'>
     <button id="send-name" (click)='start()'>Start</button>
-    <p class="error" *ngIf="error !== ''">{{error}}</p>
   </div>
 
   <div *ngIf='tracking' class="dot-container">
     <span class="dot dot-animation"></span>
     <p>{{currentPosition}}</p>
   </div>
+  <p class="error" *ngIf="error !== ''">{{error}}</p>
 </div>
