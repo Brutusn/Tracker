@@ -21,16 +21,6 @@ export class SocketService {
         access_token
       }
     });
-
-    this.onEvent('connect_error').subscribe((error: Error) => {
-      console.error(error);
-      alert(error);
-    });
-
-    this.onEvent('growl').subscribe((msg) => {
-      console.warn('GROWL:', msg);
-      alert(msg);
-    });
   }
 
   public onEvent(event: string): Observable<any> {

@@ -23,9 +23,9 @@ export class BodyComponent implements OnInit {
   ngOnInit() {
   }
 
-  geoError (error) {
+  geoError (error: PositionError) {
     console.error(error);
-    this.error = error;
+    this.error = error.message;
   }
 
   start() {
@@ -50,6 +50,17 @@ export class BodyComponent implements OnInit {
       
       this.displayLocation();
       this.sendPosition();
+    });
+
+    // Hacky thing.. but for now this is okay(-ish)
+    this.ws.onEvent('connect_error').subscribe((error: Error) => {
+      console.error(error);
+      this.error = error.message;
+    });
+
+    this.ws.onEvent('growl').subscribe((msg) => {
+      console.warn('GROWL:', msg);
+      this.error = msg;
     });
   }
 
