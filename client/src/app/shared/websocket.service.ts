@@ -9,6 +9,11 @@ export class SocketService {
     private socket;
 
     public initSocket(): void {
+      console.debug('init socket');
+      if (this.socket) {
+        this.socket.close();
+      }
+
       this.socket = socketIo(environment.ws_url, {
         query: {
           token: environment.ws_key,
@@ -16,12 +21,12 @@ export class SocketService {
         }
       });
 
-      this.socket.on('connect_error', (error: Error) => {
+      this.onEvent('connect_error').subscribe((error: Error) => {
         console.error(error);
         alert(error);
       });
-
-      this.socket.on('growl', (msg) => {
+  
+      this.onEvent('growl').subscribe((msg) => {
         console.warn('GROWL:', msg);
         alert(msg);
       });

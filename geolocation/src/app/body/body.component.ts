@@ -3,6 +3,8 @@ import { GeoService } from '../shared/geo.service';
 import { SocketService } from '../shared/websocket.service';
 import { Observable } from 'rxjs';
 
+import { nameData } from '../shared/interfaces';
+
 @Component({
   selector: 'app-body',
   templateUrl: './body.component.html',
@@ -13,6 +15,7 @@ export class BodyComponent implements OnInit {
   public tracking = false;
   public currentPosition = 'wacht op locatie..';
   public username = window.localStorage.getItem('user-name') || '';
+  private access_token = window.localStorage.getItem('access_token') || '';
   public error = '';
 
   constructor(private geo: GeoService, private ws: SocketService) { }
@@ -34,31 +37,28 @@ export class BodyComponent implements OnInit {
     }
 
     // Init the socket with the given username.
-    this.ws.initSocket(this.username);
+    this.ws.initSocket(this.username, this.access_token);
 
-    this.ws.onEvent('final-name').subscribe((name) => {
-      this.handleName(name);
-
-      console.log('name');
+    this.ws.onEvent('final-name').subscribe((data: nameData) => {
+      this.handleName(data);
 
       this.geo.watch().subscribe(({ coords }) => {
-        console.log('base location');
         this.error = '';
         this.tracking = true;
       }, 
       (error) => this.geoError(error));
-
-      console.log('go on');
       
       this.displayLocation();
       this.sendPosition();
     });
   }
 
-  handleName (name) {
+  handleName ({ name, access_token }: nameData): void {
     window.localStorage.setItem('user-name', name);
+    window.localStorage.setItem('access_token', access_token);
 
     this.username = name;
+    this.access_token = access_token;
   }
 
   sendPosition () {

@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 export class SocketService {
   private socket;
 
-  public initSocket(name): void {
+  public initSocket(name, access_token = ''): void {
     console.log('init socket');
     if (this.socket) {
       this.socket.close();
@@ -17,7 +17,8 @@ export class SocketService {
       query: {
         token: environment.ws_key_lim,
         requestPositions: false,
-        name
+        name,
+        access_token
       }
     });
 
