@@ -9,12 +9,14 @@ import { BodyComponent } from './body/body.component';
 
 import { SocketService } from './shared/websocket.service';
 import { GeoService } from './shared/geo.service';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    BodyComponent
+    BodyComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,

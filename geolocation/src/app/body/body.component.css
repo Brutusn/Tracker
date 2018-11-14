@@ -11,10 +11,12 @@
   margin-top: 0;
 }
 
-p.error {
-  color: #f22613;
-  border: 1px solid #f22613;
-  padding: 0.5em;
+strong {
+  color: white;
+}
+
+.small {
+  font-size: 75%;
 }
 
 .dot-container {

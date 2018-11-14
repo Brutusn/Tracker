@@ -5,12 +5,16 @@ import { Observable } from 'rxjs';
 
 import { nameData } from '../shared/interfaces';
 
+import { environment } from '../../environments/environment';
+
 @Component({
   selector: 'app-body',
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.css']
 })
 export class BodyComponent implements OnInit {
+
+  public serverUrl = environment.ws_url;
 
   public tracking = false;
   public currentPosition = 'wacht op locatie..';
@@ -29,8 +33,9 @@ export class BodyComponent implements OnInit {
   }
 
   start() {
-    if (this.username.length < 4) {
-      this.error = 'Naam moet minimaal 3 karakters lang zijn!';
+
+    if (this.username.length < 4 || this.username.length > 25) {
+      this.error = 'Naam moet tussen de 3 en 25 karakters lang zijn!';
       return;
     } else {
       this.error = '';
@@ -50,17 +55,6 @@ export class BodyComponent implements OnInit {
       
       this.displayLocation();
       this.sendPosition();
-    });
-
-    // Hacky thing.. but for now this is okay(-ish)
-    this.ws.onEvent('connect_error').subscribe((error: Error) => {
-      console.error(error);
-      this.error = error.message;
-    });
-
-    this.ws.onEvent('growl').subscribe((msg) => {
-      console.warn('GROWL:', msg);
-      this.error = msg;
     });
   }
 

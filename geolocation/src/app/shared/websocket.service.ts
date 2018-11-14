@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
@@ -7,6 +7,9 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class SocketService {
   private socket;
+
+  private socketAnnouncedSubject = new Subject<any>();
+  socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
   public initSocket(name, access_token = ''): void {
     console.log('init socket');
@@ -21,6 +24,12 @@ export class SocketService {
         access_token
       }
     });
+
+    this.announceSocket();
+  }
+
+  public announceSocket () {
+    this.socketAnnouncedSubject.next();
   }
 
   public onEvent(event: string): Observable<any> {
