@@ -1,6 +1,7 @@
 // Simple server that receives a location via a REST API and has a connected socket!
 //@ts-check
-const http = require('https');
+const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -15,12 +16,30 @@ const { handleName } = require('./handleName.js');
 const rf = fs.readFileSync;
 // Set up
 const app = express();
-const server = http.createServer({
+const server = https.createServer({
   key: rf('../cert/SSLprivatekey.key'),
   cert: rf('../cert/SSLcertificate.crt'),
   ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')]
 }, app);
 const io = socket(server);
+
+// The http server is just to redirect.
+const httpServer = http.createServer(app);
+
+// Redirect to https.
+app.use((req, res, next) => {
+  if(!req.secure) {
+    console.debug('Insecure connection, redirect to https..');
+    return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  }
+  next();
+});
+
+// Simple request logger, just to see some activity.
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] [${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
+  next();
+});
 
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
@@ -29,6 +48,7 @@ if (config.serveClient === true) {
 }
 
 server.listen(config.port);
+httpServer.listen(config.port + 1);
 console.log('Server listening on port:', config.port);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,12 +79,6 @@ const userLeft = (name = '__nameless__') => {
 ////////////////////////////////////////////////////////////////////
 // REST - API
 ////////////////////////////////////////////////////////////////////
-// Simple request logger, just to see some activity.
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] Request to: ${req.path}, method: ${req.method}, ip: ${req.ip}`);
-  next();
-});
-
 // Basic API token validation.
 const tokenValidator = (req, res, next) => {
   const providedToken = req.get('Authorization');
