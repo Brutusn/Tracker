@@ -22,11 +22,12 @@ export class LocationService {
     });
   }
 
-  mapPositions (pos: Position): PositionMapped {
+  mapPositions (pos: Position, keepOnlineState = false): PositionMapped {
     let newObject: PositionMapped = {};
     const mapper = (p: Position): PositionMapped => {
       newObject[p.name] = p;
-      newObject[p.name].online = true;
+      newObject[p.name].online = keepOnlineState ? p.online : true;
+
       newObject[p.name].speed = p.speed ? Math.round(p.speed * 3.6) : 0;
 
       return newObject;
@@ -42,8 +43,13 @@ export class LocationService {
     return new Observable<PositionMapped>((observer) => {
       return this.ws.onEvent('initial-positions')
         .subscribe((positions: PositionMapped) => {
-          // This will retrieve a list from the back-end as is...
-          observer.next(Object.assign(this.mappedPositions, positions));
+          Object.keys(positions).forEach((pos: string) => {
+            const obj: Position = positions[pos];
+
+            this.mapPositions(obj, true);
+          });
+
+          observer.next(this.mappedPositions);
         });
     });
   }
