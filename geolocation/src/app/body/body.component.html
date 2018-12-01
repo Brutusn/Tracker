@@ -11,7 +11,9 @@
   <div *ngIf='tracking' class="dot-container">
     <span class="dot dot-animation"></span>
     <p>{{currentPosition}}</p>
-    <p>{{ speed }}</p>
+  </div>
+  <div [ngClass]="{ 'auto-play': autoPlay === true }">
+    <label><input type="checkbox" [(ngModel)]="autoPlay" (change)="setAutoPlay()"/> Display always on.</label>
   </div>
   <app-error [error]="error"></app-error>
 </div>
