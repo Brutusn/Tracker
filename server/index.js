@@ -22,7 +22,7 @@ const server = https.createServer({
   key: rf('../cert/SSLprivatekey.key'),
   cert: rf('../cert/SSLcertificate.crt'),
   ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')],
-  secureOptions: constants.SSL_OP_NO_TLSv1_1
+  secureOptions: constants.SSL_OP_NO_TLSv1
 }, app);
 const io = socket(server);
 
