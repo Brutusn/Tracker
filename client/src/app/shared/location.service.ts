@@ -27,6 +27,7 @@ export class LocationService {
     const mapper = (p: Position): PositionMapped => {
       newObject[p.name] = p;
       newObject[p.name].online = true;
+      newObject[p.name].speed = p.speed ? Math.round(p.speed * 3.6) : 0;
 
       return newObject;
     }

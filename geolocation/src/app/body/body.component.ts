@@ -22,6 +22,8 @@ export class BodyComponent implements OnInit {
   private access_token = window.localStorage.getItem('access_token') || '';
   public error = '';
 
+  public speed = '';
+
   constructor(private geo: GeoService, private ws: SocketService) { }
 
   ngOnInit() {
@@ -69,9 +71,11 @@ export class BodyComponent implements OnInit {
   sendPosition () {
     this.geo.watch().subscribe(({ coords }) => {
       this.error = '';
+      this.speed = coords.speed.toString();
       this.ws.emit('send-position', {
         name: this.username,
         position: [coords.latitude, coords.longitude],
+        speed: coords.speed,
       });
     }, 
     (error) => this.geoError(error));

@@ -51,7 +51,7 @@ export class MapComponent implements OnInit {
       ...this.onlineCirle,
       color: '#2e3131',
     })
-      .bindTooltip('Blokhut')
+      .bindTooltip('Blokhut (HQ)')
       .addTo(this.map);
 
     this.listenToPositions();
@@ -65,7 +65,7 @@ export class MapComponent implements OnInit {
     const opts = data.online ? this.onlineCirle : this.offLineCircle;
 
     return L.circleMarker(data.position, opts)
-      .bindTooltip(data.name);
+      .bindTooltip(`${data.name} (${data.speed} Km/h)`);
   }
 
   handleCoordinates (data: PositionMapped) {
