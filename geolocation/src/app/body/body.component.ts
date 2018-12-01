@@ -19,7 +19,6 @@ export class BodyComponent implements OnInit {
   public currentPosition = 'wacht op locatie..';
   public username = window.localStorage.getItem('user-name') || '';
   public error = '';
-  public speed = '';
 
   private access_token = window.localStorage.getItem('access_token') || '';
 
@@ -73,7 +72,6 @@ export class BodyComponent implements OnInit {
   sendPosition () {
     this.geo.watch().subscribe(({ coords }) => {
       this.error = '';
-      this.speed = coords.speed.toString();
       this.ws.emit('send-position', {
         name: this.username,
         position: [coords.latitude, coords.longitude],
