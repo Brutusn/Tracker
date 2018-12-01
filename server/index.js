@@ -5,6 +5,8 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
+const { constants } = require('crypto');
+
 const express = require('express');
 const socket = require('socket.io');
 
@@ -15,11 +17,13 @@ const { handleName } = require('./handleName.js');
 
 const rf = fs.readFileSync;
 // Set up
+console.log(constants.SSL_OP_NO_TLSv1);
 const app = express();
 const server = https.createServer({
   key: rf('../cert/SSLprivatekey.key'),
   cert: rf('../cert/SSLcertificate.crt'),
-  ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')]
+  ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')],
+  secureOptions: constants.SSL_OP_NO_TLSv1
 }, app);
 const io = socket(server);
 
