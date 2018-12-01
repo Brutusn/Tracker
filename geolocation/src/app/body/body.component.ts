@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { GeoService } from '../shared/geo.service';
 import { SocketService } from '../shared/websocket.service';
 
-import NoSleep from 'nosleep.js';
-
 import { nameData } from '../shared/interfaces';
 
 import { environment } from '../../environments/environment';
@@ -22,17 +20,13 @@ export class BodyComponent implements OnInit {
   public username = window.localStorage.getItem('user-name') || '';
   public error = '';
   public speed = '';
-  public autoPlay = false;
 
   private access_token = window.localStorage.getItem('access_token') || '';
-  private noSleep: any;
 
   constructor(
     private geo: GeoService, 
     private ws: SocketService
-  ) {
-    this.noSleep = new NoSleep();
-  }
+  ) { }
 
   ngOnInit() {
   }
@@ -95,13 +89,5 @@ export class BodyComponent implements OnInit {
       this.currentPosition = `lat: ${coords.latitude}, lng: ${coords.longitude}`;
     }, 
     (error) => this.geoError(error));
-  }
-
-  setAutoPlay () {
-    if (this.autoPlay === true) {
-      this.noSleep.enable();
-    } else {
-      this.noSleep.disable();
-    }
   }
 }

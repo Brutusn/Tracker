@@ -10,13 +10,15 @@ import { BodyComponent } from './body/body.component';
 import { SocketService } from './shared/websocket.service';
 import { GeoService } from './shared/geo.service';
 import { ErrorComponent } from './error/error.component';
+import { DisplayOnComponent } from './display-on/display-on.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     BodyComponent,
-    ErrorComponent
+    ErrorComponent,
+    DisplayOnComponent
   ],
   imports: [
     BrowserModule,

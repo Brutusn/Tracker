@@ -12,8 +12,6 @@
     <span class="dot dot-animation"></span>
     <p>{{currentPosition}}</p>
   </div>
-  <div [ngClass]="{ 'auto-play': autoPlay === true }">
-    <label><input type="checkbox" [(ngModel)]="autoPlay" (change)="setAutoPlay()"/> Display always on.</label>
-  </div>
+  <app-display-on></app-display-on>
   <app-error [error]="error"></app-error>
 </div>
