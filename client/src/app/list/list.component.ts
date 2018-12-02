@@ -22,16 +22,16 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Get all the data once... keep the 
+    // Get all the data once... keep the
     this.loc.getLocations().subscribe((data: PositionMapped) => {
         this.listData = data;
-      }, 
+      },
       this.handleError
     );
 
     this.loc.getNewLocation().subscribe((data: PositionMapped) => {
         this.listData = data;
-      }, 
+      },
       this.handleError
     );
   }

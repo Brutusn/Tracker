@@ -25,9 +25,9 @@ export class MapComponent implements OnInit {
   private offLineCircle = {
     ...this.onlineCirle,
     color: '#F22613',
-  }
+  };
 
-  public autoZoom: boolean = true;
+  public autoZoom = true;
 
   constructor(private loc: LocationService) { }
 
@@ -87,12 +87,12 @@ export class MapComponent implements OnInit {
   listenToPositions () {
     this.loc.getLocations().subscribe((data: PositionMapped) => {
         this.handleCoordinates(data);
-      }, 
+      },
       this.handleError
     );
     this.loc.getNewLocation().subscribe((data: PositionMapped) => {
         this.handleCoordinates(data);
-      }, 
+      },
       this.handleError
     );
   }

@@ -9,7 +9,7 @@ export class SocketService {
     private socket;
 
     public initSocket(): void {
-      console.debug('init socket');
+      console.log('init socket');
       if (this.socket) {
         this.socket.close();
       }
@@ -25,7 +25,7 @@ export class SocketService {
         console.error(error);
         alert(error);
       });
-  
+
       this.onEvent('growl').subscribe((msg) => {
         console.warn('GROWL:', msg);
         alert(msg);
@@ -35,7 +35,7 @@ export class SocketService {
     public onEvent(event: string): Observable<any> {
       return new Observable<Object>((observer) => {
         this.socket.on(event, (data: any) => {
-          console.debug('Got message on:', event);
+          console.log('Got message on:', event);
           return observer.next(data);
         });
       });

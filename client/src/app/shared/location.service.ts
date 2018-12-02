@@ -31,7 +31,7 @@ export class LocationService {
       newObject[p.name].speed = p.speed ? Math.round(p.speed * 3.6) : 0;
 
       return newObject;
-    }
+    };
 
     newObject = mapper(pos);
 
