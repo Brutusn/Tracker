@@ -35,14 +35,14 @@ export class SocketService {
   public onEvent(event: string): Observable<any> {
     return new Observable<Object>((observer) => {
       this.socket.on(event, (data: any) => {
-        console.debug('Got message on:', event);
+        console.log('Got message on:', event);
         return observer.next(data);
       });
     });
   }
 
   public emit(event: string, data) {
-    console.debug('Send message to:', event);
+    console.log('Send message to:', event);
     this.socket.emit(event, data);
   }
 }

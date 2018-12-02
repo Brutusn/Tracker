@@ -8,7 +8,7 @@ import { SocketService } from '../shared/websocket.service';
 })
 export class ErrorComponent implements OnInit {
 
-  @Input('error') error = '';
+  @Input() error = '';
 
   constructor(private ws: SocketService) { }
 
@@ -28,11 +28,11 @@ export class ErrorComponent implements OnInit {
       this.ws.onEvent('disconnect').subscribe((reason) => {
         this.error = `${this.prefix} ${reason}`;
       });
-  
+
       this.ws.onEvent('growl').subscribe((msg) => {
         console.warn('GROWL:', msg);
         this.error = `Server message: ${msg}`;
       });
-    })
+    });
   }
 }

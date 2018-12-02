@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GeoService } from '../shared/geo.service';
 import { SocketService } from '../shared/websocket.service';
 
-import { nameData } from '../shared/interfaces';
+import { NameData } from '../shared/interfaces';
 
 import { environment } from '../../environments/environment';
 
@@ -23,7 +23,7 @@ export class BodyComponent implements OnInit {
   private access_token = window.localStorage.getItem('access_token') || '';
 
   constructor(
-    private geo: GeoService, 
+    private geo: GeoService,
     private ws: SocketService
   ) { }
 
@@ -47,21 +47,21 @@ export class BodyComponent implements OnInit {
     // Init the socket with the given username.
     this.ws.initSocket(this.username, this.access_token);
 
-    this.ws.onEvent('final-name').subscribe((data: nameData) => {
+    this.ws.onEvent('final-name').subscribe((data: NameData) => {
       this.handleName(data);
 
       this.geo.watch().subscribe(({ coords }) => {
         this.error = '';
         this.tracking = true;
-      }, 
+      },
       (error) => this.geoError(error));
-      
+
       this.displayLocation();
       this.sendPosition();
     });
   }
 
-  handleName ({ name, access_token }: nameData): void {
+  handleName ({ name, access_token }: NameData): void {
     window.localStorage.setItem('user-name', name);
     window.localStorage.setItem('access_token', access_token);
 
@@ -77,7 +77,7 @@ export class BodyComponent implements OnInit {
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
       });
-    }, 
+    },
     (error) => this.geoError(error));
   }
 
@@ -85,7 +85,7 @@ export class BodyComponent implements OnInit {
     this.geo.watch().subscribe(({ coords }) => {
       this.error = '';
       this.currentPosition = `lat: ${coords.latitude}, lng: ${coords.longitude}`;
-    }, 
+    },
     (error) => this.geoError(error));
   }
 }

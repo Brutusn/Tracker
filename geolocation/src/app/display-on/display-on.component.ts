@@ -8,7 +8,7 @@ import NoSleep from 'nosleep.js';
   styleUrls: ['./display-on.component.css']
 })
 export class DisplayOnComponent implements OnInit {
-  
+
   public displayOn = false;
 
   private noSleep: any;
@@ -20,7 +20,7 @@ export class DisplayOnComponent implements OnInit {
     this.noSleep.disable();
   }
 
-  constructor() { 
+  constructor() {
     this.noSleep = new NoSleep();
   }
 

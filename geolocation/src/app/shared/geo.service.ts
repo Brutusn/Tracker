@@ -10,18 +10,18 @@ export class GeoService {
   private geoOpts = {
     enableHighAccuracy: true,
     maximumAge: 300000
+  };
+
+  constructor() {
   }
 
-  constructor() { 
-  }
-
-  watch ():Observable<any> {
+  watch (): Observable<any> {
     return new Observable<object>((observer) => {
       let watchId;
 
       if ('geolocation' in navigator) {
         watchId = navigator.geolocation.watchPosition(
-          (position) => observer.next(position), 
+          (position) => observer.next(position),
           (error) => observer.error(error),
           this.geoOpts
         );
@@ -29,8 +29,8 @@ export class GeoService {
         observer.error('Geolocation not available.');
       }
 
-      return { unsubscribe() { 
-        navigator.geolocation.clearWatch(watchId); 
+      return { unsubscribe() {
+        navigator.geolocation.clearWatch(watchId);
       }};
     });
   }
