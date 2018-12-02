@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 import NoSleep from 'nosleep.js';
 
@@ -12,6 +12,13 @@ export class DisplayOnComponent implements OnInit {
   public displayOn = false;
 
   private noSleep: any;
+
+  // The no sleep option might stop working of the window loses focus. So now we set it visually!
+  @HostListener('window:blur', ['$event'])
+  stopNosleep() {
+    this.displayOn = false;
+    this.noSleep.disable();
+  }
 
   constructor() { 
     this.noSleep = new NoSleep();
