@@ -17,6 +17,28 @@ li:not(:last-of-type) {
   margin-bottom: .5em;
 }
 
+.pos-rel {
+  position: relative;
+}
+
+button {
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  border-radius: 4px;
+  border: none;
+  padding: .5em .75em;
+
+  color: white;
+  background-color: var(--header-color);
+
+  transition: background-color .25s ease-in-out;
+}
+button:hover {
+  background-color: #202099;
+}
+
 .off-line {
   border-bottom: 2px solid var(--off-line);
 }

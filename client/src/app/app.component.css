@@ -1,8 +1,8 @@
 header {
-  background-color: #013243;
+  background-color: var(--header-color);
   color: var(--light-text);
   overflow: hidden;
-  
+
   grid-row: 1;
   grid-area: header;
 }

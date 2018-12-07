@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Position, PositionMapped } from '../shared/position';
 import { LocationService } from '../shared/location.service';
+import { SocketService } from '../shared/websocket.service';
 
 @Component({
   selector: 'app-list',
@@ -13,12 +14,15 @@ export class ListComponent implements OnInit {
   public listData: PositionMapped = {};
   public objectKeys = Object.keys;
 
-  constructor(private loc: LocationService) {
-  }
-
   private handleError (error) {
     // For now...
     alert(error);
+  }
+
+  constructor(private loc: LocationService, private ws: SocketService) {
+    this.ws.onEvent('user-destroyed').subscribe((name: string) => {
+      delete this.listData[name];
+    });
   }
 
   ngOnInit() {
@@ -34,5 +38,9 @@ export class ListComponent implements OnInit {
       },
       this.handleError
     );
+  }
+
+  removeOffline (name: string): void {
+    this.ws.emit('user-destroy', name);
   }
 }

@@ -9,7 +9,6 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { ListComponent } from './list/list.component';
 import { LocationService } from './shared/location.service';
 import { SocketService } from './shared/websocket.service';
-import { HideOffLineComponent } from './hide-off-line/hide-off-line.component';
 
 @NgModule({
   declarations: [
@@ -17,8 +16,7 @@ import { HideOffLineComponent } from './hide-off-line/hide-off-line.component';
     HeaderComponentComponent,
     MapComponent,
     SideBarComponent,
-    ListComponent,
-    HideOffLineComponent
+    ListComponent
   ],
   imports: [
     BrowserModule,

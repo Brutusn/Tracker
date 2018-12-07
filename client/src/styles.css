@@ -3,6 +3,7 @@
 :root {
   --dark-text: #202020;
   --light-text: #EEEEEE;
+  --header-color: #013243;
 }
 
 *, *::before, *::after {
@@ -28,7 +29,7 @@ body {
   display: grid;
   grid-template-rows: max-content;
   grid-template-columns: 1fr 3fr;
-  grid-template-areas: 
+  grid-template-areas:
     'header header'
     'sidebar map';
   height: 100%;

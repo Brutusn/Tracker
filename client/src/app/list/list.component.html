@@ -2,9 +2,10 @@
   <li *ngIf="objectKeys(listData).length === 0">No connected users.</li>
 
   <li *ngFor="let position of objectKeys(listData)" [ngClass]="{'off-line': listData[position].online === false}">
-    <div>
+    <div class="pos-rel">
       <p class="primary">{{listData[position].name}}</p>
       <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}</p>
+      <button *ngIf="listData[position].online === false" (click)="removeOffline(listData[position].name)">DEL</button>
     </div>
   </li>
 </ul>
