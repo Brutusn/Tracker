@@ -78,9 +78,14 @@ const sendPosition = (data, errorFn) => {
   positions.addPosition(data);
 }
 const userLeft = (name = '__nameless__') => {
-  console.log('User left:', name);
+  console.log('[APP] User left:', name);
   positions.userOffline(name);
   broadcast('user-left', name);
+}
+const removeOfflineUser = (name) => {
+  console.log('[APP] Removing offline user');
+  positions.removeUser(name);
+  broadcast('user-destroyed', name);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -117,6 +122,13 @@ app.post('/api/byebye/:name', tokenValidator, ({ params: { name }}, res) => {
   res.send({ confirmed: name });
 });
 
+// DELETE /api/destroy/:name
+app.delete('/api/destroy/:name', tokenValidator, ({ params: { name }}, res) => {
+  removeOfflineUser(name);
+
+  res.send({ deleted: name });
+});
+
 ////////////////////////////////////////////////////////////////////
 // SOCKET - API
 ////////////////////////////////////////////////////////////////////
@@ -142,12 +154,16 @@ io
       const nameData = handleName(name, access_token);
       name = nameData.name;
 
-      console.log('[SOCKET] User joined:', name);
+      console.log('[APP] User joined:', name);
       process.nextTick(() => socket.emit('final-name', nameData));
     }
 
     if (token === config.ws_key) {
       socket.join('super-secret');
+
+      socket.on('user-destroy', (user) => {
+        removeOfflineUser(user);
+      });
     }
 
     // Send the last n amount of positions to the front-end

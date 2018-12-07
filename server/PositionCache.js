@@ -23,4 +23,10 @@ module.exports = class PositionCache {
     this.positions[pos.name] = pos;
     this.positions[pos.name].online = true;
   }
+
+  removeUser (user) {
+    if (this.positions[user] && this.positions[user].online === false) {
+      delete this.positions[user];
+    }
+  }
 };
