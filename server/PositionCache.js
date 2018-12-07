@@ -1,8 +1,12 @@
 //@ts-check
+
+const { handleName } = require('./handleName.js');
+
 // Simple position class
 module.exports = class PositionCache {
   constructor () {
     this.positions = {};
+    this.users = {};
   }
 
   get getAll () {
@@ -10,6 +14,15 @@ module.exports = class PositionCache {
     delete this.positions.__nameless__;
 
     return this.positions;
+  }
+
+  registerUser (name, token = '') {
+    const handled = handleName(this.users, name, token);
+
+    console.log(handled);
+
+    this.users = handled[0];
+    return handled[1];
   }
 
   userOffline (user) {
@@ -27,6 +40,9 @@ module.exports = class PositionCache {
   removeUser (user) {
     if (this.positions[user] && this.positions[user].online === false) {
       delete this.positions[user];
+    }
+    if (this.users[user]) {
+      delete this.users[user];
     }
   }
 };

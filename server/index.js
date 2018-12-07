@@ -14,7 +14,6 @@ const socket = require('socket.io');
 const config = require('../config/server.js');
 
 const PosCache = require('./PositionCache.js');
-const { handleName } = require('./handleName.js');
 
 console.log(`[CORE] Node running on version: ${process.version}...`);
 
@@ -151,7 +150,7 @@ io
     let name = socket.handshake.query.name;
 
     if (name) {
-      const nameData = handleName(name, access_token);
+      const nameData = positions.registerUser(name, access_token);
       name = nameData.name;
 
       console.log('[APP] User joined:', name);
