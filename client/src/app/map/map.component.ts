@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 
 import * as L from 'leaflet';
 import { Position, PositionMapped } from '../shared/position';
+import { SocketService } from '../shared/websocket.service';
 
 @Component({
   selector: 'app-map',
@@ -18,6 +19,8 @@ export class MapComponent implements OnInit {
   private markerLayer = L.featureGroup();
   private blokhut: any = [51.6267702062721, 5.522872209548951];
 
+  private markers = {};
+
   private onlineCirle = {
     radius: 8,
     fillOpacity: 0.75,
@@ -29,11 +32,31 @@ export class MapComponent implements OnInit {
 
   public autoZoom = true;
 
-  constructor(private loc: LocationService) { }
+  constructor(private loc: LocationService, private ws: SocketService) {
+    this.ws.onEvent('user-destroyed').subscribe((name: string) => {
+      this.markerLayer.removeLayer(this.markers[name]);
+
+      this.setBounds();
+
+      delete this.markers[name];
+    });
+
+    this.ws.onEvent('user-left').subscribe((name: string) => {
+      const marker = this.markers[name];
+
+      if (marker) {
+        marker.setStyle(this.offLineCircle);
+      }
+    });
+  }
 
   private handleError (error) {
     // For now...
     alert(error);
+  }
+
+  private tooltipString (data: Position): string {
+    return `${data.name} (${data.speed} Km/h)`;
   }
 
   ngOnInit() {
@@ -64,22 +87,35 @@ export class MapComponent implements OnInit {
   createMarker (data: Position): any {
     const opts = data.online ? this.onlineCirle : this.offLineCircle;
 
-    return L.circleMarker(data.position, opts)
-      .bindTooltip(`${data.name} (${data.speed} Km/h)`);
+    this.markers[data.name] = L.circleMarker(data.position, opts)
+      .bindTooltip(this.tooltipString(data));
+
+    return this.markers[data.name];
   }
 
-  handleCoordinates (data: PositionMapped) {
-    this.markerLayer.clearLayers();
-
-    Object.entries(data).forEach(([key, item]) => {
+  markerHandler ([key, item]) {
+    // Only create a new marker if it's not yet known.
+    if (!this.markers[item.name]) {
       this.markerLayer.addLayer(this.createMarker(item));
-    });
+    } else {
+      // Update the tooltip with the new speed.
+      this.markers[item.name].setTooltipContent(this.tooltipString(item));
+      this.markers[item.name].setLatLng(item.position);
+    }
+  }
 
+  setBounds () {
     const bounds = this.markerLayer.getBounds();
 
     if (Object.keys(bounds).length > 0 && this.autoZoom === true) {
       this.map.fitBounds(bounds);
     }
+  }
+
+  handleCoordinates (data: PositionMapped) {
+    Object.entries(data).forEach(this.markerHandler.bind(this));
+
+    this.setBounds();
 
     this.markerLayer.getLayers().forEach((layer) => layer.openTooltip());
   }

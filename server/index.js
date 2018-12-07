@@ -82,7 +82,7 @@ const userLeft = (name = '__nameless__') => {
   broadcast('user-left', name);
 }
 const removeOfflineUser = (name) => {
-  console.log('[APP] Removing offline user');
+  console.log('[APP] Removing offline user:', name);
   positions.removeUser(name);
   broadcast('user-destroyed', name);
 }

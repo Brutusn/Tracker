@@ -23,6 +23,11 @@ export class ListComponent implements OnInit {
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       delete this.listData[name];
     });
+    this.ws.onEvent('user-left').subscribe((name: string) => {
+      if (this.listData[name]) {
+        this.listData[name].online = false;
+      }
+    });
   }
 
   ngOnInit() {
@@ -41,6 +46,10 @@ export class ListComponent implements OnInit {
   }
 
   removeOffline (name: string): void {
-    this.ws.emit('user-destroy', name);
+    const del = confirm('You sure mate?!');
+
+    if (del) {
+      this.ws.emit('user-destroy', name);
+    }
   }
 }

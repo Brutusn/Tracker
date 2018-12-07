@@ -20,6 +20,9 @@ export class LocationService {
         this.mappedPositions[name].online = false;
       }
     });
+    this.ws.onEvent('user-destroyed').subscribe((name: string) => {
+      delete this.mappedPositions[name];
+    });
   }
 
   mapPositions (pos: Position, keepOnlineState = false): PositionMapped {

@@ -19,8 +19,6 @@ module.exports = class PositionCache {
   registerUser (name, token = '') {
     const handled = handleName(this.users, name, token);
 
-    console.log(handled);
-
     this.users = handled[0];
     return handled[1];
   }
