@@ -8,12 +8,15 @@ const path = require('path');
 const { constants } = require('crypto');
 
 const express = require('express');
+const compression = require('compression');
 const socket = require('socket.io');
 
 const config = require('../config/server.js');
 
 const PosCache = require('./PositionCache.js');
 const { handleName } = require('./handleName.js');
+
+console.log(`[CORE] Node running on version: ${process.version}...`);
 
 const rf = fs.readFileSync;
 // Set up
@@ -32,7 +35,7 @@ const httpServer = http.createServer(app);
 // Redirect to https.
 app.use((req, res, next) => {
   if(!req.secure) {
-    console.debug('Insecure connection, redirect to https..');
+    console.log('[HTTP] Insecure connection, redirect to https..', req.url);
     return res.redirect(['https://', req.get('Host'), req.url].join(''));
   }
   next();
@@ -40,19 +43,20 @@ app.use((req, res, next) => {
 
 // Simple request logger, just to see some activity.
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] [${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
+  console.log(`[${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
   next();
 });
 
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
+  app.use(compression());
   app.use('/tracker', express.static(path.join(__dirname, '../client/dist/tracker-client')));
   app.use(express.static('../geolocation/dist/geolocation'));
 }
 
 server.listen(config.port);
 httpServer.listen(config.port + 1);
-console.log('Server listening on port:', config.port);
+console.log(`[CORE] Server listening on port: ${config.port}`);
 
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PosCache();
@@ -125,11 +129,11 @@ io
       return next();
     }
 
-    console.log('A socket could not be connected.');
+    console.log('[SOCKET] A socket could not be connected.');
     next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
-    console.log('A socket connected', socket.id);
+    console.log('[SOCKET] A socket connected', socket.id);
     
     const { token, requestPositions, access_token } = socket.handshake.query;
     let name = socket.handshake.query.name;
@@ -138,7 +142,7 @@ io
       const nameData = handleName(name, access_token);
       name = nameData.name;
 
-      console.log('User joined:', name);
+      console.log('[SOCKET] User joined:', name);
       process.nextTick(() => socket.emit('final-name', nameData));
     }
 
