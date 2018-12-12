@@ -24,6 +24,7 @@ export class MapComponent implements OnInit {
   private onlineCirle = {
     radius: 8,
     fillOpacity: 0.75,
+    color: '#4d13d1',
   };
   private offLineCircle = {
     ...this.onlineCirle,
@@ -45,7 +46,7 @@ export class MapComponent implements OnInit {
       const marker = this.markers[name];
 
       if (marker) {
-        marker.setStyle(this.offLineCircle);
+        marker.setStyle(this.returnMarkerOpts(false));
       }
     });
   }
@@ -57,6 +58,10 @@ export class MapComponent implements OnInit {
 
   private tooltipString (data: Position): string {
     return `${data.name} (${data.speed} Km/h)`;
+  }
+
+  private returnMarkerOpts (online: boolean) {
+    return online ? this.onlineCirle : this.offLineCircle;
   }
 
   ngOnInit() {
@@ -95,12 +100,15 @@ export class MapComponent implements OnInit {
 
   markerHandler ([key, item]) {
     // Only create a new marker if it's not yet known.
-    if (!this.markers[item.name]) {
+    const marker = this.markers[item.name];
+    if (!marker) {
       this.markerLayer.addLayer(this.createMarker(item));
     } else {
       // Update the tooltip with the new speed.
-      this.markers[item.name].setTooltipContent(this.tooltipString(item));
-      this.markers[item.name].setLatLng(item.position);
+      marker
+        .setTooltipContent(this.tooltipString(item))
+        .setLatLng(item.position)
+        .setStyle(this.returnMarkerOpts(item.online));
     }
   }
 
@@ -113,7 +121,7 @@ export class MapComponent implements OnInit {
   }
 
   handleCoordinates (data: PositionMapped) {
-    Object.entries(data).forEach(this.markerHandler.bind(this));
+    Object.entries(data).forEach((entry) => this.markerHandler(entry));
 
     this.setBounds();
 
