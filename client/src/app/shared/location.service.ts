@@ -25,18 +25,26 @@ export class LocationService {
     });
   }
 
+  // This will calculate the speed, if a number higher than <insane> km/h it will return the original speed.
+  // This isn't rock solid, because you could have wrong speeds below threshold that are wrong.
+  private calcSpeed (speed: number, insane = 150): number {
+    const toKmh = Math.round(speed * 3.6);
+
+    if (toKmh > insane) {
+      return Math.round(speed);
+    }
+
+    return toKmh;
+  }
+
   mapPositions (pos: Position, keepOnlineState = false): PositionMapped {
-    let newObject: PositionMapped = {};
-    const mapper = (p: Position): PositionMapped => {
-      newObject[p.name] = p;
-      newObject[p.name].online = keepOnlineState ? p.online : true;
+    const newObject: PositionMapped = {};
 
-      newObject[p.name].speed = p.speed ? Math.round(p.speed * 3.6) : 0;
-
-      return newObject;
+    newObject[pos.name] = {
+      ...pos,
+      online: keepOnlineState ? pos.online : true,
+      speed: this.calcSpeed(pos.speed || 0)
     };
-
-    newObject = mapper(pos);
 
     // Merges the new data so no dubplicates come in..
     return Object.assign(this.mappedPositions, newObject);
