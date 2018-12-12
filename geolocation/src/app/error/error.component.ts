@@ -12,7 +12,7 @@ export class ErrorComponent implements OnInit {
 
   constructor(private ws: SocketService) { }
 
-  private prefix = 'Socket error:';
+  private prefix = 'Verbindingsfout:';
   private handleConnectError = (error: Error) => {
     console.error(error);
 
@@ -32,6 +32,10 @@ export class ErrorComponent implements OnInit {
       this.ws.onEvent('growl').subscribe((msg) => {
         console.warn('GROWL:', msg);
         this.error = `Server message: ${msg}`;
+      });
+
+      this.ws.onEvent('connect').subscribe(() => {
+        this.error = '';
       });
     });
   }
