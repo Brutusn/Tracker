@@ -49,7 +49,8 @@ export const locationArray: Route[] = [{
   coord: {
       latitude: 51.585798,
       longitude: 6.028043
-    }, {
+    }
+  }, {
   code: 'Y2hhbXBhZ25l',
   coord: {
       latitude: 51.558334,
