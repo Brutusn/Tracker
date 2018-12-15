@@ -8,6 +8,8 @@ import * as L from 'leaflet';
 import { Position, PositionMapped } from '../shared/position';
 import { SocketService } from '../shared/websocket.service';
 
+import { locationArray, Route } from '../../../../shared/route';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -17,7 +19,7 @@ export class MapComponent implements OnInit {
 
   private map;
   private markerLayer = L.featureGroup();
-  private blokhut: any = [51.6267702062721, 5.522872209548951];
+  private blokhut: L.LatLngExpression = [51.6267702062721, 5.522872209548951];
 
   private markers = {};
 
@@ -82,9 +84,23 @@ export class MapComponent implements OnInit {
       color: '#2e3131',
     })
       .bindTooltip('Blokhut (HQ)')
-      .addTo(this.map);
+      .addTo(this.map)
+      .openTooltip();
 
     this.listenToPositions();
+
+    // Show the locations
+    locationArray.forEach((item: Route) => {
+      const coord: L.LatLngExpression = [item.coord.latitude, item.coord.longitude];
+
+      L.circleMarker(coord, {
+        ...this.onlineCirle,
+        color: '#f89406',
+      })
+        .bindTooltip(atob(item.code))
+        .addTo(this.map)
+        .openTooltip();
+    });
   }
 
   markerClick (layer) {
