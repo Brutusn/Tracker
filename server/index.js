@@ -107,27 +107,6 @@ app.all('/api/ping', tokenValidator, (req, res) => {
   res.send({ pong: new Date() });
 });
 
-// POST /api/send-position
-app.post('/api/send-position', tokenValidator, ({ params: { body }}, res) => {
-  sendPosition(body, res.status(400).send);
-
-  res.send('Ok thanks!');
-});
-
-// POST /api/byebye/:name
-app.post('/api/byebye/:name', tokenValidator, ({ params: { name }}, res) => {
-  userLeft(name);
-
-  res.send({ confirmed: name });
-});
-
-// DELETE /api/destroy/:name
-app.delete('/api/destroy/:name', tokenValidator, ({ params: { name }}, res) => {
-  removeOfflineUser(name);
-
-  res.send({ deleted: name });
-});
-
 ////////////////////////////////////////////////////////////////////
 // SOCKET - API
 ////////////////////////////////////////////////////////////////////

@@ -17,10 +17,10 @@ module.exports = class PositionCache {
   }
 
   registerUser (name, token = '') {
-    const handled = handleName(this.users, name, token);
+    const [users, nameObj] = handleName(this.users, name, token);
 
-    this.users = handled[0];
-    return handled[1];
+    this.users = users;
+    return nameObj;
   }
 
   userOffline (user) {

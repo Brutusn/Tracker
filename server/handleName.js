@@ -3,7 +3,7 @@ const crypto = require('crypto');
 // Add a date.. just as extra..
 const hashString = (string) => {
   const hash = crypto.createHash('sha256');
-  return hash.update('Make a token: ' + string).digest('hex');
+  return hash.update('Make a token: ' + new Date() + string).digest('hex');
 }
 
 /**
@@ -34,5 +34,6 @@ exports.handleName = (connectedNames, name, token = '', suffix = 0) => {
     connectedNames, {
       name,
       access_token
-    }];
+    }
+  ];
 }
