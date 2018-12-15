@@ -33,14 +33,16 @@ export class CompassComponent implements OnInit {
     private compass: CompassService,
     private ws: SocketService,
     private geo: GeoService
-  ) { }
+  ) {
+    this.ws.onEvent('route-start').subscribe(() => {
+      this.geo.watch().subscribe(({ coords }) => {
+        this.handleCoords(coords);
+      });
+    });
+  }
 
   ngOnInit () {
-    console.log('ng init compass');
     this.codeWord = this.compass.decode(locationArray[this.waypoint].code);
-    this.geo.watch().subscribe(({ coords }) => {
-      this.handleCoords(coords);
-    });
   }
 
   heading (heading) {
@@ -104,8 +106,6 @@ export class CompassComponent implements OnInit {
   }
 
   handleCoords (coords) {
-    this.latestCoords = coords;
-
     const toLocation = this.getWaypoint(this.waypoint);
     const heading = this.heading(coords.heading);
     const _coords: Coordinate = {
