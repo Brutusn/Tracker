@@ -32,7 +32,7 @@ export class BodyComponent implements OnInit {
 
   geoError (error: PositionError) {
     console.error(error);
-    this.error = error.message;
+    this.error = error.message || 'GPS Error';
   }
 
   start() {
@@ -56,7 +56,6 @@ export class BodyComponent implements OnInit {
       },
       (error) => this.geoError(error));
 
-      this.displayLocation();
       this.sendPosition();
     });
   }
@@ -77,14 +76,6 @@ export class BodyComponent implements OnInit {
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
       });
-    },
-    (error) => this.geoError(error));
-  }
-
-  displayLocation () {
-    this.geo.watch().subscribe(({ coords }) => {
-      this.error = '';
-      this.currentPosition = `lat: ${coords.latitude}, lng: ${coords.longitude}`;
     },
     (error) => this.geoError(error));
   }
