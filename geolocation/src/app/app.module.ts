@@ -11,6 +11,7 @@ import { SocketService } from './shared/websocket.service';
 import { GeoService } from './shared/geo.service';
 import { ErrorComponent } from './error/error.component';
 import { DisplayOnComponent } from './display-on/display-on.component';
+import { CompassComponent } from './compass/compass.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DisplayOnComponent } from './display-on/display-on.component';
     HeaderComponent,
     BodyComponent,
     ErrorComponent,
-    DisplayOnComponent
+    DisplayOnComponent,
+    CompassComponent
   ],
   imports: [
     BrowserModule,

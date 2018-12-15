@@ -1,5 +1,5 @@
 <div class="centered">
-  <div *ngIf='!tracking' class="names">
+  <div *ngIf='tracking === 0' class="names">
     <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*.
       Op de blokhut zien dan mensen waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
     <p><strong>Vergeet niet om toestemming te geven voor het delen van de locatie!</strong></p>
@@ -8,10 +8,12 @@
     <p class="small">* Url: {{serverUrl}}</p>
   </div>
 
-  <div *ngIf='tracking' class="dot-container">
+  <div *ngIf='tracking === 1' class="dot-container">
     <span class="dot dot-animation"></span>
     <p>Veel plezier <b>{{username}}</b></p>
   </div>
+
+  <app-compass [enable]="tracking === 2"></app-compass>
   <app-display-on></app-display-on>
   <app-error [error]="error"></app-error>
 </div>

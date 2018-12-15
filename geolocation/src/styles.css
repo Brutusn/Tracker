@@ -3,6 +3,12 @@
 :root {
   --dark-text: #202020;
   --light-text: #bdc3c7;
+
+  --hue: 0;
+  --saturation: 80%;
+  --lightness: 47%;
+  --compass-rotation: 0deg;
+  --compass-red: hsla(var(--hue), var(--saturation), var(--lightness), 1);
 }
 
 *, *::before, *::after {

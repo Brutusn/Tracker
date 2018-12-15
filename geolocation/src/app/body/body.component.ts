@@ -6,6 +6,12 @@ import { NameData } from '../shared/interfaces';
 
 import { environment } from '../../environments/environment';
 
+enum TrackingModes {
+  NO_TRACKING,
+  TRACKING,
+  COMPASS
+}
+
 @Component({
   selector: 'app-body',
   templateUrl: './body.component.html',
@@ -15,7 +21,7 @@ export class BodyComponent implements OnInit {
 
   public serverUrl = environment.ws_url;
 
-  public tracking = false;
+  public tracking = TrackingModes['NO_TRACKING'];
   public currentPosition = 'wacht op locatie..';
   public username = window.localStorage.getItem('user-name') || '';
   public error = '';
@@ -52,11 +58,18 @@ export class BodyComponent implements OnInit {
 
       this.geo.watch().subscribe(({ coords }) => {
         this.error = '';
-        this.tracking = true;
+        this.tracking = TrackingModes['TRACKING'];
       },
       (error) => this.geoError(error));
 
       this.sendPosition();
+    });
+
+    this.ws.onEvent('start-route').subscribe(() => {
+      this.tracking = TrackingModes['COMPASS'];
+    });
+    this.ws.onEvent('end-route').subscribe(() => {
+      this.tracking = TrackingModes['TRACKING'];
     });
   }
 
