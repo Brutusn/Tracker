@@ -17,7 +17,7 @@ import { locationArray, Route } from '../../../../shared/route';
 })
 export class MapComponent implements OnInit {
 
-  private map;
+  private map: L.Map;
   private markerLayer = L.featureGroup();
   private blokhut: L.LatLngExpression = [51.6267702062721, 5.522872209548951];
 
@@ -103,8 +103,8 @@ export class MapComponent implements OnInit {
     });
   }
 
-  markerClick (layer) {
-    this.map.setView(layer.latlng, 17);
+  markerClick (event: any) {
+    this.map.setView(event.latlng, 17);
   }
 
   createMarker (data: Position): any {

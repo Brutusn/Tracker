@@ -52,4 +52,8 @@ export class ListComponent implements OnInit {
       this.ws.emit('user-destroy', name);
     }
   }
+
+  startRouteFor (name: string): void {
+    //
+  }
 }

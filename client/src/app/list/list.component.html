@@ -6,6 +6,7 @@
       <p class="primary">{{listData[position].name}}</p>
       <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}</p>
       <button *ngIf="listData[position].online === false" (click)="removeOffline(listData[position].name)">DEL</button>
+      <button *ngIf="listData[position].online === true" (click)="startRouteFor(listData[position].name)">START</button>
     </div>
   </li>
 </ul>
