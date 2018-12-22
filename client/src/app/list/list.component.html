@@ -3,7 +3,7 @@
 
   <li *ngFor="let position of objectKeys(listData)" [ngClass]="{'off-line': listData[position].online === false}">
     <div class="pos-rel">
-      <p class="primary">{{listData[position].name}}</p>
+      <p class="primary">{{listData[position].name}} (post: {{listData[position].post}}/{{totalPost}})</p>
       <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}</p>
       <button *ngIf="listData[position].online === false" (click)="removeOffline(listData[position].name)">DEL</button>
       <button *ngIf="listData[position].online === true" (click)="startRouteFor(listData[position].name)">START</button>

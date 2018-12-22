@@ -4,6 +4,7 @@ export interface Position {
   speed: null | number;
   date: Date;
   online?: boolean;
+  post: number;
 }
 
 export interface PositionMapped {

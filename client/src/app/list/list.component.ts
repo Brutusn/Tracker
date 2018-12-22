@@ -4,6 +4,8 @@ import { Position, PositionMapped } from '../shared/position';
 import { LocationService } from '../shared/location.service';
 import { SocketService } from '../shared/websocket.service';
 
+import { locationArray } from '../../../../shared/route';
+
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -13,6 +15,8 @@ export class ListComponent implements OnInit {
 
   public listData: PositionMapped = {};
   public objectKeys = Object.keys;
+
+  public totalPost = locationArray.length;
 
   private handleError (error) {
     // For now...
@@ -54,6 +58,14 @@ export class ListComponent implements OnInit {
   }
 
   startRouteFor (name: string): void {
-    //
+    const start = prompt('Vanaf welke post moet er gestart worden?', '1');
+    const parsed = parseInt(start, 10);
+
+    if (start && !isNaN(parsed)) {
+      this.ws.emit('start-route', {
+        name,
+        startAt: parsed
+      });
+    }
   }
 }

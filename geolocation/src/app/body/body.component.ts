@@ -26,6 +26,9 @@ export class BodyComponent implements OnInit {
   public username = window.localStorage.getItem('user-name') || '';
   public error = '';
 
+  // TODO: Get this from the compass..
+  public currentPost = 0;
+
   private access_token = window.localStorage.getItem('access_token') || '';
 
   constructor(
@@ -88,6 +91,7 @@ export class BodyComponent implements OnInit {
         name: this.username,
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
+        post: this.currentPost,
       });
     },
     (error) => this.geoError(error));
