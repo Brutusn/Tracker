@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import * as geolib from 'geolib';
 
-import { locationArray, Coordinate } from '../../../../shared/route';
+import { locationArray, Coordinate, Route } from '../../../../shared/route';
 import { CompassService } from './compass.service';
 import { SocketService } from '../shared/websocket.service';
 import { GeoService } from '../shared/geo.service';
@@ -14,9 +14,10 @@ import { GeoService } from '../shared/geo.service';
 })
 export class CompassComponent implements OnInit {
   @Input() enable: boolean;
+  @Output() endFound = new EventEmitter<boolean>();
 
   // These are disaplayed
-  public displayDistance = '';
+  public displayDistance = '0 km';
   public codeWord = '';
 
   // These not.
@@ -29,23 +30,31 @@ export class CompassComponent implements OnInit {
   private compassOffset = 45;
   private cssVar = '--compass-rotation';
 
+  // Locations minus starting point.
+  private locations = locationArray.filter((i: Route) => i.skip !== true);
+
   constructor(
     private compass: CompassService,
     private ws: SocketService,
     private geo: GeoService
   ) {
-    this.ws.onEvent('route-start').subscribe(() => {
-      this.geo.watch().subscribe(({ coords }) => {
-        this.handleCoords(coords);
+    this.ws.socketAnnounced.subscribe(() => {
+      this.ws.onEvent('start-route').subscribe((start: number) => {
+        this.setWaypoint(start);
+        this.codeWord = this.compass.decode(this.locations[this.waypoint].code);
+
+        this.geo.watch().subscribe(({ coords }) => {
+          this.handleCoords(coords);
+        });
       });
     });
   }
 
   ngOnInit () {
-    this.codeWord = this.compass.decode(locationArray[this.waypoint].code);
+    this.codeWord = this.compass.decode(this.locations[this.waypoint].code);
   }
 
-  heading (heading) {
+  heading (heading: number) {
     if (heading || heading === 0) {
       this.lastHeading = heading;
     }
@@ -69,17 +78,17 @@ export class CompassComponent implements OnInit {
   }
 
   getWaypoint (waypoint: string | number = 0) {
-    const obj = locationArray[parseInt(waypoint as string, 10)];
+    const obj = this.locations[parseInt(waypoint as string, 10)];
 
     if (obj) {
       return obj;
     }
 
-    return locationArray[0];
+    return this.locations[0];
   }
   setWaypoint (waypoint: string | number = 0) {
     const index = parseInt(waypoint as string, 10);
-    const obj = locationArray[waypoint];
+    const obj = this.locations[waypoint];
     const store = (wp) => {
       this.waypoint = wp;
       localStorage.setItem('waypoint', wp);
@@ -94,13 +103,18 @@ export class CompassComponent implements OnInit {
   foundWaypoint (distance: number) {
     if (distance < this.findRadius) {
       // Point found.. whoohoo!
-      if ((this.waypoint + 1) < locationArray.length) {
+      if ((this.waypoint + 1) === this.locations.length) {
+        // Endpoint is found!
+        this.endFound.emit(true);
+      }
+
+      if ((this.waypoint + 1) < this.locations.length) {
         // Next point is also an object.. so use that one next.
         this.waypoint++;
 
         this.setWaypoint(this.waypoint);
 
-        this.codeWord = this.compass.decode(locationArray[this.waypoint].code);
+        this.codeWord = this.compass.decode(this.locations[this.waypoint].code);
       }
     }
   }

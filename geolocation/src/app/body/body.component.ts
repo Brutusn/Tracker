@@ -58,22 +58,19 @@ export class BodyComponent implements OnInit {
 
     this.ws.onEvent('final-name').subscribe((data: NameData) => {
       this.handleName(data);
-
-      this.geo.watch().subscribe(({ coords }) => {
-        this.error = '';
-        this.tracking = TrackingModes['TRACKING'];
-      },
-      (error) => this.geoError(error));
-
+      this.tracking = TrackingModes['TRACKING'];
       this.sendPosition();
     });
 
     this.ws.onEvent('start-route').subscribe(() => {
       this.tracking = TrackingModes['COMPASS'];
     });
-    this.ws.onEvent('end-route').subscribe(() => {
+  }
+
+  onEndFound (found: boolean) {
+    if (found) {
       this.tracking = TrackingModes['TRACKING'];
-    });
+    }
   }
 
   handleName ({ name, access_token }: NameData): void {
@@ -92,6 +89,7 @@ export class BodyComponent implements OnInit {
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
         post: this.currentPost,
+        waypoint: parseInt(localStorage.getItem('waypoint'), 10),
       });
     },
     (error) => this.geoError(error));
