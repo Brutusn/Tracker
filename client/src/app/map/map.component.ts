@@ -83,23 +83,24 @@ export class MapComponent implements OnInit {
       ...this.onlineCirle,
       color: '#2e3131',
     })
-      .bindTooltip('Blokhut (HQ)')
-      .addTo(this.map)
-      .openTooltip();
+      .bindTooltip('Blokhut (HQ)', { permanent: true })
+      .addTo(this.map);
 
     this.listenToPositions();
 
     // Show the locations
+    const filteredArray = locationArray.filter((i) => i.skip !== true);
     locationArray.forEach((item: Route) => {
       const coord: L.LatLngExpression = [item.coord.latitude, item.coord.longitude];
+      const code = atob(item.code).toUpperCase();
+      const indexOfFiltered = item.skip !== true ? `(${filteredArray.findIndex((i) => i.code === item.code)})` : '';
 
       L.circleMarker(coord, {
         ...this.onlineCirle,
         color: '#f89406',
       })
-        .bindTooltip(atob(item.code))
-        .addTo(this.map)
-        .openTooltip();
+        .bindTooltip(`${code} ${indexOfFiltered}`.trim(), { permanent: true })
+        .addTo(this.map);
     });
   }
 
@@ -111,7 +112,7 @@ export class MapComponent implements OnInit {
     const opts = data.online ? this.onlineCirle : this.offLineCircle;
 
     this.markers[data.name] = L.circleMarker(data.position, opts)
-      .bindTooltip(this.tooltipString(data));
+      .bindTooltip(this.tooltipString(data), { permanent: true });
 
     return this.markers[data.name];
   }
@@ -142,8 +143,6 @@ export class MapComponent implements OnInit {
     Object.entries(data).forEach((entry) => this.markerHandler(entry));
 
     this.setBounds();
-
-    this.markerLayer.getLayers().forEach((layer) => layer.openTooltip());
   }
 
   listenToPositions () {

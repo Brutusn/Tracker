@@ -16,7 +16,8 @@ export class ListComponent implements OnInit {
   public listData: PositionMapped = {};
   public objectKeys = Object.keys;
 
-  public totalPost = locationArray.length;
+  private locations = locationArray.filter((i) => i.skip !== true);
+  public totalPost = this.locations.length;
 
   private handleError (error) {
     // For now...
@@ -58,10 +59,13 @@ export class ListComponent implements OnInit {
   }
 
   startRouteFor (name: string): void {
-    const start = prompt('Vanaf welke post moet er gestart worden?', '1');
+    const start = prompt('Vanaf welke post moet er gestart worden?', '0');
     const parsed = parseInt(start, 10);
+    const code = this.locations[parsed] ? atob(this.locations[parsed].code).toUpperCase() : 'Onbekend';
 
-    if (start && !isNaN(parsed)) {
+    const correct = confirm(`Dat is post: ${code}`);
+
+    if (start && correct && !isNaN(parsed)) {
       this.ws.emit('start-route', {
         name,
         startAt: parsed

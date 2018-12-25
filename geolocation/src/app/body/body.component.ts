@@ -89,7 +89,7 @@ export class BodyComponent implements OnInit {
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
         post: this.currentPost,
-        waypoint: parseInt(localStorage.getItem('waypoint'), 10),
+        waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
       });
     },
     (error) => this.geoError(error));
