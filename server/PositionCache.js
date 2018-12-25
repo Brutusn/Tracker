@@ -7,6 +7,7 @@ module.exports = class PositionCache {
   constructor () {
     this.positions = {};
     this.users = {};
+    this.sockets = {};
   }
 
   get getAll () {
@@ -16,11 +17,25 @@ module.exports = class PositionCache {
     return this.positions;
   }
 
-  registerUser (name, token = '') {
+  registerUser (name, token = '', socket) {
     const [users, nameObj] = handleName(this.users, name, token);
 
     this.users = users;
+
+    // Add the socket.
+    this.sockets[nameObj.name] = socket;
+
     return nameObj;
+  }
+
+  getSocketOfUser (user) {
+    const socket = this.sockets[user];
+
+    if (!socket) {
+      return;
+    }
+
+    return socket;
   }
 
   userOffline (user) {

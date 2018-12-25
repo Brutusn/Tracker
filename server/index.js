@@ -129,7 +129,7 @@ io
     let name = socket.handshake.query.name;
 
     if (name) {
-      const nameData = positions.registerUser(name, access_token);
+      const nameData = positions.registerUser(name, access_token, socket);
       name = nameData.name;
 
       console.log('[APP] User joined:', name);
@@ -141,6 +141,16 @@ io
 
       socket.on('user-destroy', (user) => {
         removeOfflineUser(user);
+      });
+
+      socket.on('start-route', ({ name, startAt = 0 }) => {
+        const userSocket = positions.getSocketOfUser(name);
+
+        if (userSocket) {
+          userSocket.emit('start-route', startAt);
+        } else {
+          socket.emit('growl', { error: `User: ${name} not found.`});
+        }
       });
     }
 
