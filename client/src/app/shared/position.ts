@@ -5,6 +5,7 @@ export interface Position {
   date: Date;
   online?: boolean;
   waypoint: number;
+  gpsStarted?: boolean;
 }
 
 export interface PositionMapped {

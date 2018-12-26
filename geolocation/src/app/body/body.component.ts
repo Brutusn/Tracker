@@ -90,6 +90,7 @@ export class BodyComponent implements OnInit {
         speed: coords.speed,
         post: this.currentPost,
         waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
+        gpsStarted: this.tracking === TrackingModes['COMPASS']
       });
     },
     (error) => this.geoError(error));

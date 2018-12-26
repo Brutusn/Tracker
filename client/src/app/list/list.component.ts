@@ -61,11 +61,15 @@ export class ListComponent implements OnInit {
   startRouteFor (name: string): void {
     const start = prompt('Vanaf welke post moet er gestart worden?', '0');
     const parsed = parseInt(start, 10);
-    const code = this.locations[parsed] ? atob(this.locations[parsed].code).toUpperCase() : 'Onbekend';
 
+    if (!start || !isNaN(parsed)) {
+      return;
+    }
+
+    const code = this.locations[parsed] ? atob(this.locations[parsed].code).toUpperCase() : 'Onbekend';
     const correct = confirm(`Dat is post: ${code}`);
 
-    if (start && correct && !isNaN(parsed)) {
+    if (correct) {
       this.ws.emit('start-route', {
         name,
         startAt: parsed

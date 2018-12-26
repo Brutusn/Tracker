@@ -1,6 +1,7 @@
 ul {
   --accent-color: #757575;
   --off-line: #F22613;
+  --gps-active: #BADA55;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -39,8 +40,16 @@ button:hover {
   background-color: #202099;
 }
 
+.off-line, .gps-started {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+
+.gps-started {
+  border-bottom-color: var(--gps-active);
+}
 .off-line {
-  border-bottom: 2px solid var(--off-line);
+  border-bottom-color: var(--off-line);
 }
 
 p {
@@ -74,6 +83,9 @@ p {
   background: #2c82c9;
 }
 
+.gps-started .primary:after {
+  background: var(--gps-active);
+}
 .off-line .primary:after {
   background: var(--off-line);
 }

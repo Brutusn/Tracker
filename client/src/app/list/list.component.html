@@ -1,7 +1,10 @@
 <ul>
   <li *ngIf="objectKeys(listData).length === 0">No connected users.</li>
 
-  <li *ngFor="let position of objectKeys(listData)" [ngClass]="{'off-line': listData[position].online === false}">
+  <li
+    *ngFor="let position of objectKeys(listData)"
+    [ngClass]="{'off-line': listData[position].online === false,
+                'gps-started': listData[position].gpsStarted === true}">
     <div class="pos-rel">
       <p class="primary">{{listData[position].name}}</p>
       <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}, post: {{listData[position].waypoint}}/{{totalPost}}</p>

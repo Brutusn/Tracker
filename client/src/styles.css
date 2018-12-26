@@ -35,3 +35,13 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
+.grid-header {
+  grid-area: header;
+}
+.grid-map {
+  grid-area: map;
+}
+.grid-side-bar {
+  grid-area: sidebar;
+}
