@@ -62,7 +62,7 @@ export class ListComponent implements OnInit {
     const start = prompt('Vanaf welke post moet er gestart worden?', '0');
     const parsed = parseInt(start, 10);
 
-    if (!start || !isNaN(parsed)) {
+    if (!start || isNaN(parsed)) {
       return;
     }
 
