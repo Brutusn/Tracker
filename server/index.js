@@ -35,7 +35,10 @@ const httpServer = http.createServer(app);
 app.use((req, res, next) => {
   if(!req.secure) {
     console.log('[HTTP] Insecure connection, redirect to https..', req.url);
-    return res.redirect(['https://', req.get('Host'), req.url].join(''));
+
+    const toUrl = req.url.includes('/tracker') ? '/tracker' : '/';
+
+    return res.redirect(`https://${req.get('Host')}${toUrl}`);
   }
   next();
 });
@@ -124,7 +127,7 @@ io
   })
   .on('connection', (socket) => {
     console.log('[SOCKET] A socket connected', socket.id);
-    
+
     const { token, requestPositions, access_token } = socket.handshake.query;
     let name = socket.handshake.query.name;
 
