@@ -50,8 +50,12 @@ export class ListComponent implements OnInit {
     );
   }
 
-  removeOffline (name: string): void {
-    const del = confirm('You sure mate?!');
+  removeOffline (name: string, event?: Event): void {
+    const del = confirm(`Deleting ${name}.. You sure mate?!`);
+
+    if (event) {
+      event.preventDefault();
+    }
 
     if (del) {
       this.ws.emit('user-destroy', name);

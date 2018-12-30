@@ -4,7 +4,8 @@
   <li
     *ngFor="let position of objectKeys(listData)"
     [ngClass]="{'off-line': listData[position].online === false,
-                'gps-started': listData[position].gpsStarted === true}">
+                'gps-started': listData[position].gpsStarted === true}"
+    (contextmenu)="removeOffline(listData[position].name, $event)">
     <div class="pos-rel">
       <p class="primary">{{listData[position].name}}</p>
       <p class="secondary">Last update: {{listData[position].date | date: 'HH:mm:ss'}}, post: {{listData[position].waypoint}}/{{totalPost}}</p>
