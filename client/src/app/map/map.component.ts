@@ -59,7 +59,7 @@ export class MapComponent implements OnInit {
   }
 
   private tooltipString (data: Position): string {
-    const speed = Math.round(data.speed);
+    const speed = Math.round(data.speed * 3.6);
 
     return `${data.name} (${speed} Km/h)`;
   }
