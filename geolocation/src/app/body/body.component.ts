@@ -39,13 +39,12 @@ export class BodyComponent implements OnInit {
   ngOnInit() {
   }
 
-  geoError (error: PositionError) {
+  geoError (error: PositionError): void {
     console.error(error);
     this.error = error.message || 'GPS Error';
   }
 
-  start() {
-
+  start(): void {
     if (this.username.length < 4 || this.username.length > 25) {
       this.error = 'Naam moet tussen de 3 en 25 karakters lang zijn!';
       return;
@@ -67,7 +66,7 @@ export class BodyComponent implements OnInit {
     });
   }
 
-  onEndFound (found: boolean) {
+  onEndFound (found: boolean): void {
     if (found) {
       this.tracking = TrackingModes['TRACKING'];
     }
@@ -81,7 +80,7 @@ export class BodyComponent implements OnInit {
     this.access_token = access_token;
   }
 
-  sendPosition () {
+  sendPosition (): void {
     this.geo.watch().subscribe(({ coords }) => {
       this.error = '';
       this.ws.emit('send-position', {

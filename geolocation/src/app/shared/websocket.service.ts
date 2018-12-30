@@ -6,12 +6,12 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class SocketService {
-  private socket;
+  private socket: any;
 
   private socketAnnouncedSubject = new Subject<any>();
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
-  public initSocket(name, access_token = ''): void {
+  public initSocket(name: string, access_token = ''): void {
     console.log('init socket');
     if (this.socket) {
       this.socket.close();
@@ -25,10 +25,19 @@ export class SocketService {
       }
     });
 
+    // Use latest token on reconnect.
+    this.socket.on('reconnect_attempt', () => {
+      this.socket.io.opts.query = {
+        ...this.socket.io.opts.query,
+
+        access_token: window.localStorage.getItem('access_token')
+      };
+    });
+
     this.announceSocket();
   }
 
-  public announceSocket () {
+  public announceSocket (): void {
     this.socketAnnouncedSubject.next();
   }
 
@@ -41,7 +50,7 @@ export class SocketService {
     });
   }
 
-  public emit(event: string, data) {
+  public emit(event: string, data: any): void {
     console.log('Send message to:', event);
     this.socket.emit(event, data);
   }

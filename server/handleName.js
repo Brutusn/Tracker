@@ -15,8 +15,21 @@ const hashString = (string) => {
  * @returns { array } [connectedNames, { name, token }]
  */
 exports.handleName = (connectedNames, name, token = '', suffix = 0) => {
-  // If username exists, but token is wrong..
-  if (connectedNames[name] && connectedNames[name] !== token) {
+  const user = connectedNames[name];
+
+  // User exists and has the correct token, send original details back.
+  if (user === token) {
+    return [
+      connectedNames,
+      {
+        name,
+        access_token: token
+      }
+    ]
+  }
+
+  // User exists but token is wrong, send back a new user.
+  if (user && user !== token) {
     const n = name.includes('~') ? name.split('~')[0] : name;
 
     const suf = suffix === 0 ? '' : `~${suffix}`;
@@ -25,13 +38,15 @@ exports.handleName = (connectedNames, name, token = '', suffix = 0) => {
     return exports.handleName(connectedNames, newName, hashString(newName), suffix + 1);
   }
 
+  // In here the user didn't exist. So we create a new one.
   // Generate new token if it doesn't exist yet.
   const access_token = hashString(name);
 
   connectedNames[name] = access_token;
 
   return [
-    connectedNames, {
+    connectedNames, 
+    {
       name,
       access_token
     }

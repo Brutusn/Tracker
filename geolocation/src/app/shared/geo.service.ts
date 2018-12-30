@@ -9,7 +9,8 @@ export class GeoService {
 
   private geoOpts = {
     enableHighAccuracy: true,
-    maximumAge: 2500
+    maximumAge: 2500,
+    timeout: 5000,
   };
 
   constructor() {
