@@ -87,6 +87,7 @@ export class BodyComponent implements OnInit {
         name: this.username,
         position: [coords.latitude, coords.longitude],
         speed: coords.speed,
+        heading: coords.heading,
         post: this.currentPost,
         waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
         gpsStarted: this.tracking === TrackingModes['COMPASS']
