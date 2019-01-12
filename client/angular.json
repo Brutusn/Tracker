@@ -27,7 +27,7 @@
               "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [],
-            "baseHref": "/tracker/"
+            "baseHref": "/"
           },
           "configurations": {
             "production": {

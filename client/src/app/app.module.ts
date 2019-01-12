@@ -1,28 +1,48 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { HeaderComponentComponent } from './header-component/header-component.component';
-import { MapComponent } from './map/map.component';
-import { SideBarComponent } from './side-bar/side-bar.component';
-import { ListComponent } from './list/list.component';
 import { LocationService } from './shared/location.service';
 import { SocketService } from './shared/websocket.service';
+import { LoginComponent } from './login/login.component';
+
+
+const routes: Routes = [{
+    path: '',
+    redirectTo: 'gps',
+    pathMatch: 'full'
+  }, {
+    path: 'gps',
+    loadChildren: './gps/gps.module#GpsModule'
+  }, {
+    path: 'tracker',
+    loadChildren: './tracker/tracker.module#TrackerModule'
+  }, {
+    path: 'login',
+    component: LoginComponent
+  }, {
+    path: '**',
+    redirectTo: 'gps'
+  }
+];
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponentComponent,
-    MapComponent,
-    SideBarComponent,
-    ListComponent
+    LoginComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    RouterModule.forRoot(routes)
   ],
-  providers: [LocationService, SocketService],
+  providers: [
+    LocationService,
+    SocketService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

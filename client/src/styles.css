@@ -2,8 +2,14 @@
 
 :root {
   --dark-text: #202020;
-  --light-text: #EEEEEE;
   --header-color: #013243;
+  --light-text: #bdc3c7;
+
+  --hue: 0;
+  --saturation: 80%;
+  --lightness: 47%;
+  --compass-rotation: 0deg;
+  --compass-red: hsla(var(--hue), var(--saturation), var(--lightness), 1);
 }
 
 *, *::before, *::after {
@@ -25,23 +31,26 @@ body {
   height: 100vh;
 }
 
-.container {
-  display: grid;
-  grid-template-rows: max-content;
-  grid-template-columns: 1fr 3fr;
-  grid-template-areas:
-    'header header'
-    'sidebar map';
-  height: 100%;
-  overflow: hidden;
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.flex-container > *:last-child {
+  flex: 1 1 auto;
 }
 
-.grid-header {
-  grid-area: header;
+app-tracker {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
-.grid-map {
-  grid-area: map;
+
+router-outlet {
+  display: none;
 }
-.grid-side-bar {
-  grid-area: sidebar;
+
+app-body {
+  background-color: #000000;
+  color: var(--light-text);
 }

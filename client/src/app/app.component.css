@@ -3,15 +3,16 @@ header {
   color: var(--light-text);
   overflow: hidden;
 
-  grid-row: 1;
+  flex: 0 0 auto;
 }
 
-app-side-bar {
-  grid-row: 2;
-  overflow: auto;
-}
+header h1 {
+  color: var(--light-text);
+  background-color: var(--dark-text);
 
-app-map {
-  grid-row: 2;
-  position: relative;
+  margin: 0;
+  padding: .5em;
+
+  font-size: 1.5em;
+  text-align: center;
 }

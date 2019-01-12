@@ -13,7 +13,7 @@ export class LocationService {
   mappedPositions: PositionMapped = {};
 
   constructor (private ws: SocketService) {
-    this.ws.initSocket();
+    this.ws.initSocket(false);
 
     this.ws.onEvent('user-left').subscribe((name) => {
       if (this.mappedPositions[name]) {

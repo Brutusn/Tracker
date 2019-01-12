@@ -3,7 +3,6 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-const path = require('path');
 
 const { constants } = require('crypto');
 
@@ -52,8 +51,7 @@ app.use((req, res, next) => {
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
   app.use(compression());
-  app.use('/tracker', express.static(path.join(__dirname, '../client/dist/tracker-client')));
-  app.use(express.static('../geolocation/dist/geolocation'));
+  app.use(express.static('../client/dist/tracker-client'));
 }
 
 server.listen(config.port);
