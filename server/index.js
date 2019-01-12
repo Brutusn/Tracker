@@ -3,6 +3,7 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const path = require('path');
 
 const { constants } = require('crypto');
 
@@ -35,9 +36,7 @@ app.use((req, res, next) => {
   if(!req.secure) {
     console.log('[HTTP] Insecure connection, redirect to https..', req.url);
 
-    const toUrl = req.url.includes('/tracker') ? '/tracker' : '/';
-
-    return res.redirect(`https://${req.get('Host')}${toUrl}`);
+    return res.redirect(`https://${req.get('Host')}/`);
   }
   next();
 });
@@ -47,12 +46,6 @@ app.use((req, res, next) => {
   console.log(`[${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
   next();
 });
-
-// If we also want this server to serve the client.
-if (config.serveClient === true) {
-  app.use(compression());
-  app.use(express.static('../client/dist/tracker-client'));
-}
 
 server.listen(config.port);
 httpServer.listen(config.port + 1);
@@ -107,6 +100,15 @@ const tokenValidator = (req, res, next) => {
 app.all('/api/ping', tokenValidator, (req, res) => {
   res.send({ pong: new Date() });
 });
+
+// If we also want this server to serve the client.
+if (config.serveClient === true) {
+  app.use(compression());
+  app.use(express.static('../client/dist/tracker-client'));
+  app.all('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/tracker-client/index.html'));
+  });
+}
 
 ////////////////////////////////////////////////////////////////////
 // SOCKET - API
