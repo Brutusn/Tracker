@@ -8,6 +8,11 @@
   --hue: 0;
   --saturation: 80%;
   --lightness: 47%;
+
+  /* this is the roration of the compass */
+  --rotation: 0;
+
+  /* rotation of the pointer */
   --compass-rotation: 0deg;
   --compass-red: hsla(var(--hue), var(--saturation), var(--lightness), 1);
 }

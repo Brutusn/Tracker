@@ -1,6 +1,4 @@
-.rotator {
-  --rotation: 0;
-
+.rotator > svg{
   transition: transform .5s cubic-bezier(.75, -0.5, 0, 1.75);
 
   transform: rotate(var(--rotation));

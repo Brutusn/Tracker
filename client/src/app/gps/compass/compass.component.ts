@@ -23,7 +23,7 @@ export class CompassComponent implements OnInit {
 
   handleCoords ({ heading }: any) {
     if (heading || heading === 0) {
-      this.lastHeading = 0;
+      this.lastHeading = heading;
     }
 
     document.documentElement.style.setProperty(this.cssVar, `${this.lastHeading}deg`);
