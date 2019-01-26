@@ -1,19 +1,20 @@
 <div class="centered">
   <div *ngIf='tracking === 0' class="names">
-    <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*.
-      Op de blokhut zien dan mensen waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
+    <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*,
+      zodate de blokhut kan zien waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
     <p><strong>Vergeet niet om toestemming te geven voor het delen van de locatie!</strong></p>
-    <input type="text" name="username" [(ngModel)]='username'>
+    <label for="name">Vul je naam in:</label><br />
+    <input type="text" id="name" name="username" [(ngModel)]='username'>
     <button id="send-name" (click)='start()'>Start</button>
     <p class="small">* Url: {{serverUrl}}</p>
   </div>
 
   <div *ngIf='tracking === 1' class="dot-container">
-    <span class="dot dot-animation"></span>
+    <app-compass></app-compass>
     <p>Veel plezier <b>{{username}}</b></p>
   </div>
 
-  <app-compass [enable]="tracking === 2" (endFound)="onEndFound($event)"></app-compass>
+  <app-pointer [enable]="tracking === 2" (endFound)="onEndFound($event)"></app-pointer>
   <app-display-on></app-display-on>
   <app-error [error]="error"></app-error>
 </div>

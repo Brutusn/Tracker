@@ -33,6 +33,7 @@ strong {
   margin-top: 5em;
 }
 
+/*
 .dot {
   background-color: #000000;
 
@@ -62,4 +63,4 @@ strong {
     transform: rotate(360deg);
     box-shadow: 0 0 200px 0 var(--light-text);
   }
-}
+} */

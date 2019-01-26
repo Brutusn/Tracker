@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CompassService } from './compass.service';
+import { PointerService } from './pointer.service';
 
-describe('CompassService', () => {
+describe('PointerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: CompassService = TestBed.get(CompassService);
+    const service: PointerService = TestBed.get(PointerService);
     expect(service).toBeTruthy();
   });
 });
