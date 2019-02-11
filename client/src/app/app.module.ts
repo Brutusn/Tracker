@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { LocationService } from './shared/location.service';
@@ -10,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 
 import { ToastComponent } from './shared/toast/toast.component';
 import { ToastService } from './shared/toast/toast.service';
+import { AuthGuard } from './shared/auth.guard';
 
 const routes: Routes = [{
     path: '',
@@ -20,7 +22,8 @@ const routes: Routes = [{
     loadChildren: './gps/gps.module#GpsModule'
   }, {
     path: 'tracker',
-    loadChildren: './tracker/tracker.module#TrackerModule'
+    loadChildren: './tracker/tracker.module#TrackerModule',
+    canLoad: [AuthGuard]
   }, {
     path: 'login',
     component: LoginComponent
@@ -40,6 +43,7 @@ const routes: Routes = [{
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     RouterModule.forRoot(routes)
   ],
   providers: [
@@ -48,8 +52,7 @@ const routes: Routes = [{
     ToastService
   ],
   bootstrap: [
-    AppComponent,
-    ToastComponent
+    AppComponent
   ]
 })
 export class AppModule { }

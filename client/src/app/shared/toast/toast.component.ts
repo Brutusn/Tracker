@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { Toast } from './toast.interface';
 import { ToastService } from './toast.service';
@@ -8,21 +8,17 @@ import { ToastService } from './toast.service';
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.css']
 })
-export class ToastComponent implements OnInit {
+export class ToastComponent {
 
   hasToast = false;
   toast: Toast;
 
   toastTimer = null;
 
-  constructor(private ts: ToastService) { }
-
-  ngOnInit() {
+  constructor(private ts: ToastService) {
     this.ts.toasts.subscribe((toast: Toast) => {
       this.hasToast = true;
       this.toast = toast;
-
-      console.log(toast);
 
       this.toastTimeout(toast.closeDelay);
     });
@@ -30,7 +26,7 @@ export class ToastComponent implements OnInit {
 
   private toastTimeout(timeout: number) {
     if (this.toastTimer) {
-      this.toastTimer.clearTimout();
+      clearTimeout(this.toastTimer);
     }
 
     this.toastTimer = setTimeout(() => {

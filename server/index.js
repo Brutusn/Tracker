@@ -8,12 +8,14 @@ const path = require('path');
 const { constants } = require('crypto');
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const compression = require('compression');
 const socket = require('socket.io');
 
 const config = require('../config/server.js');
 
 const PosCache = require('./PositionCache.js');
+const passwordHandler = require('./password');
 
 console.log(`[CORE] Node running on version: ${process.version}...`);
 
@@ -33,6 +35,8 @@ const httpServer = http.createServer(app);
 
 // Redirect to https.
 app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   if(!req.secure) {
     console.log('[HTTP] Insecure connection, redirect to https..', req.url);
 
@@ -46,6 +50,8 @@ app.use((req, res, next) => {
   console.log(`[${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
   next();
 });
+
+app.use(bodyParser.json()); 
 
 server.listen(config.port);
 httpServer.listen(config.port + 1);
@@ -101,6 +107,16 @@ app.all('/api/ping', tokenValidator, (req, res) => {
   res.send({ pong: new Date() });
 });
 
+app.post('/api/login', tokenValidator, (req, res) => {
+  const givenPass = req.body.password;
+
+  if (!givenPass || !passwordHandler.verifyPassword(givenPass)) {
+    return res.status(401).send('Invalid password');
+  }
+
+  res.send({ access_token: passwordHandler.createToken(givenPass) });
+});
+
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
   app.use(compression());
@@ -119,6 +135,8 @@ io
     const { token } = socket.handshake.query;
 
     if (token === config.ws_key || token === config.ws_key_lim) {
+
+      // TODO if config.ws_key then verify access token
       return next();
     }
 
