@@ -6,6 +6,7 @@ import { SocketService } from '../../shared/websocket.service';
 import { NameData } from '../../shared/interfaces';
 
 import { environment } from '../../../environments/environment';
+import { ToastService } from 'src/app/shared/toast/toast.service';
 
 enum TrackingModes {
   NO_TRACKING,
@@ -25,32 +26,56 @@ export class BodyComponent implements OnInit {
   public tracking = TrackingModes['NO_TRACKING'];
   public currentPosition = 'wacht op locatie..';
   public username = window.localStorage.getItem('user-name') || '';
-  public error = '';
 
   // TODO: Get this from the compass..
   public currentPost = 0;
 
   private access_token = window.localStorage.getItem('access_token') || '';
 
+  private prefix = 'Verbindingsfout:';
+  private handleConnectError = (error: Error) => {
+    console.error(error);
+
+    const parseError = error.toString();
+
+    this.toast.error(`${this.prefix} ${error.message || parseError}`);
+  }
+
   constructor(
     private geo: GeoService,
-    private ws: SocketService
-  ) { }
+    private ws: SocketService,
+    private toast: ToastService
+  ) {
+    this.ws.socketAnnounced.subscribe(() => {
+      this.ws.onEvent('error').subscribe(this.handleConnectError);
+      this.ws.onEvent('connect_error').subscribe(this.handleConnectError);
+      this.ws.onEvent('disconnect').subscribe((reason) => {
+        this.toast.error(`${this.prefix} ${reason}`);
+      });
+
+      this.ws.onEvent('growl').subscribe((msg) => {
+        console.warn('GROWL:', msg);
+        this.toast.normal(`Server message: ${msg}`);
+      });
+      this.ws.onEvent('connect').subscribe(() => {
+        this.toast.info('Connection success');
+      });
+    });
+  }
 
   ngOnInit() {
+
   }
 
   geoError (error: PositionError): void {
     console.error(error);
-    this.error = error.message || 'GPS Error';
+    this.toast.error(error.message || 'GPS Error');
   }
 
   start(): void {
     if (this.username.length < 4 || this.username.length > 25) {
-      this.error = 'Naam moet tussen de 3 en 25 karakters lang zijn!';
+      this.toast.error('Naam moet tussen de 3 en 25 karakters lang zijn!');
       return;
-    } else {
-      this.error = '';
     }
 
     // Init the socket with the given username.
@@ -83,7 +108,6 @@ export class BodyComponent implements OnInit {
 
   sendPosition (): void {
     this.geo.watch().subscribe(({ coords }) => {
-      this.error = '';
       this.ws.emit('send-position', {
         name: this.username,
         position: [coords.latitude, coords.longitude],

@@ -7,7 +7,6 @@ import { GeoService } from '../shared/geo.service';
 
 import { BodyComponent } from './body/body.component';
 import { PointerComponent } from './pointer/pointer.component';
-import { ErrorComponent } from './error/error.component';
 import { DisplayOnComponent } from './display-on/display-on.component';
 import { CompassComponent } from './compass/compass.component';
 
@@ -24,7 +23,6 @@ import { CompassComponent } from './compass/compass.component';
     BodyComponent,
     PointerComponent,
     CompassComponent,
-    ErrorComponent,
     DisplayOnComponent
   ],
   providers: [ GeoService ]

@@ -8,6 +8,8 @@ import { LocationService } from './shared/location.service';
 import { SocketService } from './shared/websocket.service';
 import { LoginComponent } from './login/login.component';
 
+import { ToastComponent } from './shared/toast/toast.component';
+import { ToastService } from './shared/toast/toast.service';
 
 const routes: Routes = [{
     path: '',
@@ -32,7 +34,8 @@ const routes: Routes = [{
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,
@@ -41,8 +44,12 @@ const routes: Routes = [{
   ],
   providers: [
     LocationService,
-    SocketService
+    SocketService,
+    ToastService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent,
+    ToastComponent
+  ]
 })
 export class AppModule { }
