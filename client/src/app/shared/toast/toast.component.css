@@ -4,6 +4,7 @@
 
   padding: 1em;
   border-radius: .25em;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
   color: var(--text-color);
   background-color: var(--bg-color);
@@ -11,6 +12,8 @@
   position: absolute;
   bottom: 0;
   right: 0;
+
+  z-index: 1000;
 
   margin: 1em;
 }

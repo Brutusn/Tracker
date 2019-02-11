@@ -5,6 +5,7 @@ import { LocationService } from '../../shared/location.service';
 import { SocketService } from '../../shared/websocket.service';
 
 import { locationArray } from '../../shared/route';
+import { ToastService } from 'src/app/shared/toast/toast.service';
 
 @Component({
   selector: 'app-list',
@@ -21,12 +22,18 @@ export class ListComponent implements OnInit {
 
   private handleError (error) {
     // For now...
-    alert(error);
+    this.ts.error(error.message || error);
   }
 
-  constructor(private loc: LocationService, private ws: SocketService) {
+  constructor(
+    private loc: LocationService,
+    private ws: SocketService,
+    private ts: ToastService
+  ) {
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       delete this.listData[name];
+
+      this.ts.success('User deleted from the list.', `Deleted ${name}`);
     });
     this.ws.onEvent('user-left').subscribe((name: string) => {
       if (this.listData[name]) {

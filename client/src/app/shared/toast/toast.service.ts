@@ -26,25 +26,28 @@ export class ToastService {
   }
 
   // Wrappers..
-  error (message: string) {
+  error (message: string, title = '') {
     this.open({
       message,
-      style: 'error'
+      style: 'error',
+      title
     });
   }
-  info (message: string) {
+  info (message: string, title = '') {
     this.open({
       message,
-      style: 'info'
+      style: 'info',
+      title
     });
   }
-  success (message: string) {
+  success (message: string, title = '') {
     this.open({
       message,
-      style: 'success'
+      style: 'success',
+      title
     });
   }
-  normal (message: string) {
-    this.open({ message });
+  normal (message: string, title = '') {
+    this.open({ message, title });
   }
 }

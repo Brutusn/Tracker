@@ -9,6 +9,7 @@ import { Position, PositionMapped } from '../../shared/position';
 import { SocketService } from '../../shared/websocket.service';
 
 import { locationArray, Route } from '../../shared/route';
+import { ToastService } from 'src/app/shared/toast/toast.service';
 
 @Component({
   selector: 'app-map',
@@ -35,7 +36,11 @@ export class MapComponent implements OnInit {
 
   public autoZoom = true;
 
-  constructor(private loc: LocationService, private ws: SocketService) {
+  constructor(
+    private loc: LocationService,
+    private ws: SocketService,
+    private ts: ToastService
+  ) {
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       this.markerLayer.removeLayer(this.markers[name]);
 
@@ -54,8 +59,7 @@ export class MapComponent implements OnInit {
   }
 
   private handleError (error) {
-    // For now...
-    alert(error);
+    this.ts.error(error.message || error);
   }
 
   private tooltipString (data: Position): string {
