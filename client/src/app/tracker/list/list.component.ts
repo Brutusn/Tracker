@@ -21,7 +21,6 @@ export class ListComponent implements OnInit {
   public totalPost = this.locations.length;
 
   private handleError (error) {
-    // For now...
     this.ts.error(error.message || error);
   }
 
