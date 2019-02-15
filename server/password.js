@@ -1,24 +1,11 @@
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const config = require('../config/server');
 
 const hashString = (string) => {
   const hash = crypto.createHash('sha256');
-  return hash.update(string).digest('hex');
-}
-
-// TODO FIND CRYPTING METHODS
-const encrypt = (object) => {
-  return JSON.stringify(object);
-}
-const decrypt = (string) => {
-  const asString = string;
-
-  try {
-    return JSON.parse(asString);
-  } catch (e) {
-    return false;
-  }
+  return hash.update(string + config.jwt_secret).digest('hex');
 }
 
 const hashedPassword = hashString(config.password);
@@ -43,19 +30,24 @@ exports.verifyPassword = (password) => {
  * @returns { string }
  */
 exports.createToken = (password) => {
-  return encrypt({
-    password: hashString(password),
-    // Add a date.. just as extra..
-    date: new Date()
-  });
+  return jwt.sign({ password: hashString(password), date: new Date() }, config.jwt_secret);
 }
+
+const decode = (token, pass) => {
+  try {
+    return jwt.verify(token, pass);
+  } catch (e) {
+    return false;
+  }
+}
+
 /**
  * Verifys the token given.
  * @param { string } token given token.
  * @returns { boolean }
  */
 exports.verifyToken = (token) => {
-  const asObject = decrypt(token);
+  const asObject = decode(token, config.jwt_secret);
 
   if (!asObject) {
     return false;

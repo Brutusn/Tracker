@@ -132,12 +132,16 @@ if (config.serveClient === true) {
 io
 // Only users with the correct token are allowed to connect.
   .use((socket, next) => {
-    const { token } = socket.handshake.query;
+    const { token, admin_token } = socket.handshake.query;
 
     if (token === config.ws_key || token === config.ws_key_lim) {
+      if (token === config.ws_key_lim) {
+        return next();
+      }
 
-      // TODO if config.ws_key then verify access token
-      return next();
+      if (passwordHandler.verifyToken(admin_token)) {
+        return next();
+      }
     }
 
     console.log('[SOCKET] A socket could not be connected.');
@@ -154,6 +158,7 @@ io
       name = nameData.name;
 
       console.log('[APP] User joined:', name);
+      broadcast('user-joined', name);
       process.nextTick(() => socket.emit('final-name', nameData));
     }
 

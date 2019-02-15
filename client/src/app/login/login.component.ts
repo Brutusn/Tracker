@@ -1,18 +1,21 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 import { ToastService } from '../shared/toast/toast.service';
+import { SocketService } from '../shared/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
-
+export class LoginComponent implements OnDestroy {
   pass: string;
+
+  private httpSub: Subscription;
 
   constructor(
     private ts: ToastService,
@@ -20,7 +23,8 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnDestroy(): void {
+    this.unsub();
   }
 
   onSubmit() {
@@ -28,10 +32,11 @@ export class LoginComponent implements OnInit {
       this.ts.error('Enter a password!');
     }
 
-    console.log('hi');
     this.ts.normal('Logging in..');
 
-    this.http
+    this.unsub();
+
+    this.httpSub = this.http
       .post(environment.ws_url + '/api/login', {
         password: this.pass
       }, {
@@ -44,8 +49,14 @@ export class LoginComponent implements OnInit {
 
   }
 
+  private unsub (): void {
+    if (this.httpSub) {
+      this.httpSub.unsubscribe();
+    }
+  }
+
   private handleSuccess (response) {
-    window.sessionStorage.setItem('auth-token', response.access_token);
+    window.sessionStorage.setItem('admin_token', response.access_token);
 
     this.ts.success('Loggin success!');
     this.router.navigate(['tracker']);

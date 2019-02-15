@@ -40,6 +40,9 @@ export class ListComponent implements OnInit {
         this.listData[name].online = false;
       }
     });
+    this.ws.onEvent('user-joined').subscribe((name: string) => {
+      this.ts.info(`Welcome "${name}"!`, 'User joined!');
+    });
   }
 
   ngOnInit() {

@@ -11,7 +11,7 @@ export class AuthGuard implements CanLoad {
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | boolean {
     // It's a basic check.
-    if (!window.sessionStorage.getItem('auth-token')) {
+    if (!window.sessionStorage.getItem('admin_token')) {
       this.navigateToLogin();
       return false;
     }
