@@ -30,7 +30,7 @@ export class SocketService {
     const query: any = {
       token,
       requestPositions: !limited,
-      admin_token: window.sessionStorage.getItem('admin_token')
+      admin_token: window.localStorage.getItem('admin_token')
     };
 
     if (name) {
@@ -53,6 +53,7 @@ export class SocketService {
     this.socket.on('error', (error: any) => {
       if (error === 'Unable to authenticate.') {
         this.toast.error(error);
+        window.localStorage.removeItem('admin_token');
         this.router.navigate(['login']);
       }
     });
@@ -63,7 +64,7 @@ export class SocketService {
         ...this.socket.io.opts.query,
 
         access_token: window.localStorage.getItem('access_token'),
-        admin_token: window.sessionStorage.getItem('admin_token')
+        admin_token: window.localStorage.getItem('admin_token')
       };
     });
 

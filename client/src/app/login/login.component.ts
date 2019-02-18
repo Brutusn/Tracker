@@ -56,7 +56,7 @@ export class LoginComponent implements OnDestroy {
   }
 
   private handleSuccess (response) {
-    window.sessionStorage.setItem('admin_token', response.access_token);
+    window.localStorage.setItem('admin_token', response.access_token);
 
     this.ts.success('Loggin success!');
     this.router.navigate(['tracker']);
