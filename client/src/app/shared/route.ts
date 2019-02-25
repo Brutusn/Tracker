@@ -60,3 +60,48 @@ export const locationArray: Route[] = [{
       }
     }
 ];
+
+export const postArray: Route[] = [{
+	//Start
+    code: 'U3RhcnQ=',
+    coord: {
+        latitude: 51.698066,
+        longitude: 5.741429
+      },
+  }, {
+	//Post 2
+    code: 'UG9zdCAy',
+    coord: {
+        latitude: 51.740379,
+        longitude: 5.780722
+      }
+  }, {
+	//Post 2a
+    code: 'UG9zdCAyYQ==',
+    coord: {
+        latitude: 51.701114,
+        longitude: 5.954895
+      }
+  }, {
+	//Post 3
+    code: 'UG9zdCAz',
+    coord: {
+        latitude: 51.558226,
+        longitude: 6.037146
+      }
+  }, {
+	//Post 4
+    code: 'UG9zdCA0',
+    coord: {
+        latitude: 51.518352,
+        longitude: 5.786407
+      }
+  }, {
+	//Post 5
+    code: 'UG9zdCA1',
+    coord: {
+        latitude: 51.517913,
+        longitude: 5.595172
+      }
+  }
+];
