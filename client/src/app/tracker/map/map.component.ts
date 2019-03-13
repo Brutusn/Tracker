@@ -8,7 +8,7 @@ import * as L from 'leaflet';
 import { Position, PositionMapped } from '../../shared/position';
 import { SocketService } from '../../shared/websocket.service';
 
-import { locationArray, Route } from '../../shared/route';
+import { locationArray, postArray, Route } from '../../shared/route';
 import { ToastService } from 'src/app/shared/toast/toast.service';
 
 @Component({
@@ -99,13 +99,24 @@ export class MapComponent implements OnInit {
       const code = atob(item.code).toUpperCase();
       const indexOfFiltered = item.skip !== true ? `(${filteredArray.findIndex((i) => i.code === item.code)})` : '';
 
-      L.circleMarker(coord, {
-        ...this.onlineCirle,
-        color: '#f89406',
-      })
-        .bindTooltip(`${code} ${indexOfFiltered}`.trim(), { permanent: true })
-        .addTo(this.map);
+      this.addPostCircle(coord, code, indexOfFiltered, '#f89406');
     });
+
+    postArray.forEach((item: Route) => {
+      const coord: L.LatLngExpression = [item.coord.latitude, item.coord.longitude];
+      const code = atob(item.code).toUpperCase();
+
+      this.addPostCircle(coord, code, '', '#e47833');
+    });
+  }
+
+  private addPostCircle (coord: L.LatLngExpression, code: string, indexOfFiltered: string, color: string) {
+    L.circleMarker(coord, {
+      ...this.onlineCirle,
+      color,
+    })
+      .bindTooltip(`${code} ${indexOfFiltered}`.trim(), { permanent: true })
+      .addTo(this.map);
   }
 
   markerClick (event: any) {
