@@ -10,7 +10,7 @@ export interface Route {
 }
 
 export const locationArray: Route[] = [{
-  code: 'cG9zdA==',
+  code: 'UG9zdCAyYQ==',
   coord: {
     latitude: 51.701114,
     longitude: 5.954895,
@@ -75,13 +75,14 @@ export const postArray: Route[] = [{
     latitude: 51.740379,
     longitude: 5.780722
   }
-}, {
-  // Post 2a
-  code: 'UG9zdCAyYQ==',
-  coord: {
-    latitude: 51.701114,
-    longitude: 5.954895
-  }
+// Deze post is de eerste in de locatie reeks, 2 keer tonen niet nodig.
+// }, {
+//   // Post 2a
+//   code: 'UG9zdCAyYQ==',
+//   coord: {
+//     latitude: 51.701114,
+//     longitude: 5.954895
+//   }
 }, {
   // Post 3
   code: 'UG9zdCAz',
