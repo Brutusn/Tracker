@@ -3,8 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
-import { ToastService } from '../shared/toast/toast.service';
-import { SocketService } from '../shared/websocket.service';
+import { ToastService } from '@shared/toast/toast.service';
 import { Subscription } from 'rxjs';
 
 @Component({

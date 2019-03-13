@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { GeoService } from 'src/app/shared/geo.service';
+import * as geolib from 'geolib';
+
+import { GeoService } from '@shared/geo.service';
+import { Route, locationArray, Coordinate } from '@shared/route';
+import { SocketService } from '@shared/websocket.service';
 
 @Component({
   selector: 'app-compass',
@@ -11,21 +15,41 @@ export class CompassComponent implements OnInit {
   private lastHeading = 0;
   private cssVar = '--rotation';
 
+  private triggerDistance = 50; // Meter
+  private triggerLocation: Route = locationArray[0];
+
   constructor (
-    private geo: GeoService
+    private geo: GeoService,
+    private ws: SocketService
   ) { }
 
   ngOnInit () {
     this.geo.watch().subscribe(({ coords }) => {
       this.handleCoords(coords);
+      this.checkForRouteStart(coords);
     });
   }
 
-  handleCoords ({ heading }: any) {
+  private handleCoords ({ heading }: any) {
     if (heading || heading === 0) {
       this.lastHeading = heading;
     }
 
     document.documentElement.style.setProperty(this.cssVar, `${this.lastHeading}deg`);
+  }
+
+  private checkForRouteStart (coords) {
+    const _coords: Coordinate = {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    };
+
+    const distance = geolib.getDistance(_coords, this.triggerLocation.coord, 1, 1);
+
+    console.log('distance', distance);
+
+    if (distance < this.triggerDistance) {
+      // Send emit message now.
+    }
   }
 }

@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
-import { LocationService } from '../../shared/location.service';
+import { LocationService } from '@shared/location.service';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 import * as L from 'leaflet';
-import { Position, PositionMapped } from '../../shared/position';
-import { SocketService } from '../../shared/websocket.service';
+import { Position, PositionMapped } from '@shared/position';
+import { SocketService } from '@shared/websocket.service';
 
-import { locationArray, postArray, Route } from '../../shared/route';
-import { ToastService } from 'src/app/shared/toast/toast.service';
+import { locationArray, postArray, Route } from '@shared/route';
+import { ToastService } from '@shared/toast/toast.service';
 
 @Component({
   selector: 'app-map',

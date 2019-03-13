@@ -5,13 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { LocationService } from './shared/location.service';
-import { SocketService } from './shared/websocket.service';
+import { LocationService } from '@shared/location.service';
+import { SocketService } from '@shared/websocket.service';
 import { LoginComponent } from './login/login.component';
 
-import { ToastComponent } from './shared/toast/toast.component';
-import { ToastService } from './shared/toast/toast.service';
-import { AuthGuard } from './shared/auth.guard';
+import { ToastComponent } from '@shared/toast/toast.component';
+import { ToastService } from '@shared/toast/toast.service';
+import { AuthGuard } from '@shared/auth.guard';
 
 const routes: Routes = [{
     path: '',

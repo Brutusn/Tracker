@@ -3,7 +3,7 @@ import { Observable, of, Subject } from 'rxjs';
 
 import { SocketService } from './websocket.service';
 
-import { Position, PositionMapped } from '../shared/position';
+import { Position, PositionMapped } from '@shared/position';
 
 
 @Injectable()

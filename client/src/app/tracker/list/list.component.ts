@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Position, PositionMapped } from '../../shared/position';
-import { LocationService } from '../../shared/location.service';
-import { SocketService } from '../../shared/websocket.service';
+import { Position, PositionMapped } from '@shared/position';
+import { LocationService } from '@shared/location.service';
+import { SocketService } from '@shared/websocket.service';
 
-import { locationArray } from '../../shared/route';
-import { ToastService } from 'src/app/shared/toast/toast.service';
+import { locationArray } from '@shared/route';
+import { ToastService } from '@shared/toast/toast.service';
 
 @Component({
   selector: 'app-list',

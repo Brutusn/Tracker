@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { GeoService } from '../shared/geo.service';
+import { GeoService } from '@shared/geo.service';
 
 import { BodyComponent } from './body/body.component';
 import { PointerComponent } from './pointer/pointer.component';

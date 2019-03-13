@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
-import { GeoService } from '../../shared/geo.service';
-import { SocketService } from '../../shared/websocket.service';
+import { GeoService } from '@shared/geo.service';
+import { SocketService } from '@shared/websocket.service';
 
-import { NameData } from '../../shared/interfaces';
+import { NameData } from '@shared/interfaces';
 
-import { environment } from '../../../environments/environment';
-import { ToastService } from 'src/app/shared/toast/toast.service';
+import { environment } from '@env/environment';
+import { ToastService } from '@shared/toast/toast.service';
 
 enum TrackingModes {
   NO_TRACKING,

@@ -2,10 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import * as geolib from 'geolib';
 
-import { locationArray, Coordinate, Route } from '../../shared/route';
+import { locationArray, Coordinate, Route } from '@shared/route';
 import { PointerService } from './pointer.service';
-import { SocketService } from '../../shared/websocket.service';
-import { GeoService } from '../../shared/geo.service';
+import { SocketService } from '@shared/websocket.service';
+import { GeoService } from '@shared/geo.service';
 
 @Component({
   selector: 'app-pointer',
