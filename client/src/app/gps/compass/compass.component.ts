@@ -46,10 +46,9 @@ export class CompassComponent implements OnInit {
 
     const distance = geolib.getDistance(_coords, this.triggerLocation.coord, 1, 1);
 
-    console.log('distance', distance);
-
     if (distance < this.triggerDistance) {
       // Send emit message now.
+      setTimeout(() => this.ws.emit('user-in-reach', { distance }), 5000);
     }
   }
 }

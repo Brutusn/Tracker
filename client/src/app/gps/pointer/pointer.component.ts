@@ -105,6 +105,7 @@ export class PointerComponent implements OnInit {
       // Point found.. whoohoo!
       if ((this.waypoint + 1) === this.locations.length) {
         // Endpoint is found!
+        this.setWaypoint(this.waypoint + 1);
         this.endFound.emit(true);
       }
 

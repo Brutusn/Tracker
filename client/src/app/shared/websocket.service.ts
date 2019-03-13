@@ -47,7 +47,7 @@ export class SocketService {
     // });
 
     this.onEvent('growl').subscribe((msg) => {
-      this.toast.normal(msg);
+      this.toast.open(msg);
     });
 
     this.socket.on('error', (error: any) => {

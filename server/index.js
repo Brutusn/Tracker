@@ -175,7 +175,7 @@ io
         if (userSocket) {
           userSocket.emit('start-route', startAt);
         } else {
-          socket.emit('growl', { error: `User: ${name} not found.`});
+          socket.emit('growl', { style: 'error', message: `User: ${name} not found.`});
         }
       });
     }
@@ -186,9 +186,14 @@ io
     }
 
     socket.on('send-position', (data) => {
-      const errorFn = (msg) => socket.emit('growl', msg);
+      const errorFn = (message) => socket.emit('growl', message);
 
       sendPosition(data, errorFn);
+    });
+
+    socket.on('user-in-reach', ({ distance }) => {
+      socket.emit('start-route', 0);
+      broadcast('growl', { style: 'info', message: `User: ${name} started it's route. Distance: ${distance}.`});
     });
     
     socket.on('disconnect', () => {
