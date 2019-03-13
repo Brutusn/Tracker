@@ -33,6 +33,14 @@ strong {
   margin-top: 5em;
 }
 
+app-compass {
+  width: 90vw;
+  height: 90vw;
+
+  max-width: 500px;
+  max-height: 500px;
+}
+
 /*
 .dot {
   background-color: #000000;

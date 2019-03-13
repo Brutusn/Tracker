@@ -1,5 +1,12 @@
-.rotator > svg{
-  transition: transform .5s cubic-bezier(.75, -0.5, 0, 1.75);
+svg {
+  display: block; /* Chrome fix, prevents weird pixels in the parent node */
 
+  transition: transform .5s ease-out;
   transform: rotate(var(--rotation));
+
+  width: inherit;
+  height: inherit;
+
+  max-width: inherit;
+  max-height: inherit;
 }
