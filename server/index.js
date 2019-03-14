@@ -120,7 +120,10 @@ app.post('/api/login', tokenValidator, (req, res) => {
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
   app.use(compression());
-  app.use(express.static('../client/dist/tracker-client'));
+  app.use(express.static('../client/dist/tracker-client', {
+    immutable: true,
+    maxAge: '1y'
+  }));
   app.all('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/tracker-client/index.html'));
   });
