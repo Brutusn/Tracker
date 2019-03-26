@@ -4,9 +4,9 @@ import { LocationService } from '@shared/location.service';
 
 import { environment } from '@env/environment';
 
-import * as L from 'leaflet';
 import { Position, PositionMapped } from '@shared/position';
 import { SocketService } from '@shared/websocket.service';
+import * as L from 'leaflet';
 
 import { locationArray, postArray, Route } from '@shared/route';
 import { ToastService } from '@shared/toast/toast.service';
@@ -14,7 +14,7 @@ import { ToastService } from '@shared/toast/toast.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
 
@@ -36,10 +36,10 @@ export class MapComponent implements OnInit {
 
   public autoZoom = true;
 
-  constructor(
+  constructor (
     private loc: LocationService,
     private ws: SocketService,
-    private ts: ToastService
+    private ts: ToastService,
   ) {
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       this.markerLayer.removeLayer(this.markers[name]);
@@ -72,12 +72,12 @@ export class MapComponent implements OnInit {
     return online ? this.onlineCirle : this.offLineCircle;
   }
 
-  ngOnInit() {
+  ngOnInit () {
     // Base coordinates go to the blokhut of Scouting Veghel
     this.map = L.map('tracker-map').setView(this.blokhut, 15);
 
     L.tileLayer(environment.map_url, {
-        attribution: 'S5 StamTour Tracker'
+        attribution: 'S5 StamTour Tracker',
     }).addTo(this.map);
 
     this.markerLayer.addTo(this.map);
@@ -164,12 +164,12 @@ export class MapComponent implements OnInit {
     this.loc.getLocations().subscribe((data: PositionMapped) => {
         this.handleCoordinates(data);
       },
-      this.handleError
+      this.handleError,
     );
     this.loc.getNewLocation().subscribe((data: PositionMapped) => {
         this.handleCoordinates(data);
       },
-      this.handleError
+      this.handleError,
     );
   }
 }

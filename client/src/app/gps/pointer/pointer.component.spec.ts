@@ -8,7 +8,7 @@ describe('CompassComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PointerComponent ]
+      declarations: [ PointerComponent ],
     })
     .compileComponents();
   }));

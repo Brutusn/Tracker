@@ -5,7 +5,6 @@ import { SocketService } from './websocket.service';
 
 import { Position, PositionMapped } from '@shared/position';
 
-
 @Injectable()
 export class LocationService {
 
@@ -30,7 +29,7 @@ export class LocationService {
 
     newObject[pos.name] = {
       ...pos,
-      online: keepOnlineState ? pos.online : true
+      online: keepOnlineState ? pos.online : true,
     };
 
     // Merges the new data so no dubplicates come in..

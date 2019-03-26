@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SocketService {
   private socket: any;
@@ -15,12 +15,12 @@ export class SocketService {
   private socketAnnouncedSubject = new Subject<any>();
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
-  constructor(
+  constructor (
     private toast: ToastService,
-    private router: Router
+    private router: Router,
   ) {}
 
-  public initSocket(limited = true, name?: string, access_token = ''): void {
+  public initSocket (limited = true, name?: string, access_token = ''): void {
     console.count('Init socket');
     if (this.socket) {
       this.socket.close();
@@ -30,7 +30,7 @@ export class SocketService {
     const query: any = {
       token,
       requestPositions: !limited,
-      admin_token: window.localStorage.getItem('admin_token')
+      admin_token: window.localStorage.getItem('admin_token'),
     };
 
     if (name) {
@@ -64,20 +64,19 @@ export class SocketService {
         ...this.socket.io.opts.query,
 
         access_token: window.localStorage.getItem('access_token'),
-        admin_token: window.localStorage.getItem('admin_token')
+        admin_token: window.localStorage.getItem('admin_token'),
       };
     });
 
     this.announceSocket();
   }
 
-
   public announceSocket (): void {
     this.socketAnnouncedSubject.next();
   }
 
-  public onEvent(event: string): Observable<any> {
-    return new Observable<Object>((observer) => {
+  public onEvent (event: string): Observable<any> {
+    return new Observable<object>((observer) => {
       this.socket.on(event, (data: any) => {
         console.log('Got message on:', event);
         return observer.next(data);
@@ -85,7 +84,7 @@ export class SocketService {
     });
   }
 
-  public emit(event: string, data) {
+  public emit (event: string, data) {
     console.log('Send message to:', event);
     this.socket.emit(event, data);
   }

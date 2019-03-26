@@ -1,58 +1,57 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
 
-import { AppComponent } from './app.component';
 import { LocationService } from '@shared/location.service';
 import { SocketService } from '@shared/websocket.service';
+import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
+import { AuthGuard } from '@shared/auth.guard';
 import { ToastComponent } from '@shared/toast/toast.component';
 import { ToastService } from '@shared/toast/toast.service';
-import { AuthGuard } from '@shared/auth.guard';
 
 const routes: Routes = [{
     path: '',
     redirectTo: 'gps',
-    pathMatch: 'full'
+    pathMatch: 'full',
   }, {
     path: 'gps',
-    loadChildren: './gps/gps.module#GpsModule'
+    loadChildren: './gps/gps.module#GpsModule',
   }, {
     path: 'tracker',
     loadChildren: './tracker/tracker.module#TrackerModule',
-    canLoad: [AuthGuard]
+    canLoad: [AuthGuard],
   }, {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
   }, {
     path: '**',
-    redirectTo: 'gps'
-  }
+    redirectTo: 'gps',
+  },
 ];
-
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ToastComponent
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
   ],
   providers: [
     LocationService,
     SocketService,
-    ToastService
+    ToastService,
   ],
   bootstrap: [
-    AppComponent
-  ]
+    AppComponent,
+  ],
 })
 export class AppModule { }

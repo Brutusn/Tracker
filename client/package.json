@@ -7,7 +7,7 @@
     "build": "ng build",
     "prod": "npx ng build --prod --progress",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "ng lint --fix",
     "e2e": "ng e2e",
     "report": "webpack-bundle-analyzer dist/tracker-client/stats.json"
   },

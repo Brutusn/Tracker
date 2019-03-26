@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Toast } from './toast.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToastService {
   private toastSubject = new Subject<Toast>();
@@ -14,10 +14,10 @@ export class ToastService {
     message: '',
     style: 'normal',
     title: '',
-    closeDelay: 3000
+    closeDelay: 3000,
   };
 
-  constructor() { }
+  constructor () { }
 
   open (options: Toast) {
     const opts = { ...this.defaults, ...options };
@@ -30,21 +30,21 @@ export class ToastService {
     this.open({
       message,
       style: 'error',
-      title
+      title,
     });
   }
   info (message: string, title = '') {
     this.open({
       message,
       style: 'info',
-      title
+      title,
     });
   }
   success (message: string, title = '') {
     this.open({
       message,
       style: 'success',
-      title
+      title,
     });
   }
   normal (message: string, title = '') {

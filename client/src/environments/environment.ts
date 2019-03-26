@@ -10,7 +10,7 @@ export const environment = {
 
   ws_url: 'https://www.welpensionie.nl:8080',
   ws_key: config.ws_key,
-  ws_key_lim: config.ws_key_lim
+  ws_key_lim: config.ws_key_lim,
 };
 
 /*

@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
-import { SideBarComponent } from './side-bar/side-bar.component';
-import { MapComponent } from './map/map.component';
 import { ListComponent } from './list/list.component';
+import { MapComponent } from './map/map.component';
+import { SideBarComponent } from './side-bar/side-bar.component';
 import { TrackerComponent } from './tracker.component';
 
 @NgModule({
@@ -14,14 +14,14 @@ import { TrackerComponent } from './tracker.component';
     FormsModule,
     RouterModule.forChild([{
       path: '',
-      component: TrackerComponent
-    }])
+      component: TrackerComponent,
+    }]),
   ],
   declarations: [
     TrackerComponent,
     SideBarComponent,
     MapComponent,
-    ListComponent
-  ]
+    ListComponent,
+  ],
 })
 export class TrackerModule { }

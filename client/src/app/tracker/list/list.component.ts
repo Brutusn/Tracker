@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Position, PositionMapped } from '@shared/position';
 import { LocationService } from '@shared/location.service';
+import { Position, PositionMapped } from '@shared/position';
 import { SocketService } from '@shared/websocket.service';
 
 import { locationArray } from '@shared/route';
@@ -10,7 +10,7 @@ import { ToastService } from '@shared/toast/toast.service';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.css']
+  styleUrls: ['./list.component.css'],
 })
 export class ListComponent implements OnInit {
 
@@ -24,10 +24,10 @@ export class ListComponent implements OnInit {
     this.ts.error(error.message || error);
   }
 
-  constructor(
+  constructor (
     private loc: LocationService,
     private ws: SocketService,
-    private ts: ToastService
+    private ts: ToastService,
   ) {
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       delete this.listData[name];
@@ -44,18 +44,18 @@ export class ListComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit () {
     // Get all the data once... keep the
     this.loc.getLocations().subscribe((data: PositionMapped) => {
         this.listData = data;
       },
-      this.handleError
+      this.handleError,
     );
 
     this.loc.getNewLocation().subscribe((data: PositionMapped) => {
         this.listData = data;
       },
-      this.handleError
+      this.handleError,
     );
   }
 
@@ -85,7 +85,7 @@ export class ListComponent implements OnInit {
     if (correct) {
       this.ws.emit('start-route', {
         name,
-        startAt: parsed
+        startAt: parsed,
       });
     }
   }

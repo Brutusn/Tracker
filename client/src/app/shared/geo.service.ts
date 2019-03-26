@@ -10,7 +10,7 @@ export class GeoService {
     timeout: 5000,
   };
 
-  constructor() {
+  constructor () {
   }
 
   watch (): Observable<any> {
@@ -21,13 +21,13 @@ export class GeoService {
         watchId = navigator.geolocation.watchPosition(
           (position) => observer.next(position),
           (error) => observer.error(error),
-          this.geoOpts
+          this.geoOpts,
         );
       } else {
         observer.error('Geolocation not available.');
       }
 
-      return { unsubscribe() {
+      return { unsubscribe () {
         navigator.geolocation.clearWatch(watchId);
       }};
     });

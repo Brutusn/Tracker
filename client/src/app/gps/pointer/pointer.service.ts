@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PointerService {
 
-  constructor() { }
+  constructor () { }
 
   public toKmh (speed: number | string, suffix = ' km/h') {
     if (speed === null) {

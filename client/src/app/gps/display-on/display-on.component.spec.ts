@@ -8,7 +8,7 @@ describe('DisplayOnComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DisplayOnComponent ]
+      declarations: [ DisplayOnComponent ],
     })
     .compileComponents();
   }));

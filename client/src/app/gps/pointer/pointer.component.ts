@@ -1,16 +1,16 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import * as geolib from 'geolib';
 
-import { locationArray, Coordinate, Route } from '@shared/route';
-import { PointerService } from './pointer.service';
-import { SocketService } from '@shared/websocket.service';
 import { GeoService } from '@shared/geo.service';
+import { Coordinate, locationArray, Route } from '@shared/route';
+import { SocketService } from '@shared/websocket.service';
+import { PointerService } from './pointer.service';
 
 @Component({
   selector: 'app-pointer',
   templateUrl: './pointer.component.html',
-  styleUrls: ['./pointer.component.css']
+  styleUrls: ['./pointer.component.css'],
 })
 export class PointerComponent implements OnInit {
   @Input() enable: boolean;
@@ -33,10 +33,10 @@ export class PointerComponent implements OnInit {
   // Locations minus starting point.
   private locations = locationArray.filter((i: Route) => i.skip !== true);
 
-  constructor(
+  constructor (
     private compass: PointerService,
     private ws: SocketService,
-    private geo: GeoService
+    private geo: GeoService,
   ) {
     this.ws.socketAnnounced.subscribe(() => {
       this.ws.onEvent('start-route').subscribe((start: number) => {

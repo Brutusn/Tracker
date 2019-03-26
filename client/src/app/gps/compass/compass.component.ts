@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import * as geolib from 'geolib';
 
 import { GeoService } from '@shared/geo.service';
-import { Route, locationArray, Coordinate } from '@shared/route';
+import { Coordinate, locationArray, Route } from '@shared/route';
 import { SocketService } from '@shared/websocket.service';
 
 @Component({
   selector: 'app-compass',
   templateUrl: './compass.component.html',
-  styleUrls: ['./compass.component.css']
+  styleUrls: ['./compass.component.css'],
 })
 export class CompassComponent implements OnInit {
 
@@ -21,7 +21,7 @@ export class CompassComponent implements OnInit {
 
   constructor (
     private geo: GeoService,
-    private ws: SocketService
+    private ws: SocketService,
   ) { }
 
   ngOnInit () {

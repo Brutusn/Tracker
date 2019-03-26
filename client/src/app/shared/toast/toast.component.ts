@@ -6,7 +6,7 @@ import { ToastService } from './toast.service';
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
-  styleUrls: ['./toast.component.css']
+  styleUrls: ['./toast.component.css'],
 })
 export class ToastComponent {
 
@@ -15,7 +15,7 @@ export class ToastComponent {
 
   toastTimer = null;
 
-  constructor(private ts: ToastService) {
+  constructor (private ts: ToastService) {
     this.ts.toasts.subscribe((toast: Toast) => {
       this.hasToast = true;
       this.toast = toast;
@@ -24,7 +24,7 @@ export class ToastComponent {
     });
   }
 
-  private toastTimeout(timeout: number) {
+  private toastTimeout (timeout: number) {
     if (this.toastTimer) {
       clearTimeout(this.toastTimer);
     }

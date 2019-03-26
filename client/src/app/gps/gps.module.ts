@@ -1,14 +1,14 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { GeoService } from '@shared/geo.service';
 
 import { BodyComponent } from './body/body.component';
-import { PointerComponent } from './pointer/pointer.component';
-import { DisplayOnComponent } from './display-on/display-on.component';
 import { CompassComponent } from './compass/compass.component';
+import { DisplayOnComponent } from './display-on/display-on.component';
+import { PointerComponent } from './pointer/pointer.component';
 
 @NgModule({
   imports: [
@@ -16,15 +16,15 @@ import { CompassComponent } from './compass/compass.component';
     FormsModule,
     RouterModule.forChild([{
       path: '',
-      component: BodyComponent
-    }])
+      component: BodyComponent,
+    }]),
   ],
   declarations: [
     BodyComponent,
     PointerComponent,
     CompassComponent,
-    DisplayOnComponent
+    DisplayOnComponent,
   ],
-  providers: [ GeoService ]
+  providers: [ GeoService ],
 })
 export class GpsModule { }

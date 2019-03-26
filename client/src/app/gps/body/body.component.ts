@@ -11,13 +11,13 @@ import { ToastService } from '@shared/toast/toast.service';
 enum TrackingModes {
   NO_TRACKING,
   TRACKING,
-  COMPASS
+  COMPASS,
 }
 
 @Component({
   selector: 'app-body',
   templateUrl: './body.component.html',
-  styleUrls: ['./body.component.css']
+  styleUrls: ['./body.component.css'],
 })
 export class BodyComponent implements OnInit {
 
@@ -41,10 +41,10 @@ export class BodyComponent implements OnInit {
     this.toast.error(`${this.prefix} ${error.message || parseError}`);
   }
 
-  constructor(
+  constructor (
     private geo: GeoService,
     private ws: SocketService,
-    private toast: ToastService
+    private toast: ToastService,
   ) {
     this.ws.socketAnnounced.subscribe(() => {
       this.ws.onEvent('error').subscribe(this.handleConnectError);
@@ -63,7 +63,7 @@ export class BodyComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit () {
 
   }
 
@@ -72,7 +72,7 @@ export class BodyComponent implements OnInit {
     this.toast.error(error.message || 'GPS Error');
   }
 
-  start(): void {
+  start (): void {
     if (this.username.length < 4 || this.username.length > 25) {
       this.toast.error('Naam moet tussen de 3 en 25 karakters lang zijn!');
       return;
@@ -115,7 +115,7 @@ export class BodyComponent implements OnInit {
         heading: coords.heading,
         post: this.currentPost,
         waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
-        gpsStarted: this.tracking === TrackingModes['COMPASS']
+        gpsStarted: this.tracking === TrackingModes['COMPASS'],
       });
     },
     (error) => this.geoError(error));
