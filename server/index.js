@@ -37,8 +37,13 @@ const httpServer = http.createServer(app);
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Strict-Transport-Security", "max-age: 15552000; includeSubDomains");
   if(!req.secure) {
     console.log('[HTTP] Insecure connection, redirect to https..', req.url);
+
+    if (req.url.includes('.php')) {
+      return res.status(418).send('Konijnenboutje');
+    }
 
     return res.redirect(`https://${req.get('Host')}/`);
   }
