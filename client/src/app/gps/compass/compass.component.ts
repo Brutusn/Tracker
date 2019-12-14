@@ -45,7 +45,7 @@ export class CompassComponent implements OnInit {
       longitude: coords.longitude,
     };
 
-    const distance = geolib.getDistance(_coords, this.triggerLocation.coord, 1, 1);
+    const distance = geolib.getDistance(_coords, this.triggerLocation.coord, 1);
 
     if (distance < this.triggerDistance) {
       // Send emit message now.

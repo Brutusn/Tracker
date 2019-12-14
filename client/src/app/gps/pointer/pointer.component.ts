@@ -71,7 +71,7 @@ export class PointerComponent implements OnInit {
 
   distanceToGo (distance: number): string {
     const gt = distance > 1000;
-    const convert = gt ? geolib.convertUnit('km', distance, 1) : Math.round(distance);
+    const convert = gt ? geolib.convertDistance(distance, 'km') : Math.round(distance);
     const suffix = gt ? 'km' : 'm';
 
     return `${convert} ${suffix}`;
@@ -128,7 +128,7 @@ export class PointerComponent implements OnInit {
       longitude: coords.longitude,
     };
 
-    this.distance =  geolib.getDistance(_coords, toLocation.coord, 1, 1);
+    this.distance =  geolib.getDistance(_coords, toLocation.coord, 1);
     const bearing = geolib.getRhumbLineBearing(_coords, toLocation.coord);
 
     this.displayDistance = this.distanceToGo(this.distance);
