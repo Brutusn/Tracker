@@ -19,10 +19,10 @@ const routes: Routes = [{
     pathMatch: 'full',
   }, {
     path: 'gps',
-    loadChildren: './gps/gps.module#GpsModule',
+    loadChildren: () => import('./gps/gps.module').then(m => m.GpsModule),
   }, {
     path: 'tracker',
-    loadChildren: './tracker/tracker.module#TrackerModule',
+    loadChildren: () => import('./tracker/tracker.module').then(m => m.TrackerModule),
     canLoad: [AuthGuard],
   }, {
     path: 'login',
