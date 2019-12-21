@@ -1,5 +1,5 @@
-<div class="centered">
-  <div *ngIf='tracking === 0' class="names">
+<div class="centered" [ngClass]="{ 'map-in-tracking-mode': tracking === trackingModes.TRACKING }">
+  <div *ngIf='tracking === trackingModes.NO_TRACKING' class="names">
     <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*,
       zodate de blokhut kan zien waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
     <p><strong>Vergeet niet om toestemming te geven voor het delen van de locatie!</strong></p>
@@ -9,11 +9,16 @@
     <p class="small">* Url: {{serverUrl}}</p>
   </div>
 
-  <div *ngIf='tracking === 1' class="dot-container">
+  <div *ngIf='tracking === trackingModes.TRACKING' class="dot-container">
     <app-compass></app-compass>
     <p>Veel plezier <b>{{username}}</b></p>
   </div>
 
-  <app-pointer [enable]="tracking === 2" (endFound)="onEndFound($event)"></app-pointer>
+  <!-- <app-pointer [enable]="tracking === trackingModes.COMPASS" (endFound)="onEndFound($event)"></app-pointer> -->
   <app-display-on></app-display-on>
 </div>
+
+<app-gps-map
+  *ngIf='tracking !== trackingModes.NO_TRACKING'
+  [inGameMode]="tracking === trackingModes.COMPASS"
+></app-gps-map>

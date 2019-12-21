@@ -20,7 +20,7 @@ export class SocketService {
     private router: Router,
   ) {}
 
-  public initSocket (limited = true, name?: string, access_token = ''): void {
+  initSocket (limited = true, name?: string, access_token = ''): void {
     console.count('Init socket');
     if (this.socket) {
       this.socket.close();
@@ -71,11 +71,11 @@ export class SocketService {
     this.announceSocket();
   }
 
-  public announceSocket (): void {
+  announceSocket (): void {
     this.socketAnnouncedSubject.next();
   }
 
-  public onEvent (event: string): Observable<any> {
+  onEvent (event: string): Observable<any> {
     return new Observable<object>((observer) => {
       this.socket.on(event, (data: any) => {
         console.log('Got message on:', event);
@@ -84,7 +84,7 @@ export class SocketService {
     });
   }
 
-  public emit (event: string, data) {
+  emit (event: string, data) {
     console.log('Send message to:', event);
     this.socket.emit(event, data);
   }

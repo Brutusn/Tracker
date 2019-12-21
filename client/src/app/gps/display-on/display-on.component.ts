@@ -9,7 +9,7 @@ import NoSleep from 'nosleep.js';
 })
 export class DisplayOnComponent implements OnInit {
 
-  public displayOn = false;
+  displayOn = false;
 
   private noSleep: any;
 

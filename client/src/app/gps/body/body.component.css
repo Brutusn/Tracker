@@ -1,6 +1,16 @@
 .centered {
   padding: 1em;
   font-size: 14pt;
+  z-index: 1;
+  position: relative;
+}
+
+.map-in-tracking-mode {
+  height: 100%;
+
+  background-color: rgba(0,0,0,.6);
+
+  backdrop-filter: blur(3px) grayscale(1);
 }
 
 .centered input, .centered button {

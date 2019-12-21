@@ -7,7 +7,7 @@ export class PointerService {
 
   constructor () { }
 
-  public toKmh (speed: number | string, suffix = ' km/h') {
+  toKmh (speed: number | string, suffix = ' km/h') {
     if (speed === null) {
       return 0 + suffix;
     }
@@ -16,10 +16,10 @@ export class PointerService {
     return Math.round(_speed * 3.6) + suffix;
   }
 
-  public encode (str = '') {
+  encode (str = '') {
     return btoa(str);
   }
-  public decode (str = '') {
+  decode (str = '') {
     return atob(str);
   }
 }

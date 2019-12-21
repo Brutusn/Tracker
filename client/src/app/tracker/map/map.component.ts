@@ -8,6 +8,7 @@ import { Position, PositionMapped } from '@shared/position';
 import { SocketService } from '@shared/websocket.service';
 import * as L from 'leaflet';
 
+import { LeafletMap } from '@shared/leaflet-map.abstract';
 import { locationArray, postArray, Route } from '@shared/route';
 import { ToastService } from '@shared/toast/toast.service';
 
@@ -16,13 +17,8 @@ import { ToastService } from '@shared/toast/toast.service';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnInit {
-
-  private map: L.Map;
-  private markerLayer = L.featureGroup();
-  private blokhut: L.LatLngExpression = [51.6267702062721, 5.522872209548951];
-
-  private markers = {};
+export class MapComponent extends LeafletMap implements OnInit {
+   private markers = {};
 
   private onlineCirle = {
     radius: 8,
@@ -34,13 +30,12 @@ export class MapComponent implements OnInit {
     color: '#F22613',
   };
 
-  public autoZoom = true;
-
   constructor (
-    private loc: LocationService,
-    private ws: SocketService,
-    private ts: ToastService,
+    private readonly loc: LocationService,
+    private readonly ws: SocketService,
+    protected readonly ts: ToastService,
   ) {
+    super(ts);
     this.ws.onEvent('user-destroyed').subscribe((name: string) => {
       this.markerLayer.removeLayer(this.markers[name]);
 
@@ -73,17 +68,12 @@ export class MapComponent implements OnInit {
   }
 
   ngOnInit () {
-    // Base coordinates go to the blokhut of Scouting Veghel
-    this.map = L.map('tracker-map').setView(this.blokhut, 15);
-
-    L.tileLayer(environment.map_url, {
-        attribution: 'S5 StamTour Tracker',
-    }).addTo(this.map);
+    super.ngOnInit();
 
     this.markerLayer.addTo(this.map);
     this.markerLayer.on('click', (e) => this.markerClick(e));
 
-    L.circleMarker(this.blokhut, {
+    L.circleMarker(LeafletMap.blokhut, {
       ...this.onlineCirle,
       color: '#2e3131',
     })
@@ -96,15 +86,15 @@ export class MapComponent implements OnInit {
     const filteredArray = locationArray.filter((i) => i.skip !== true);
     locationArray.forEach((item: Route) => {
       const coord: L.LatLngExpression = [item.coord.latitude, item.coord.longitude];
-      const code = atob(item.code).toUpperCase();
-      const indexOfFiltered = item.skip !== true ? `(${filteredArray.findIndex((i) => i.code === item.code)})` : '';
+      const code = item.code.toUpperCase();
+      const indexOfFiltered = item.skip !== true ? `(${filteredArray.findIndex((i) => i.code === item.code) + 1})` : '';
 
       this.addPostCircle(coord, code, indexOfFiltered, '#f89406');
     });
 
     postArray.forEach((item: Route) => {
       const coord: L.LatLngExpression = [item.coord.latitude, item.coord.longitude];
-      const code = atob(item.code).toUpperCase();
+      const code = item.code.toUpperCase();
 
       this.addPostCircle(coord, code, '', '#e47833');
     });

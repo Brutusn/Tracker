@@ -1,3 +1,5 @@
+import { LeafletMap } from './leaflet-map.abstract';
+
 export interface Coordinate {
   latitude: number;
   longitude: number;
@@ -10,98 +12,65 @@ export interface Route {
 }
 
 export const locationArray: Route[] = [{
-  code: 'UG9zdCAyYQ==',
+  code: 'Hanenwaterval',
   coord: {
-    latitude: 51.701114,
-    longitude: 5.954895,
-  },
-  skip: true,
-}, {
-  code: 'd2VnZWluZGU=',
-  coord: {
-    latitude: 51.675402,
-    longitude: 5.961284,
+    latitude: 51.634953,
+    longitude: 5.820189,
   },
 }, {
-  code: 'dmVubmV0amU=',
+  code: 'Kapel',
   coord: {
-    latitude: 51.659853,
-    longitude: 5.926366,
+    latitude: 51.637840,
+    longitude: 5.707294,
   },
 }, {
-  code: 'c2xvb3RqZQ==',
+  code: 'De beste blokhut',
   coord: {
-    latitude: 51.625877,
-    longitude: 5.954718,
+    latitude: LeafletMap.blokhut[0],
+    longitude: LeafletMap.blokhut[1],
   },
-}, {
-  code: 'aGVpbGlnZQ==',
-  coord: {
-    latitude: 51.622000,
-    longitude: 5.982688,
-  },
-}, {
-  code: 'cGFubmVua29la2Vu',
-  coord: {
-    latitude: 51.594617,
-    longitude: 5.998415,
-  },
-}, {
-  code: 'bWFyaWE=',
-  coord: {
-    latitude: 51.585798,
-    longitude: 6.028043,
-  },
-}, {
-  code: 'Y2hhbXBhZ25l',
-  coord: {
-    latitude: 51.558334,
-    longitude: 6.037009,
-  },
-},
-];
+}];
 
 export const postArray: Route[] = [{
   // Start
-  code: 'U3RhcnQ=',
+  code: 'Nistelrode',
   coord: {
-    latitude: 51.698066,
-    longitude: 5.741429,
+    latitude: 51.688280,
+    longitude: 5.565392,
   },
 }, {
   // Post 2
-  code: 'UG9zdCAy',
+  code: 'Pannenkoekenrestaurant',
   coord: {
-    latitude: 51.740379,
-    longitude: 5.780722,
+    latitude: 51.819452,
+    longitude: 5.943595,
   },
-// Deze post is de eerste in de locatie reeks, 2 keer tonen niet nodig.
-// }, {
-//   // Post 2a
-//   code: 'UG9zdCAyYQ==',
-//   coord: {
-//     latitude: 51.701114,
-//     longitude: 5.954895
-//   }
 }, {
   // Post 3
-  code: 'UG9zdCAz',
+  code: 'CHAAARGE!',
   coord: {
-    latitude: 51.558226,
-    longitude: 6.037146,
+    latitude: 51.768865,
+    longitude: 6.151342,
   },
 }, {
   // Post 4
-  code: 'UG9zdCA0',
+  code: 'Noob camper',
   coord: {
-    latitude: 51.518352,
-    longitude: 5.786407,
+    latitude: 51.668885,
+    longitude: 6.453046,
   },
 }, {
   // Post 5
-  code: 'UG9zdCA1',
+  code: 'Vrienden van Veghel',
   coord: {
-    latitude: 51.517913,
-    longitude: 5.595172,
+    latitude: 51.669845,
+    longitude: 6.154036,
+  },
+}, {
+  // Post 6
+  code: 'Kruising',
+  coord: {
+    latitude: 51.691966,
+    longitude: 5.942469,
   },
 }];

@@ -14,11 +14,11 @@ import { ToastService } from '@shared/toast/toast.service';
 })
 export class ListComponent implements OnInit {
 
-  public listData: PositionMapped = {};
-  public objectKeys = Object.keys;
+  listData: PositionMapped = {};
+  objectKeys = Object.keys;
 
   private locations = locationArray.filter((i) => i.skip !== true);
-  public totalPost = this.locations.length;
+  totalPost = this.locations.length;
 
   private handleError (error) {
     this.ts.error(error.message || error);

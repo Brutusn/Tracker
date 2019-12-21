@@ -13,8 +13,8 @@ export class GeoService {
   constructor () {
   }
 
-  watch (): Observable<any> {
-    return new Observable<object>((observer) => {
+  watch (): Observable<Position> {
+    return new Observable<Position>((observer) => {
       let watchId;
 
       if ('geolocation' in navigator) {

@@ -8,7 +8,8 @@ export const environment = {
   production: false,
   map_url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 
-  ws_url: 'https://www.welpensionie.nl:8080',
+  // ws_url: 'https://www.welpensionie.nl:8080',
+  ws_url: 'https://localhost',
   ws_key: config.ws_key,
   ws_key_lim: config.ws_key_lim,
 };

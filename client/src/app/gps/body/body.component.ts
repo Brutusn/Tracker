@@ -21,14 +21,15 @@ enum TrackingModes {
 })
 export class BodyComponent implements OnInit {
 
-  public serverUrl = environment.ws_url;
+  serverUrl = environment.ws_url;
 
-  public tracking = TrackingModes['NO_TRACKING'];
-  public currentPosition = 'wacht op locatie..';
-  public username = window.localStorage.getItem('user-name') || '';
+  trackingModes = TrackingModes;
+  tracking: TrackingModes = TrackingModes.NO_TRACKING;
+  currentPosition = 'wacht op locatie..';
+  username = window.localStorage.getItem('user-name') || '';
 
   // TODO: Get this from the compass..
-  public currentPost = 0;
+  currentPost = 0;
 
   private access_token = window.localStorage.getItem('access_token') || '';
 
@@ -83,18 +84,18 @@ export class BodyComponent implements OnInit {
 
     this.ws.onEvent('final-name').subscribe((data: NameData) => {
       this.handleName(data);
-      this.tracking = TrackingModes['TRACKING'];
+      this.tracking = TrackingModes.TRACKING;
       this.sendPosition();
     });
 
     this.ws.onEvent('start-route').subscribe(() => {
-      this.tracking = TrackingModes['COMPASS'];
+      this.tracking = TrackingModes.COMPASS;
     });
   }
 
   onEndFound (found: boolean): void {
     if (found) {
-      this.tracking = TrackingModes['TRACKING'];
+      this.tracking = TrackingModes.TRACKING;
     }
   }
 
@@ -115,7 +116,7 @@ export class BodyComponent implements OnInit {
         heading: coords.heading,
         post: this.currentPost,
         waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
-        gpsStarted: this.tracking === TrackingModes['COMPASS'],
+        gpsStarted: this.tracking === TrackingModes.COMPASS,
       });
     },
     (error) => this.geoError(error));

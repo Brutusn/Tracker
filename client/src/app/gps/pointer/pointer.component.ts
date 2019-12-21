@@ -17,8 +17,8 @@ export class PointerComponent implements OnInit {
   @Output() endFound = new EventEmitter<boolean>();
 
   // These are disaplayed
-  public displayDistance = '0 km';
-  public codeWord = '';
+  displayDistance = '0 km';
+  codeWord = '';
 
   // These not.
   private distance = 0;

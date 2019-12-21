@@ -64,6 +64,7 @@ router-outlet {
 app-body {
   background-color: #000000;
   color: var(--light-text);
+  position: relative;
 }
 
 .carbon {

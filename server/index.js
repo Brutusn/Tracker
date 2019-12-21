@@ -23,9 +23,9 @@ const rf = fs.readFileSync;
 // Set up
 const app = express();
 const server = https.createServer({
-  key: rf('../cert/SSLprivatekey.key'),
-  cert: rf('../cert/SSLcertificate.crt'),
-  ca: [rf('../cert/ca1.crt'), rf('../cert/ca2.crt')],
+  key: rf(`${__dirname}/../cert/SSLprivatekey.key`),
+  cert: rf(`${__dirname}/../cert/SSLcertificate.crt`),
+  ca: [rf(`${__dirname}/../cert/ca1.crt`), rf(`${__dirname}/../cert/ca2.crt`)],
   secureOptions: constants.SSL_OP_NO_TLSv1
 }, app);
 const io = socket(server);
@@ -125,7 +125,7 @@ app.post('/api/login', tokenValidator, (req, res) => {
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
   app.use(compression());
-  app.use(express.static('../client/dist/tracker-client', {
+  app.use(express.static(`${__dirname}/../client/dist/tracker-client`, {
     immutable: true,
     maxAge: '1y'
   }));
