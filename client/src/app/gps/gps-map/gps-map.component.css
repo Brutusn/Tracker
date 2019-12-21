@@ -18,16 +18,17 @@
   border-radius: 1em;
 
   font-weight: bold;
-  font-size: 150%;
+  font-size: 100%;
   text-transform: uppercase;
   position: absolute;
 
   color: var(--dark-text);
 
-  width: 14em;
+  max-width: 20em;
+  width: 90vw;
 
-  bottom: 2em;
-  left: calc(50vw - 7em);
+  bottom: 3em;
+  left: 5vw;
 
   background-color: rgba(255, 255, 255, .7);
   backdrop-filter: blur(3px);

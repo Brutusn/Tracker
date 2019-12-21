@@ -1,12 +1,12 @@
 .centered {
-  padding: 1em;
+  padding: 3em 1em 2em 1em;
   font-size: 14pt;
   z-index: 1;
   position: relative;
+  height: 100%;
 }
 
 .map-in-tracking-mode {
-  height: 100%;
 
   background-color: rgba(0,0,0,.6);
 

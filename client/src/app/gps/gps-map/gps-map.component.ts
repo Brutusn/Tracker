@@ -7,7 +7,7 @@ import { map, tap, take } from 'rxjs/operators';
 import { CircleMarker, LatLngTuple } from 'leaflet';
 import { Route, locationArray, Coordinate } from '@shared/route';
 import { SocketService } from '@shared/websocket.service';
-import * as geolib from 'geolib';
+import { getDistance, convertDistance } from 'geolib';
 
 @Component({
   selector: 'app-gps-map',
@@ -57,6 +57,8 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
   ngOnInit () {
     super.ngOnInit();
     this.subscriptions.add(this.geoPositionSubscription());
+
+    this.map.removeControl(this.map.zoomControl);
 
     this.markerLayer.addLayer(this.userMarker);
     this.markerLayer.addLayer(this.goToMarker);
@@ -141,8 +143,9 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
         map((position) => position.coords),
         tap((coords) => {
           this.placeUserMarker(coords);
+          this.handleCoords(coords);
+
           if (this.inGameMode) {
-            this.handleCoords(coords);
             this.fitMapToBounds();
           } else {
             this.centerMapOnCoordinate(coords);
@@ -166,14 +169,20 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
 
         this.setWaypoint(this.waypoint);
         this.codeWord = this.locations[this.waypoint].code;
+        this.placeGoToMarker(this.getWaypoint(this.waypoint));
       }
     }
   }
 
   handleCoords (coords: Coordinate) {
     const toLocation = this.getWaypoint(this.waypoint);
+    // Have to create the object. If passed on it results in a NaN
+    const _coords = {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    };
+    const distance = getDistance(_coords, toLocation.coord);
 
-    const distance =  geolib.getDistance(coords, toLocation.coord, 1);
     this.remainingDistance = GpsMapComponent.distanceToGo(distance);
 
     // And are we close enough?
@@ -209,7 +218,7 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
 
   private static distanceToGo (distance: number): string {
     const gt = distance > 1000;
-    const convert = gt ? geolib.convertDistance(distance, 'km') : Math.round(distance);
+    const convert = gt ? convertDistance(distance, 'km') : Math.round(distance);
     const suffix = gt ? 'km' : 'm';
 
     return `${convert} ${suffix}`;
