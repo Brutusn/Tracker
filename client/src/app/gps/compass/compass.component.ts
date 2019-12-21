@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as geolib from 'geolib';
+import { getDistance } from 'geolib';
 
 import { GeoService } from '@shared/geo.service';
 import { Coordinate, locationArray, Route } from '@shared/route';
@@ -39,13 +39,13 @@ export class CompassComponent implements OnInit {
     document.documentElement.style.setProperty(this.cssVar, `-${this.lastHeading - this.rotationOffset}deg`);
   }
 
-  private checkForRouteStart (coords) {
+  private checkForRouteStart (coords: Coordinates) {
     const _coords: Coordinate = {
       latitude: coords.latitude,
       longitude: coords.longitude,
     };
 
-    const distance = geolib.getDistance(_coords, this.triggerLocation.coord, 1);
+    const distance = getDistance(_coords, this.triggerLocation.coord);
 
     if (distance < this.triggerDistance) {
       // Send emit message now.
