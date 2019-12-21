@@ -18,8 +18,6 @@ import { ToastService } from '@shared/toast/toast.service';
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent extends LeafletMap implements OnInit {
-   private markers = {};
-
   private onlineCirle = {
     radius: 8,
     fillOpacity: 0.75,

@@ -8,7 +8,7 @@ describe('GpsMapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GpsMapComponent ]
+      declarations: [ GpsMapComponent ],
     })
     .compileComponents();
   }));

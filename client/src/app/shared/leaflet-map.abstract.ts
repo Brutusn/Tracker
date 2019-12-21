@@ -16,8 +16,9 @@ export abstract class LeafletMap implements OnInit, OnDestroy {
 
   protected mapId = 'tracker-map';
   protected map: L.Map;
-  protected markerLayer = L.featureGroup();
+  protected markerLayer = this.leaflet.featureGroup();
   protected mapUrl = environment.map_url;
+  protected readonly markers = {};
 
   autoZoom = true;
 

@@ -9,3 +9,36 @@
 
   position: absolute;
 }
+
+.code-word {
+  padding: 1em 2em;
+  border: 5px solid var(--white);
+  box-shadow: 0 0 8px rgba(0,0,0,0.23);
+  border-bottom-color: var(--compass-red);
+  border-radius: 1em;
+
+  font-weight: bold;
+  font-size: 150%;
+  text-transform: uppercase;
+  position: absolute;
+
+  color: var(--dark-text);
+
+  width: 14em;
+
+  bottom: 2em;
+  left: calc(50vw - 7em);
+
+  background-color: rgba(255, 255, 255, .7);
+  backdrop-filter: blur(3px);
+}
+
+.code-word:before {
+  content: 'Code:';
+  font-size: 50%;
+  font-weight: lighter;
+  position: absolute;
+  text-transform: initial;
+  top: .75em;
+  left: 1em;
+}

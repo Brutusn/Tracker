@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ import { ToastService } from './toast/toast.service';
 export class SocketService {
   private socket: any;
 
-  private socketAnnouncedSubject = new Subject<any>();
+  private socketAnnouncedSubject = new ReplaySubject<void>();
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
   constructor (
@@ -75,16 +76,21 @@ export class SocketService {
     this.socketAnnouncedSubject.next();
   }
 
-  onEvent (event: string): Observable<any> {
-    return new Observable<object>((observer) => {
-      this.socket.on(event, (data: any) => {
-        console.log('Got message on:', event);
-        return observer.next(data);
-      });
-    });
+  onEvent<T = any> (event: string): Observable<T> {
+    return this.socketAnnounced
+      .pipe(
+        switchMap(() => {
+          return new Observable<T>((observer) => {
+            this.socket.on(event, (data: T) => {
+              console.log('Got message on:', event);
+              return observer.next(data);
+            });
+          });
+        }),
+      );
   }
 
-  emit (event: string, data) {
+  emit (event: string, data: any) {
     console.log('Send message to:', event);
     this.socket.emit(event, data);
   }

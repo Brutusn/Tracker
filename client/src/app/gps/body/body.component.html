@@ -21,4 +21,5 @@
 <app-gps-map
   *ngIf='tracking !== trackingModes.NO_TRACKING'
   [inGameMode]="tracking === trackingModes.COMPASS"
+  (endFound)="onEndFound($event)"
 ></app-gps-map>

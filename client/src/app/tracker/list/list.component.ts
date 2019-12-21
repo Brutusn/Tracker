@@ -79,7 +79,7 @@ export class ListComponent implements OnInit {
       return;
     }
 
-    const code = this.locations[parsed] ? atob(this.locations[parsed].code).toUpperCase() : 'Onbekend';
+    const code = this.locations[parsed] ? this.locations[parsed].code.toUpperCase() : 'Onbekend';
     const correct = confirm(`Dat is post: ${code}`);
 
     if (correct) {
