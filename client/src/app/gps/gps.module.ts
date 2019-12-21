@@ -8,7 +8,6 @@ import { GeoService } from '@shared/geo.service';
 import { BodyComponent } from './body/body.component';
 import { CompassComponent } from './compass/compass.component';
 import { DisplayOnComponent } from './display-on/display-on.component';
-// import { PointerComponent } from './pointer/pointer.component';
 import { GpsMapComponent } from './gps-map/gps-map.component';
 
 @NgModule({
@@ -22,7 +21,6 @@ import { GpsMapComponent } from './gps-map/gps-map.component';
   ],
   declarations: [
     BodyComponent,
-//     PointerComponent,
     CompassComponent,
     DisplayOnComponent,
     GpsMapComponent,
