@@ -1,10 +1,8 @@
 app-map {
-  flex: 6 1 auto;
   min-height: 100%;
   position: relative;
 }
 
 app-side-bar {
-  flex: 1 1 200px;
   overflow: auto;
 }
