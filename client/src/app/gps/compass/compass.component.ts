@@ -11,12 +11,10 @@ import { SocketService } from '@shared/websocket.service';
   styleUrls: ['./compass.component.css'],
 })
 export class CompassComponent implements OnInit {
-
   private lastHeading = 0;
-  private cssVar = '--rotation';
-  private rotationOffset = 180;
+  private readonly cssVar = '--rotation';
 
-  private triggerDistance = 50; // Meter
+  private readonly triggerDistance = 50; // Meter
   private triggerLocation: Route = locationArray[0];
 
   constructor (
@@ -36,7 +34,7 @@ export class CompassComponent implements OnInit {
       this.lastHeading = heading;
     }
 
-    document.documentElement.style.setProperty(this.cssVar, `-${this.lastHeading - this.rotationOffset}deg`);
+    document.documentElement.style.setProperty(this.cssVar, `-${this.lastHeading}deg`);
   }
 
   private checkForRouteStart (coords: Coordinates) {
