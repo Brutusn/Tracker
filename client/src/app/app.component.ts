@@ -9,6 +9,6 @@ export class AppComponent implements OnInit {
   title = 'tracker-client';
 
   ngOnInit () {
-    window.scrollTo(0, 1);
+    setTimeout(() => window.scrollTo(0, 1), 10);
   }
 }
