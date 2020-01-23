@@ -49,8 +49,8 @@ export const postArray: Route[] = [{
   // Post 3
   code: 'CHAAARGE!',
   coord: {
-    latitude: 51.768865,
-    longitude: 6.151342,
+    latitude: 51.769025,
+    longitude: 6.147237,
   },
 }, {
   // Post 4
