@@ -3,9 +3,13 @@
     <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*,
       zodate de blokhut kan zien waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
     <p><strong>Vergeet niet om toestemming te geven voor het delen van de locatie!</strong></p>
-    <label for="name">Vul je naam in:</label><br />
-    <input type="text" id="name" name="username" [(ngModel)]='username'>
-    <button id="send-name" (click)='start()'>Start</button>
+
+    <div class="body-input-wrapper">
+      <label class='body-label' for="name">Vul je naam in:</label>
+      <input class='body-input' type="text" id="name" name="username" [(ngModel)]='username'>
+      <button  class='body-button' id="send-name" (click)='start()'>Start</button>
+    </div>
+
     <p class="small">* Url: {{serverUrl}}</p>
   </div>
 

@@ -1,9 +1,28 @@
 .centered {
-  padding: 3em 1em 2em 1em;
+  padding: 2em 1em;
   font-size: 14pt;
   z-index: 1;
   position: relative;
   height: 100%;
+}
+
+.body-input-wrapper {
+  display: grid;
+  grid-template-areas: 'label label label label'
+                        'input input input button';
+
+  max-width: 600px;
+}
+
+.body-label {
+  grid-area: label;
+}
+.body-input {
+  grid-area: input;
+}
+.body-button {
+  grid-area: button;
+  min-width: 5em;
 }
 
 .map-in-tracking-mode {
@@ -36,7 +55,7 @@ strong {
   align-items: center;
   flex-direction: column;
 
-  height: 60vh;
+  height: 80vh;
 }
 
 .dot-container p {

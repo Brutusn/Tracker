@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { LeafletMap } from '@shared/leaflet-map.abstract';
 import { ToastService } from '@shared/toast/toast.service';
 import { GeoService } from '@shared/geo.service';
@@ -14,7 +14,7 @@ import { getDistance, convertDistance } from 'geolib';
   templateUrl: './gps-map.component.html',
   styleUrls: ['./gps-map.component.css'],
 })
-export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
+export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges, OnDestroy {
   @Input() inGameMode = false;
   @Output() endFound = new EventEmitter<boolean>();
 
@@ -66,13 +66,19 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
     this.setMode();
     this.placeGoToMarker(this.getWaypoint(0));
 
-    this.ws.onEvent<number>('start-route')
+    this.subscriptions.add(this.ws.onEvent<number>('start-route')
       .pipe(
-        take(1),
         tap((start) => this.setWaypoint(start)),
         map((start) => this.getWaypoint(start)),
-        tap((route) => this.codeWord = route.code),
-      ).subscribe();
+        tap((route) => {
+          this.codeWord = route.code;
+          this.placeGoToMarker(route);
+        }),
+      ).subscribe());
+  }
+
+  ngOnDestroy () {
+    this.subscriptions.unsubscribe();
   }
 
   private getWaypoint (waypoint: string | number = 0): Route {
@@ -219,8 +225,9 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
   private static distanceToGo (distance: number): string {
     const gt = distance > 1000;
     const convert = gt ? convertDistance(distance, 'km') : Math.round(distance);
+    const localNumber = convert.toLocaleString('nl-NL', { maximumSignificantDigits: 2 } );
     const suffix = gt ? 'km' : 'm';
 
-    return `${convert} ${suffix}`;
+    return `${localNumber} ${suffix}`;
   }
 }
