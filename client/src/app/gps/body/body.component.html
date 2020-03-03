@@ -14,11 +14,10 @@
   </div>
 
   <div *ngIf='tracking === trackingModes.TRACKING' class="dot-container">
-    <app-compass></app-compass>
+    <app-compass [inGameMode]="tracking === trackingModes.COMPASS"></app-compass>
     <p>Veel plezier <b>{{username}}</b></p>
   </div>
 
-  <!-- <app-pointer [enable]="tracking === trackingModes.COMPASS" (endFound)="onEndFound($event)"></app-pointer> -->
   <app-display-on></app-display-on>
 </div>
 
