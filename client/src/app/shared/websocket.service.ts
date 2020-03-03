@@ -5,7 +5,7 @@ import * as socketIo from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take, share } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +15,8 @@ export class SocketService {
 
   private socketAnnouncedSubject = new ReplaySubject<void>();
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
+
+  private readonly socketMap = new Map<string, Observable<any>>();
 
   constructor (
     private toast: ToastService,
@@ -79,15 +81,26 @@ export class SocketService {
   onEvent<T = any> (event: string): Observable<T> {
     return this.socketAnnounced
       .pipe(
-        switchMap(() => {
-          return new Observable<T>((observer) => {
-            this.socket.on(event, (data: T) => {
-              console.log('Got message on:', event);
-              return observer.next(data);
-            });
-          });
-        }),
+        take(1),
+        switchMap(() => this.eventObservable(event)),
       );
+  }
+
+  // This will stop adding multiple listerers for a single event.
+  private eventObservable<T = any> (event: string): Observable<T> {
+    if (this.socketMap.has(event)) {
+      return this.socketMap.get(event);
+    }
+
+    const observable = new Observable<T>((observer) => {
+      this.socket.on(event, (data: T) => {
+        console.log('Got message on:', event);
+        return observer.next(data);
+      });
+    }).pipe(share());
+
+    this.socketMap.set(event, observable);
+    return observable;
   }
 
   emit (event: string, data: any) {
