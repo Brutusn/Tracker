@@ -70,7 +70,7 @@ export const postArray: Route[] = [{
   // Post 6
   code: 'Kruising',
   coord: {
-    latitude: 51.691966,
-    longitude: 5.942469,
+    latitude: 51.6864023,
+    longitude: 5.944451,
   },
 }];
