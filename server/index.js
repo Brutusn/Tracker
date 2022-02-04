@@ -7,6 +7,8 @@ const path = require('path');
 
 const { constants } = require('crypto');
 
+const { currentTimeStamp } = require('./timestamp.js');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
@@ -17,7 +19,7 @@ const config = require('../config/server.js');
 const PosCache = require('./PositionCache.js');
 const passwordHandler = require('./password');
 
-console.log(`[CORE] Node running on version: ${process.version}...`);
+console.log(`[${currentTimeStamp()}][CORE] Node running on version: ${process.version}...`);
 
 const rf = fs.readFileSync;
 // Set up
@@ -39,7 +41,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Strict-Transport-Security", "max-age: 15552000; includeSubDomains");
   if(!req.secure) {
-    console.log('[HTTP] Insecure connection, redirect to https..', req.url);
+    console.log(`[${currentTimeStamp()}][HTTP] Insecure connection, redirect to https..: ${req.url}`);
 
     if (req.url.includes('.php')) {
       return res.status(418).send('Konijnenboutje');
@@ -60,7 +62,7 @@ app.use(bodyParser.json());
 
 server.listen(config.port);
 httpServer.listen(config.port + 1);
-console.log(`[CORE] Server listening on port: ${config.port}`);
+console.log(`[${currentTimeStamp()}][CORE] Server listening on port: ${config.port}`);
 
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PosCache();
@@ -82,12 +84,12 @@ const sendPosition = (data, errorFn) => {
   positions.addPosition(data);
 }
 const userLeft = (name = '__nameless__') => {
-  console.log('[APP] User left:', name);
+  console.log(`[${currentTimeStamp()}][APP] User left: ${name}`);
   positions.userOffline(name);
   broadcast('user-left', name);
 }
 const removeOfflineUser = (name) => {
-  console.log('[APP] Removing offline user:', name);
+  console.log(`[${currentTimeStamp()}][APP] Removing offline user: ${name}`);
   positions.removeUser(name);
   broadcast('user-destroyed', name);
 }
@@ -156,7 +158,7 @@ io
     next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
-    console.log('[SOCKET] A socket connected', socket.id);
+    console.log(`[${currentTimeStamp()}][SOCKET] A socket connected ${socket.id}`);
 
     const { token, requestPositions, access_token } = socket.handshake.query;
     let name = socket.handshake.query.name;
@@ -165,7 +167,7 @@ io
       const nameData = positions.registerUser(name, access_token, socket);
       name = nameData.name;
 
-      console.log('[APP] User joined:', name);
+      console.log(`[${currentTimeStamp()}][APP] User joined: ${name}`);
       broadcast('user-joined', name);
       process.nextTick(() => socket.emit('final-name', nameData));
     }
