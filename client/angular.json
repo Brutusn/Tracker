@@ -13,7 +13,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "dist/tracker-client",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -30,7 +29,13 @@
               "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [],
-            "baseHref": "/"
+            "baseHref": "/",
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -49,13 +54,11 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": true,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": true,
               "buildOptimizer": true
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
