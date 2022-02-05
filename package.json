@@ -9,11 +9,6 @@
     "server": "node ./server/index.js",
     "docker": "docker build -t tracker . && docker image save -o ./docker/tracker-image.tar tracker"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Brutusn/Tracker.git"
