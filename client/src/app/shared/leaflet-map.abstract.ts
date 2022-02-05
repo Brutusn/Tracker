@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy } from '@angular/core';
+import { OnInit, OnDestroy, Directive } from '@angular/core';
 import { Position } from '@shared/position';
 
 import { environment } from '@env/environment';
@@ -8,6 +8,7 @@ import { LocationService } from './location.service';
 import { ToastService } from './toast/toast.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export abstract class LeafletMap implements OnInit, OnDestroy {
   static blokhut: L.LatLngExpression = [51.6267702062721, 5.522872209548951];
 
