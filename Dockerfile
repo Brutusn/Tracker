@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16 AS node
 
 WORKDIR /usr/src/www
 COPY package*.json ./
@@ -13,6 +13,7 @@ COPY ./config ./config
 
 COPY ./server ./server
 
-EXPOSE 8123:8124
+EXPOSE 8123
+EXPOSE 8124
 
 CMD ["node", "./server/index.js"]

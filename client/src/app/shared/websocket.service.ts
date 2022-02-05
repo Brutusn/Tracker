@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, ReplaySubject } from 'rxjs';
-import * as socketIo from 'socket.io-client';
+import { io as socketIo } from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';

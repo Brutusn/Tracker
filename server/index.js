@@ -12,6 +12,7 @@ const { currentTimeStamp } = require('./timestamp.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
+const cors = require('cors');
 const socket = require('socket.io');
 
 const config = require('../config/server.js');
@@ -34,6 +35,8 @@ const io = socket(server);
 
 // The http server is just to redirect.
 const httpServer = http.createServer(app);
+
+app.use(cors({ origin: /stamtour\.nl$/ }));
 
 // Redirect to https.
 app.use((req, res, next) => {
