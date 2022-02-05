@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { SocketService } from './websocket.service';
 
@@ -14,12 +14,12 @@ export class LocationService {
   constructor (private ws: SocketService) {
     this.ws.initSocket(false);
 
-    this.ws.onEvent('user-left').subscribe((name) => {
+    this.ws.onEvent<string>('user-left').subscribe((name) => {
       if (this.mappedPositions[name]) {
         this.mappedPositions[name].online = false;
       }
     });
-    this.ws.onEvent('user-destroyed').subscribe((name: string) => {
+    this.ws.onEvent<string>('user-destroyed').subscribe((name) => {
       delete this.mappedPositions[name];
     });
   }
@@ -32,14 +32,14 @@ export class LocationService {
       online: keepOnlineState ? pos.online : true,
     };
 
-    // Merges the new data so no dubplicates come in..
+    // Merges the new data so no duplicates come in...
     return Object.assign(this.mappedPositions, newObject);
   }
 
   getLocations (): Observable<PositionMapped> {
     return new Observable<PositionMapped>((observer) => {
-      return this.ws.onEvent('initial-positions')
-        .subscribe((positions: PositionMapped) => {
+      return this.ws.onEvent<PositionMapped>('initial-positions')
+        .subscribe((positions) => {
           Object.keys(positions).forEach((pos: string) => {
             const obj: Position = positions[pos];
 
@@ -53,8 +53,8 @@ export class LocationService {
 
   getNewLocation (): Observable<PositionMapped> {
     return new Observable<PositionMapped>((observer) => {
-      return this.ws.onEvent('new-position')
-        .subscribe((position: Position) => {
+      return this.ws.onEvent<Position>('new-position')
+        .subscribe((position) => {
           observer.next(this.mapPositions(position));
         });
     });

@@ -53,7 +53,7 @@ export class CompassComponent implements OnInit, OnDestroy {
     document.documentElement.style.setProperty(this.cssVar, `-${this.lastHeading}deg`);
   }
 
-  private checkForRouteStart (coords: Coordinates) {
+  private checkForRouteStart (coords: Coordinate) {
     const _coords: Coordinate = {
       latitude: coords.latitude,
       longitude: coords.longitude,

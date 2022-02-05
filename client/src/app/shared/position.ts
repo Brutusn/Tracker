@@ -8,6 +8,7 @@ export interface Position {
   waypoint: number;
   gpsStarted?: boolean;
 }
+GeolocationPosition
 
 export interface PositionMapped {
   [key: string]: Position;

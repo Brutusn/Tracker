@@ -6,14 +6,16 @@ import { io as socketIo } from 'socket.io-client';
 import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';
 import { switchMap, take, share } from 'rxjs/operators';
+import { Socket } from 'socket.io-client/build/esm/socket';
+import { Toast } from '@shared/toast/toast.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
-  private socket: any;
+  private socket: Socket;
 
-  private socketAnnouncedSubject = new ReplaySubject<void>();
+  private socketAnnouncedSubject = new ReplaySubject<void>(1);
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
   private readonly socketMap = new Map<string, Observable<any>>();
@@ -49,7 +51,7 @@ export class SocketService {
     //   alert(error);
     // });
 
-    this.onEvent('growl').subscribe((msg) => {
+    this.onEvent<Toast>('growl').subscribe((msg) => {
       this.toast.open(msg);
     });
 
@@ -78,16 +80,16 @@ export class SocketService {
     this.socketAnnouncedSubject.next();
   }
 
-  onEvent<T = any> (event: string): Observable<T> {
+  onEvent<T = unknown> (event: string): Observable<T> {
     return this.socketAnnounced
       .pipe(
         take(1),
-        switchMap(() => this.eventObservable(event)),
+        switchMap(() => this.eventObservable<T>(event)),
       );
   }
 
-  // This will stop adding multiple listerers for a single event.
-  private eventObservable<T = any> (event: string): Observable<T> {
+  // This will stop adding multiple listeners for a single event.
+  private eventObservable<T = unknown> (event: string): Observable<T> {
     if (this.socketMap.has(event)) {
       return this.socketMap.get(event);
     }

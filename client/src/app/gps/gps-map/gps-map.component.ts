@@ -125,7 +125,7 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges, On
     this.placeMarker([route.coord.latitude, route.coord.longitude], this.goToMarker);
   }
 
-  private placeUserMarker (coords: Coordinates) {
+  private placeUserMarker (coords: Coordinate) {
       const lat = coords.latitude;
       const lng = coords.longitude;
 
@@ -139,7 +139,7 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges, On
     this.goToMarker.setRadius(GpsMapComponent.radiusFrom(this.map.getZoom()));
   }
 
-  private centerMapOnCoordinate (coords: Coordinates) {
+  private centerMapOnCoordinate (coords: Coordinate) {
     this.map.panTo([coords.latitude, coords.longitude]);
   }
 

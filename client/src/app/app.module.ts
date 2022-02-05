@@ -12,10 +12,11 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuard } from '@shared/auth.guard';
 import { ToastComponent } from '@shared/toast/toast.component';
 import { ToastService } from '@shared/toast/toast.service';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [{
     path: '',
-    redirectTo: 'gps',
+    component: HomeComponent,
     pathMatch: 'full',
   }, {
     path: 'gps',
@@ -29,7 +30,7 @@ const routes: Routes = [{
     component: LoginComponent,
   }, {
     path: '**',
-    redirectTo: 'gps',
+    redirectTo: '/',
   },
 ];
 
@@ -38,6 +39,7 @@ const routes: Routes = [{
     AppComponent,
     LoginComponent,
     ToastComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
-import { share, tap, distinctUntilChanged, distinctUntilKeyChanged } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { share, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable()
 export class GeoService {
-
   private geoOpts = {
     enableHighAccuracy: true,
     maximumAge: 2500,
     timeout: 5000,
   };
 
-  private readonly geo$ = new Observable<Position>((observer) => {
+  private readonly geo$ = new Observable<GeolocationPosition>((observer) => {
     let watchId: number;
 
     if ('geolocation' in navigator) {
@@ -22,6 +21,7 @@ export class GeoService {
       );
     } else {
       observer.error('Geolocation not available.');
+      observer.complete();
     }
 
     return { unsubscribe () {
@@ -31,11 +31,11 @@ export class GeoService {
 
   constructor () {}
 
-  watch (): Observable<Position> {
+  watch (): Observable<GeolocationPosition> {
     return this.geo$;
   }
 
-  private static distinctPosition (x: Position, y: Position): boolean {
+  private static distinctPosition (x: GeolocationPosition, y: GeolocationPosition): boolean {
     return x.timestamp === y.timestamp;
   }
 }

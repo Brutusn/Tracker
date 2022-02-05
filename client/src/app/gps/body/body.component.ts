@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { GeoService } from '@shared/geo.service';
 import { SocketService } from '@shared/websocket.service';
@@ -19,7 +19,7 @@ enum TrackingModes {
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.css'],
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent {
 
   serverUrl = environment.ws_url;
 
@@ -47,7 +47,7 @@ export class BodyComponent implements OnInit {
     private ws: SocketService,
     private toast: ToastService,
   ) {
-    this.ws.socketAnnounced.subscribe(() => {
+    // this.ws.socketAnnounced.subscribe(() => {
       this.ws.onEvent('error').subscribe(this.handleConnectError);
       this.ws.onEvent('connect_error').subscribe(this.handleConnectError);
       this.ws.onEvent('disconnect').subscribe((reason) => {
@@ -61,14 +61,10 @@ export class BodyComponent implements OnInit {
       this.ws.onEvent('connect').subscribe(() => {
         this.toast.info('Connection success');
       });
-    });
+    // });
   }
 
-  ngOnInit () {
-
-  }
-
-  geoError (error: PositionError): void {
+  geoError (error: Error): void {
     console.error(error);
     this.toast.error(error.message || 'GPS Error');
   }
@@ -108,17 +104,19 @@ export class BodyComponent implements OnInit {
   }
 
   sendPosition (): void {
-    this.geo.watch().subscribe(({ coords }) => {
-      this.ws.emit('send-position', {
-        name: this.username,
-        position: [coords.latitude, coords.longitude],
-        speed: coords.speed,
-        heading: coords.heading,
-        post: this.currentPost,
-        waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
-        gpsStarted: this.tracking === TrackingModes.COMPASS,
-      });
-    },
-    (error) => this.geoError(error));
+    this.geo.watch().subscribe({
+      next: ({ coords }) => {
+        this.ws.emit('send-position', {
+          name: this.username,
+          position: [coords.latitude, coords.longitude],
+          speed: coords.speed,
+          heading: coords.heading,
+          post: this.currentPost,
+          waypoint: parseInt(localStorage.getItem('waypoint'), 10) || 0,
+          gpsStarted: this.tracking === TrackingModes.COMPASS,
+        });
+      },
+      error: (error) => this.geoError(error),
+    });
   }
 }
