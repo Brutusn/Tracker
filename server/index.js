@@ -12,7 +12,7 @@ const { currentTimeStamp } = require('./timestamp.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
-const cors = require('cors');
+// const cors = require('cors');
 const socket = require('socket.io');
 
 const config = require('../config/server.js');
@@ -36,7 +36,7 @@ const io = socket(server);
 // The http server is just to redirect.
 const httpServer = http.createServer(app);
 
-app.use(cors({ origin: /stamtour\.nl$/ }));
+// app.use(cors({ origin: /stamtour\.nl$/ }));
 
 // Redirect to https.
 app.use((req, res, next) => {
@@ -44,13 +44,13 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Strict-Transport-Security", "max-age: 15552000; includeSubDomains");
   if(!req.secure) {
-    console.log(`[${currentTimeStamp()}][HTTP] Insecure connection, redirect to https..: ${req.url} [full: https://${req.get('Host')}/]`);
+    console.log(`[${currentTimeStamp()}][HTTP] Insecure connection, redirect to https..: ${req.url} [full: https://${config.redirectUrl}/]`);
 
     if (req.url.includes('.php')) {
       return res.status(418).send('Konijnenboutje');
     }
 
-    return res.redirect(`https://${req.get('Host')}/`);
+    return res.redirect(`https://${config.redirectUrl}/`);
   }
   next();
 });
