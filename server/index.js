@@ -12,8 +12,7 @@ const { currentTimeStamp } = require('./timestamp.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
-// const cors = require('cors');
-const socket = require('socket.io');
+const { Server } = require('socket.io');
 
 const config = require('../config/server.js');
 
@@ -31,7 +30,7 @@ const server = https.createServer({
   ca: [rf(`${__dirname}/../cert/ca1.crt`), rf(`${__dirname}/../cert/ca2.crt`)],
   secureOptions: constants.SSL_OP_NO_TLSv1
 }, app);
-const io = socket(server);
+const io = new Server(server);
 
 // The http server is just to redirect.
 const httpServer = http.createServer(app);
