@@ -160,9 +160,10 @@ io
     next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
-    console.log(`[${currentTimeStamp()}][SOCKET] A socket connected ${socket.id}`);
+    console.log(`[${currentTimeStamp()}][SOCKET] A socket connected ${socket.id}, using ${socket.conn.transport}`);
 
     const { token, requestPositions, access_token } = socket.handshake.query;
+
     let name = socket.handshake.query.name;
 
     if (name) {

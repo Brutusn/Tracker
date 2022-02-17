@@ -7,6 +7,7 @@ import { NameData } from '@shared/interfaces';
 
 import { environment } from '@env/environment';
 import { ToastService } from '@shared/toast/toast.service';
+import { FormControl } from '@angular/forms';
 
 enum TrackingModes {
   NO_TRACKING,
@@ -26,12 +27,12 @@ export class BodyComponent {
   trackingModes = TrackingModes;
   tracking: TrackingModes = TrackingModes.NO_TRACKING;
   currentPosition = 'wacht op locatie..';
-  username = window.localStorage.getItem('user-name') || '';
+  readonly username = new FormControl(window.localStorage.getItem('user-name') ?? '');
 
   // TODO: Get this from the compass..
   currentPost = 0;
 
-  private access_token = window.localStorage.getItem('access_token') || '';
+  private access_token = window.localStorage.getItem('access_token') ?? '';
 
   private prefix = 'Verbindingsfout:';
   private handleConnectError = (error: Error) => {
@@ -39,7 +40,7 @@ export class BodyComponent {
 
     const parseError = error.toString();
 
-    this.toast.error(`${this.prefix} ${error.message || parseError}`);
+    this.toast.error(`${this.prefix} ${error.message ?? parseError}`);
   }
 
   constructor (
@@ -47,7 +48,6 @@ export class BodyComponent {
     private ws: SocketService,
     private toast: ToastService,
   ) {
-    // this.ws.socketAnnounced.subscribe(() => {
       this.ws.onEvent('error').subscribe(this.handleConnectError);
       this.ws.onEvent('connect_error').subscribe(this.handleConnectError);
       this.ws.onEvent('disconnect').subscribe((reason) => {
@@ -61,7 +61,6 @@ export class BodyComponent {
       this.ws.onEvent('connect').subscribe(() => {
         this.toast.info('Connection success');
       });
-    // });
   }
 
   geoError (error: Error): void {
@@ -70,13 +69,13 @@ export class BodyComponent {
   }
 
   start (): void {
-    if (this.username.length < 4 || this.username.length > 25) {
+    if (this.username.value.length < 4 || this.username.value.length > 25) {
       this.toast.error('Naam moet tussen de 3 en 25 karakters lang zijn!');
       return;
     }
 
     // Init the socket with the given username.
-    this.ws.initSocket(true, this.username, this.access_token);
+    this.ws.initSocket(true, this.username.value, this.access_token);
 
     this.ws.onEvent('final-name').subscribe((data: NameData) => {
       this.handleName(data);
@@ -99,7 +98,7 @@ export class BodyComponent {
     window.localStorage.setItem('user-name', name);
     window.localStorage.setItem('access_token', access_token);
 
-    this.username = name;
+    this.username.setValue(name);
     this.access_token = access_token;
   }
 

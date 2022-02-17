@@ -6,7 +6,7 @@
 
     <div class="body-input-wrapper">
       <label class='body-label' for="name">Vul je naam in:</label>
-      <input class='body-input' type="text" id="name" name="username" [(ngModel)]='username'>
+      <input class='body-input' type="text" id="name" name="username" [formControl]="username">
       <button  class='body-button' id="send-name" (click)='start()'>Start</button>
     </div>
 
