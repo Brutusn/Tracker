@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { LocationService } from '@shared/location.service';
-
-import { environment } from '@env/environment';
 
 import { Position, PositionMapped } from '@shared/position';
 import { SocketService } from '@shared/websocket.service';
@@ -11,13 +9,14 @@ import * as L from 'leaflet';
 import { LeafletMap } from '@shared/leaflet-map.abstract';
 import { locationArray, postArray, Route } from '@shared/route';
 import { ToastService } from '@shared/toast/toast.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent extends LeafletMap implements OnInit {
+export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
   private onlineCirle = {
     radius: 8,
     fillOpacity: 0.75,
@@ -28,13 +27,15 @@ export class MapComponent extends LeafletMap implements OnInit {
     color: '#F22613',
   };
 
+  private readonly onDestroy$ = new Subject<void>();
+
   constructor (
     private readonly loc: LocationService,
     private readonly ws: SocketService,
     protected readonly ts: ToastService,
   ) {
     super(ts);
-    this.ws.onEvent('user-destroyed').subscribe((name: string) => {
+    this.ws.onEvent('user-destroyed').pipe(takeUntil(this.onDestroy$)).subscribe((name: string) => {
       this.markerLayer.removeLayer(this.markers[name]);
 
       this.setBounds();
@@ -42,7 +43,7 @@ export class MapComponent extends LeafletMap implements OnInit {
       delete this.markers[name];
     });
 
-    this.ws.onEvent('user-left').subscribe((name: string) => {
+    this.ws.onEvent('user-left').pipe(takeUntil(this.onDestroy$)).subscribe((name: string) => {
       const marker = this.markers[name];
 
       if (marker) {
@@ -98,6 +99,10 @@ export class MapComponent extends LeafletMap implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+  }
+
   private addPostCircle (coord: L.LatLngExpression, code: string, indexOfFiltered: string, color: string) {
     L.circleMarker(coord, {
       ...this.onlineCirle,
@@ -149,15 +154,17 @@ export class MapComponent extends LeafletMap implements OnInit {
   }
 
   listenToPositions () {
-    this.loc.getLocations().subscribe((data: PositionMapped) => {
+    this.loc.getLocations().pipe(takeUntil(this.onDestroy$)).subscribe({
+      next: (data: PositionMapped) => {
         this.handleCoordinates(data);
       },
-      this.handleError,
-    );
-    this.loc.getNewLocation().subscribe((data: PositionMapped) => {
+      error: this.handleError,
+    });
+    this.loc.getNewLocation().pipe(takeUntil(this.onDestroy$)).subscribe({
+      next: (data: PositionMapped) => {
         this.handleCoordinates(data);
       },
-      this.handleError,
-    );
+      error: this.handleError,
+    });
   }
 }

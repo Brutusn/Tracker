@@ -5,8 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './tracker.component.html',
   styleUrls: ['./tracker.component.css'],
 })
-export class TrackerComponent {
-
-  constructor () { }
-
-}
+export class TrackerComponent {}
