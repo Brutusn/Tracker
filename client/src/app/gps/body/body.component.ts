@@ -113,7 +113,7 @@ export class BodyComponent implements OnDestroy {
     this.geo.watch().pipe(takeUntil(this.onDestroy$)).subscribe({
       next: ({ coords }) => {
         this.ws.emit('send-position', {
-          name: this.username,
+          name: this.username.value,
           position: [coords.latitude, coords.longitude],
           speed: coords.speed,
           heading: coords.heading,
