@@ -19,6 +19,9 @@ const routes: Routes = [{
     component: HomeComponent,
     pathMatch: 'full',
   }, {
+    path: 'code',
+    loadChildren: () => import('./secret-code/secret-code.module').then((m) => m.SecretCodeModule),
+  }, {
     path: 'gps',
     loadChildren: () => import('./gps/gps.module').then((m) => m.GpsModule),
   }, {

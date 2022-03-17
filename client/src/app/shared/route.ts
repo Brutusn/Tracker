@@ -1,4 +1,5 @@
 import { LeafletMap } from './leaflet-map.abstract';
+import * as L from 'leaflet';
 
 export interface Coordinate {
   latitude: number;
@@ -12,6 +13,18 @@ export interface Route {
 }
 
 export const locationArray: Route[] = [{
+  code: 'Maaskruising',
+  coord: {
+    latitude: 51.685693,
+    longitude: 6.053263,
+  }
+}, {
+  code: 'Van het padje',
+  coord: {
+    latitude: 51.686674,
+    longitude: 5.944226,
+  }
+},{
   code: 'Hanenwaterval',
   coord: {
     latitude: 51.634953,
@@ -24,7 +37,7 @@ export const locationArray: Route[] = [{
     longitude: 5.707294,
   },
 }, {
-  code: 'De beste blokhut',
+  code: 'De BBQ blokhut 🥩🍺',
   coord: {
     latitude: LeafletMap.blokhut[0],
     longitude: LeafletMap.blokhut[1],
@@ -66,11 +79,13 @@ export const postArray: Route[] = [{
     latitude: 51.669845,
     longitude: 6.154036,
   },
-}, {
-  // Post 6
-  code: 'Kruising',
-  coord: {
-    latitude: 51.6864023,
-    longitude: 5.944451,
-  },
+// }, {
+//   // Post 6
+//   code: 'Kruising',
+//   coord: {
+//     latitude: 51.6864023,
+//     longitude: 5.944451,
+//   },
 }];
+
+export const SECRET_CODE = '123456';
