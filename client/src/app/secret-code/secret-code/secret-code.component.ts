@@ -9,7 +9,11 @@ import { SECRET_CODE } from '../../shared/route';
   styleUrls: ['./secret-code.component.css']
 })
 export class SecretCodeComponent {
-  readonly inputControl = new FormControl('', [Validators.minLength(4), Validators.maxLength(8), Validators.required]);
+  readonly inputControl = new FormControl('', [
+    Validators.minLength(SECRET_CODE.length - 2),
+    Validators.maxLength(SECRET_CODE.length + 2),
+    Validators.required
+  ]);
   private readonly $result = new Subject<string>();
 
 

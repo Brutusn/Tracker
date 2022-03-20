@@ -19,7 +19,7 @@ export class CompassComponent implements OnInit, OnDestroy {
   private readonly cssVar = '--rotation';
 
   private readonly triggerDistance = 50; // Meter
-  private triggerLocation: Route = postArray.find((post) => post.code === 'Kruising');
+  private triggerLocation: Route = postArray.find((post) => post.code === 'Vrienden van Veghel');
 
   private readonly subscriptions = new Subscription();
 
