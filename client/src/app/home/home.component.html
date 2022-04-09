@@ -25,7 +25,33 @@
   </div>
 
   <h3>Handige links!</h3>
-  <p>Rijdt je de avond route? <a [routerLink]="'/code'">Deze link</a> is dan erg handig!</p>
-  <p>Rijdt je de normale route? Dan heb je <a [routerLink]="'/gps'">deze link</a> nodig!</p>
+  <h4>Avond route</h4>
+  <p>
+    Download de avond route bestanden op 9 april 2022 vanaf 20:00!
+    <ng-container *ngIf="eveningRouteUnlocked$ | async">
+      <ul>
+        <li><a href="/assets/intro.pdf" download="Stamtour Avondroute introductie.pdf">Introductie</a></li>
+        <li><a href="/assets/opdr1.pdf" download="Stamtour Opdracht 1.pdf">Opdracht 1</a></li>
+        <li><a href="/assets/opdr2.pdf" download="Stamtour Opdracht 2.pdf">Opdracht 2</a></li>
+        <li><a href="/assets/opdr3.pdf" download="Stamtour Opdracht 3.pdf">Opdracht 3</a></li>
+      </ul>
+    </ng-container>
+  </p>
+  <p>
+    Controleer <a [routerLink]="'/code'">op deze pagina</a> of je de goede code hebt!.
+  </p>
+  <h4>Normale route</h4>
+  <p>
+    Het startpunt van de normale route is beschikbaar op 10 april 2022 vanaf 8:30.
+    <ng-container *ngIf="dayRouteUnlocked$ | async">
+      <br /><br />
+      <b>Scoutcentrum achter de berg</b><br />
+      Achter de Berg 16<br />
+      5388 TS, Nistelrode<br />
+      Nederland<br />
+    </ng-container>
+  </p>
+  <p><a [routerLink]="'/gps'">Deze pagina</a> heb je nodig tijdens de route.</p>
+  <h4>Stamleden</h4>
   <p>Ben je stamlid? Klik dan <a [routerLink]="'/tracker'">hier</a> ⬅ daar.</p>
 </div>
