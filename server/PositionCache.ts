@@ -1,14 +1,20 @@
 //@ts-check
 
-const crypto = require("crypto");
+import {Socket} from "socket.io";
+
+const crypto = require('crypto');
+
+interface UserData {
+  name: string;
+  pinCode: string;
+  access_token: string;
+  socket: Socket;
+}
 
 // Simple position class
 module.exports = class PositionCache {
-  constructor () {
-    // TODO: Include in map...
-    this.positions = {};
-    this.users = new Map(); // string (of username + pinCode, { name, pinCode, access_token, socket }
-  }
+  private positions: any = {};
+  private readonly users = new Map<string, UserData>();
 
   get getAll () {
     // This is the fallback name... doesn't need to be sent to the front...
@@ -69,8 +75,7 @@ module.exports = class PositionCache {
     this.users.delete(user + pinCode);
   }
 
-  /** @private */
-  hashString (string) {
+  private hashString (string) {
     const hash = crypto.createHash('sha256');
     return hash.update('Make a token: ' + new Date() + string).digest('hex');
   }
