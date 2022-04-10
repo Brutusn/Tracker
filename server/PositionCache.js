@@ -1,35 +1,47 @@
 //@ts-check
 
-const { handleName } = require('./handleName.js');
+const crypto = require("crypto");
 
 // Simple position class
 module.exports = class PositionCache {
   constructor () {
+    // TODO: Include in map...
     this.positions = {};
-    this.users = {};
-    this.sockets = {};
+    this.users = new Map(); // string (of username + pinCode, { name, pinCode, access_token, socket }
   }
 
   get getAll () {
-    // This is the fallback name.. doesn't need to be send to the front...
+    // This is the fallback name... doesn't need to be sent to the front...
     delete this.positions.__nameless__;
 
     return this.positions;
   }
 
-  registerUser (name, token = '', socket) {
-    const [users, nameObj] = handleName(this.users, name, token);
+  registerUser (name, pinCode, token = '', socket) {
+    const userToken = name + pinCode;
 
-    this.users = users;
+    if (this.users.has(userToken)) {
+      const { socket, ...rest } = this.users.get(userToken);
 
-    // Add the socket.
-    this.sockets[nameObj.name] = socket;
+      return rest;
+    }
+
+    const access_token = this.hashString(userToken);
+
+    const nameObj = {
+      socket,
+      access_token,
+      name,
+      pinCode
+    };
+
+    this.users.set(userToken, nameObj);
 
     return nameObj;
   }
 
-  getSocketOfUser (user) {
-    const socket = this.sockets[user];
+  getSocketOfUser (user, pinCode) {
+    const { socket } = this.users.get(user + pinCode);
 
     if (!socket) {
       return;
@@ -38,24 +50,28 @@ module.exports = class PositionCache {
     return socket;
   }
 
-  userOffline (user) {
-    if (this.positions[user]) {
-      this.positions[user].online = false;
+  userOffline (user, pinCode) {
+    if (this.positions[user + pinCode]) {
+      this.positions[user + pinCode].online = false;
     }
   }
 
   addPosition (pos) {
     // will add or update the position.
-    this.positions[pos.name] = pos;
-    this.positions[pos.name].online = true;
+    this.positions[pos.name + pos.pinCode] = pos;
+    this.positions[pos.name + pos.pinCode].online = true;
   }
 
-  removeUser (user) {
-    if (this.positions[user] && this.positions[user].online === false) {
-      delete this.positions[user];
+  removeUser (user, pinCode) {
+    if (this.positions[user + pinCode] && this.positions[user + pinCode].online === false) {
+      delete this.positions[user + pinCode];
     }
-    if (this.users[user]) {
-      delete this.users[user];
-    }
+    this.users.delete(user + pinCode);
+  }
+
+  /** @private */
+  hashString (string) {
+    const hash = crypto.createHash('sha256');
+    return hash.update('Make a token: ' + new Date() + string).digest('hex');
   }
 };

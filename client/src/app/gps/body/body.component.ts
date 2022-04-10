@@ -7,7 +7,7 @@ import { NameData } from '@shared/interfaces';
 
 import { environment } from '@env/environment';
 import { ToastService } from '@shared/toast/toast.service';
-import { FormControl } from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 enum TrackingModes {
@@ -28,7 +28,11 @@ export class BodyComponent implements OnDestroy {
   trackingModes = TrackingModes;
   tracking: TrackingModes = TrackingModes.NO_TRACKING;
   currentPosition = 'wacht op locatie..';
-  readonly username = new FormControl(window.localStorage.getItem('user-name') ?? '');
+
+  readonly loginForm = new FormGroup({
+    username: new FormControl(window.localStorage.getItem('user-name') ?? ''),
+    pinCode: new FormControl(window.localStorage.getItem('user-pin') ?? '')
+  });
 
   // TODO: Get this from the compass..
   currentPost = 0;
@@ -76,13 +80,13 @@ export class BodyComponent implements OnDestroy {
   }
 
   start (): void {
-    if (this.username.value.length < 4 || this.username.value.length > 25) {
+    if (this.loginForm.controls.username.value.length < 4 || this.loginForm.controls.username.value.length > 25) {
       this.toast.error('Naam moet tussen de 3 en 25 karakters lang zijn!');
       return;
     }
 
     // Init the socket with the given username.
-    this.ws.initSocket(true, this.username.value, this.access_token);
+    this.ws.initSocket(true, this.loginForm.value, this.access_token);
 
     this.ws.onEvent('final-name').pipe(takeUntil(this.onDestroy$)).subscribe((data: NameData) => {
       this.handleName(data);
@@ -101,11 +105,15 @@ export class BodyComponent implements OnDestroy {
     }
   }
 
-  handleName ({ name, access_token }: NameData): void {
+  handleName ({ name, access_token, pin }: NameData): void {
     window.localStorage.setItem('user-name', name);
+    window.localStorage.setItem('user-pin', pin);
     window.localStorage.setItem('access_token', access_token);
 
-    this.username.setValue(name);
+    this.loginForm.setValue({
+      username: name,
+      pinCode: pin,
+    });
     this.access_token = access_token;
   }
 
@@ -113,7 +121,8 @@ export class BodyComponent implements OnDestroy {
     this.geo.watch().pipe(takeUntil(this.onDestroy$)).subscribe({
       next: ({ coords }) => {
         this.ws.emit('send-position', {
-          name: this.username.value,
+          name: this.loginForm.controls.username.value,
+          pinCode: this.loginForm.controls.pinCode.value,
           position: [coords.latitude, coords.longitude],
           speed: coords.speed,
           heading: coords.heading,

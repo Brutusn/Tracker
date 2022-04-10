@@ -4,6 +4,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const { constants } = require('crypto');
 
@@ -19,7 +20,7 @@ const config = require('../config/server.js');
 const PosCache = require('./PositionCache.js');
 const passwordHandler = require('./password');
 
-console.log(`[${currentTimeStamp()}][CORE] Node running on version: ${process.version}...`);
+console.log(`[${currentTimeStamp()}][CORE] Node running on version: ${process.version}...` + os.EOL);
 
 const rf = fs.readFileSync;
 // Set up
@@ -43,7 +44,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Strict-Transport-Security", "max-age: 15552000; includeSubDomains");
   if(!req.secure) {
-    console.log(`[${currentTimeStamp()}][HTTP] Insecure connection, redirect to https..: ${req.url} [full: https://${config.redirectUrl}/]`);
+    console.log(`[${currentTimeStamp()}][HTTP] Insecure connection, redirect to https..: ${req.url} [full: https://${config.redirectUrl}/]` + os.EOL);
 
     if (req.url.includes('.php')) {
       return res.status(418).send('Konijnenboutje');
@@ -56,7 +57,7 @@ app.use((req, res, next) => {
 
 // Simple request logger, just to see some activity.
 app.use((req, res, next) => {
-  console.log(`[${req.method}] Request to: ${req.path}, (ip: ${req.ip})`);
+  console.log(`[${req.method}] Request to: ${req.path}, (ip: ${req.ip})` + os.EOL);
   next();
 });
 
@@ -64,7 +65,7 @@ app.use(bodyParser.json());
 
 server.listen(config.port);
 httpServer.listen(config.port + 1);
-console.log(`[${currentTimeStamp()}][CORE] Server listening on port: ${config.port}`);
+console.log(`[${currentTimeStamp()}][CORE] Server listening on port: ${config.port}` + os.EOL);
 
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PosCache();
@@ -76,8 +77,8 @@ const broadcast = (event, data) => {
 }
 
 const sendPosition = (data, errorFn) => {
-  if (!data.name || !Array.isArray(data.position)) {
-    return errorFn('Incomplete object. Send new like { name: "", position: [] }');
+  if (!data.name || !data.pinCode || !Array.isArray(data.position)) {
+    return errorFn('Incomplete object. Send new like { name: "", pinCode: "", position: [] }');
   }
 
   data.date = new Date();
@@ -85,14 +86,14 @@ const sendPosition = (data, errorFn) => {
   broadcast('new-position', data);
   positions.addPosition(data);
 }
-const userLeft = (name = '__nameless__') => {
-  console.log(`[${currentTimeStamp()}][APP] User left: ${name}`);
-  positions.userOffline(name);
+const userLeft = (name = '__nameless__', pinCode = '') => {
+  console.log(`[${currentTimeStamp()}][APP] User left: ${name}` + os.EOL);
+  positions.userOffline(name, pinCode);
   broadcast('user-left', name);
 }
-const removeOfflineUser = (name) => {
-  console.log(`[${currentTimeStamp()}][APP] Removing offline user: ${name}`);
-  positions.removeUser(name);
+const removeOfflineUser = (name, pinCode) => {
+  console.log(`[${currentTimeStamp()}][APP] Removing offline user: ${name}` + os.EOL);
+  positions.removeUser(name, pinCode);
   broadcast('user-destroyed', name);
 }
 
@@ -156,21 +157,22 @@ io
       }
     }
 
-    console.log('[SOCKET] A socket could not be connected.');
+    console.log('[SOCKET] A socket could not be connected.' + os.EOL);
     next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
-    console.log(`[${currentTimeStamp()}][SOCKET] A socket connected ${socket.id}, using ${socket.conn.transport}`);
+    console.log(`[${currentTimeStamp()}][SOCKET] A socket connected ${socket.id}, using ${socket.conn.transport}` + os.EOL);
 
     const { token, requestPositions, access_token } = socket.handshake.query;
 
     let name = socket.handshake.query.name;
+    let pinCode = socket.handshake.query.pinCode;
 
-    if (name) {
-      const nameData = positions.registerUser(name, access_token, socket);
+    if (name && pinCode) {
+      const nameData = positions.registerUser(name, pinCode, access_token, socket);
       name = nameData.name;
 
-      console.log(`[${currentTimeStamp()}][APP] User joined: ${name}`);
+      console.log(`[${currentTimeStamp()}][APP] User joined: ${name}` + os.EOL);
       broadcast('user-joined', name);
       process.nextTick(() => socket.emit('final-name', nameData));
     }
@@ -178,12 +180,12 @@ io
     if (token === config.ws_key) {
       socket.join('super-secret');
 
-      socket.on('user-destroy', (user) => {
-        removeOfflineUser(user);
+      socket.on('user-destroy', ({ username, pinCode }) => {
+        removeOfflineUser(username, pinCode);
       });
 
-      socket.on('start-route', ({ name, startAt = 0 }) => {
-        const userSocket = positions.getSocketOfUser(name);
+      socket.on('start-route', ({ name, pinCode, startAt = 0 }) => {
+        const userSocket = positions.getSocketOfUser(name, pinCode);
 
         if (userSocket) {
           userSocket.emit('start-route', startAt);
@@ -210,6 +212,6 @@ io
     });
     
     socket.on('disconnect', () => {
-      userLeft(name);
+      userLeft(name, pinCode);
     });
   });

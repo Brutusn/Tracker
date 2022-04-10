@@ -25,7 +25,7 @@ export class SocketService {
     private router: Router,
   ) {}
 
-  initSocket (limited = true, name?: string, access_token = ''): void {
+  initSocket (limited = true, nameAndPin?: { username: string, pinCode: string }, access_token = ''): void {
     console.count('Init socket');
     if (this.socket) {
       this.socket.close();
@@ -38,8 +38,9 @@ export class SocketService {
       admin_token: window.localStorage.getItem('admin_token'),
     };
 
-    if (name) {
-      query.name = name;
+    if (nameAndPin) {
+      query.name = nameAndPin.username;
+      query.pinCode = nameAndPin.pinCode;
       query.access_token = access_token;
     }
 
