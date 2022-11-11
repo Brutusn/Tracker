@@ -1,7 +1,7 @@
 const { createHash } = require('crypto');
 const jwt = require('jsonwebtoken');
 
-const _config = require('../config/server');
+const _config = require('../../config/server');
 
 const hashString = (string: string): string => {
   const hash = createHash('sha256');

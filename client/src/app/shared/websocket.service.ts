@@ -44,7 +44,12 @@ export class SocketService {
       query.access_token = access_token;
     }
 
-    this.socket = socketIo(environment.ws_url, { query });
+    const stringified = {
+      q: encodeURI(JSON.stringify(query))
+    }
+
+    // TODO SEND auth token via auth.token
+    this.socket = socketIo(environment.ws_url, { query: stringified });
 
     // TODO Notify to the tracker for offline states..
     // this.onEvent('connect_error').subscribe((error: Error) => {

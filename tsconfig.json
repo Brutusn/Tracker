@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./server/src",
     "downlevelIteration": true,
-    "outDir": "./compiled_server",
+    "outDir": "./compiled_server/src",
     "sourceMap": true,
     "declaration": false,
     "skipLibCheck": true,

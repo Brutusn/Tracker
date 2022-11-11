@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const { Server } = require('socket.io');
 
-const config = require('../config/server.js');
+const config = require('../../config/server.js');
 
 const PosCache = require('./PositionCache');
 const passwordHandler = require('./password');
@@ -113,12 +113,12 @@ app.post('/api/login', tokenValidator, (req, res) => {
 // If we also want this server to serve the client.
 if (config.serveClient === true) {
   app.use(compression());
-  app.use(express.static(`${__dirname}/../client/dist/tracker-client`, {
+  app.use(express.static(`${__dirname}/../../client/dist/tracker-client`, {
     immutable: true,
     maxAge: '1y'
   }));
   app.all('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/tracker-client/index.html'));
+    res.sendFile(path.join(__dirname, '../../client/dist/tracker-client/index.html'));
   });
 }
 
@@ -128,7 +128,7 @@ if (config.serveClient === true) {
 io
 // Only users with the correct token are allowed to connect.
   .use((socket, next) => {
-    const { token, admin_token } = socket.handshake.query;
+    const { token, admin_token } = JSON.parse(socket.handshake.query).q;
 
     if (token === config.ws_key || token === config.ws_key_lim) {
       if (token === config.ws_key_lim) {
@@ -145,11 +145,12 @@ io
   })
   .on('connection', (socket) => {
     socketLog.log(`A socket connected ${socket.id}, using ${socket.conn.transport}`);
+    const query = JSON.parse(socket.handshake.query).q;
 
-    const { token, requestPositions, access_token } = socket.handshake.query;
+    const { token, requestPositions, access_token } = query;
 
-    let name = socket.handshake.query.name;
-    let pinCode = socket.handshake.query.pinCode;
+    let name = query.name;
+    let pinCode = query.pinCode;
 
     if (name && pinCode) {
       const nameData = positions.registerUser(name, pinCode, access_token, socket);
