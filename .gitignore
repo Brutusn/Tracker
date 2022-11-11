@@ -4,7 +4,10 @@
 /config/client.ts
 /config/server-settings.ts
 
-/cert/*.*
+!/compiled_server/
+/compiled_server/*.*
+!/compiled_server/.gitkeep
 
 /docker/*.*
 /.idea
+/.vscode

@@ -1,0 +1,18 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./server/src",
+    "downlevelIteration": true,
+    "outDir": "./compiled_server",
+    "sourceMap": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "es2020",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"]
+  },
+  "include": ["./server/src"]
+}

@@ -1,15 +1,6 @@
 //@ts-check
-
+const { createHash } = require('crypto');
 import {Socket} from "socket.io";
-
-const crypto = require('crypto');
-
-interface UserData {
-  name: string;
-  pinCode: string;
-  access_token: string;
-  socket: Socket;
-}
 
 // Simple position class
 module.exports = class PositionCache {
@@ -76,7 +67,14 @@ module.exports = class PositionCache {
   }
 
   private hashString (string) {
-    const hash = crypto.createHash('sha256');
+    const hash = createHash('sha256');
     return hash.update('Make a token: ' + new Date() + string).digest('hex');
   }
 };
+
+interface UserData {
+  name: string;
+  pinCode: string;
+  access_token: string;
+  socket: Socket;
+}

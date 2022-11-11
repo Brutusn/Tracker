@@ -13,7 +13,7 @@ const { Server } = require('socket.io');
 
 const config = require('../config/server.js');
 
-const PosCache = require('./PositionCache.js');
+const PosCache = require('./PositionCache');
 const passwordHandler = require('./password');
 
 const coreLog = new Logger('CORE');
