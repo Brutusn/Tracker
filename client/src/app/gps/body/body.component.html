@@ -1,13 +1,21 @@
 <div class="centered" [ngClass]="{ 'map-in-tracking-mode': tracking === trackingModes.TRACKING }">
   <div *ngIf='tracking === trackingModes.NO_TRACKING' class="names">
     <p>Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar een server*,
-      zodate de blokhut kan zien waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
+      zodat de blokhut kan zien waar je bent. De locatie word <em>niet</em> opgeslagen.</p>
     <p><strong>Vergeet niet om toestemming te geven voor het delen van de locatie!</strong></p>
 
     <div class="body-input-wrapper">
-      <label class='body-label' for="name">Vul je naam in:</label>
-      <input class='body-input' type="text" id="name" name="username" [formControl]="username">
-      <button  class='body-button' id="send-name" (click)='start()'>Start</button>
+      <form [formGroup]="loginForm" (ngSubmit)="start()">
+        <span>
+          <label class='body-label' for="name">Vul je naam in:</label><br />
+          <input class='body-input' type="text" id="name" name="username" formControlName="username">
+        </span>
+        <span>
+          <label class='body-label' for="pin">Vul een pincode in:</label><br />
+          <input class='body-input' type="text" id="pin" name="pin-code" formControlName="pinCode">
+        </span>
+        <button class='body-button' type="submit" id="send-name">Start</button>
+      </form>
     </div>
 
     <p class="small">* Url: {{serverUrl}}</p>

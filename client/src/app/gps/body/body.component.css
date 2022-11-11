@@ -7,11 +7,15 @@
 }
 
 .body-input-wrapper {
-  display: grid;
-  grid-template-areas: 'label label label label'
-                        'input input input button';
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  gap: 1rem;
 
   max-width: 600px;
+}
+.body-input-wrapper form {
+  display: contents;
 }
 
 .body-label {
@@ -19,10 +23,11 @@
 }
 .body-input {
   grid-area: input;
+  width: 100%;
 }
 .body-button {
   grid-area: button;
-  min-width: 5em;
+  width: min(5rem, 50%);
 }
 
 .map-in-tracking-mode {

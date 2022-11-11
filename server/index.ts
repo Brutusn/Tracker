@@ -60,8 +60,8 @@ const broadcast = (event, data) => {
 }
 
 const sendPosition = (data, errorFn) => {
-  if (!data.name || !Array.isArray(data.position)) {
-    return errorFn('Incomplete object. Send new like { name: "", position: [] }');
+  if (!data.name || !data.pinCode || !Array.isArray(data.position)) {
+    return errorFn('Incomplete object. Send new like { name: "", pinCode: "", position: [] }');
   }
 
   data.date = new Date();
@@ -69,14 +69,14 @@ const sendPosition = (data, errorFn) => {
   broadcast('new-position', data);
   positions.addPosition(data);
 }
-const userLeft = (name = '__nameless__') => {
+const userLeft = (name = '__nameless__', pinCode = '') => {
   appLog.log(`User left: ${name}`);
-  positions.userOffline(name);
+  positions.userOffline(name, pinCode);
   broadcast('user-left', name);
 }
-const removeOfflineUser = (name) => {
+const removeOfflineUser = (name, pinCode) => {
   appLog.log(`Removing offline user: ${name}`);
-  positions.removeUser(name);
+  positions.removeUser(name, pinCode);
   broadcast('user-destroyed', name);
 }
 
@@ -149,9 +149,10 @@ io
     const { token, requestPositions, access_token } = socket.handshake.query;
 
     let name = socket.handshake.query.name;
+    let pinCode = socket.handshake.query.pinCode;
 
-    if (name) {
-      const nameData = positions.registerUser(name, access_token, socket);
+    if (name && pinCode) {
+      const nameData = positions.registerUser(name, pinCode, access_token, socket);
       name = nameData.name;
 
       appLog.log(`User joined: ${name}`);
@@ -162,12 +163,12 @@ io
     if (token === config.ws_key) {
       socket.join('super-secret');
 
-      socket.on('user-destroy', (user) => {
-        removeOfflineUser(user);
+      socket.on('user-destroy', ({ username, pinCode }) => {
+        removeOfflineUser(username, pinCode);
       });
 
-      socket.on('start-route', ({ name, startAt = 0 }) => {
-        const userSocket = positions.getSocketOfUser(name);
+      socket.on('start-route', ({ name, pinCode, startAt = 0 }) => {
+        const userSocket = positions.getSocketOfUser(name, pinCode);
 
         if (userSocket) {
           userSocket.emit('start-route', startAt);
@@ -194,6 +195,6 @@ io
     });
     
     socket.on('disconnect', () => {
-      userLeft(name);
+      userLeft(name, pinCode);
     });
   });
