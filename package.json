@@ -28,11 +28,10 @@
   "dependencies": {
     "body-parser": "^1",
     "compression": "^1",
-    "cors": "^2.8.5",
     "cryptr": "^6",
     "express": "^4",
     "jsonwebtoken": "^8",
-    "socket.io": "^4"
+    "socket.io": "^4.5.3"
   },
   "devDependencies": {
     "husky": "^4",
