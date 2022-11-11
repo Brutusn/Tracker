@@ -7,7 +7,7 @@ import { NameData } from '@shared/interfaces';
 
 import { environment } from '@env/environment';
 import { ToastService } from '@shared/toast/toast.service';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 enum TrackingModes {
@@ -28,7 +28,7 @@ export class BodyComponent implements OnDestroy {
   trackingModes = TrackingModes;
   tracking: TrackingModes = TrackingModes.NO_TRACKING;
   currentPosition = 'wacht op locatie..';
-  readonly username = new FormControl(window.localStorage.getItem('user-name') ?? '');
+  readonly username = new UntypedFormControl(window.localStorage.getItem('user-name') ?? '');
 
   // TODO: Get this from the compass..
   currentPost = 0;

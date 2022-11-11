@@ -1,5 +1,5 @@
 import { Component  } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { map, mapTo, merge, Subject } from 'rxjs';
 import { SECRET_CODE } from '../../shared/route';
 
@@ -9,7 +9,7 @@ import { SECRET_CODE } from '../../shared/route';
   styleUrls: ['./secret-code.component.css']
 })
 export class SecretCodeComponent {
-  readonly inputControl = new FormControl('', [
+  readonly inputControl = new UntypedFormControl('', [
     Validators.minLength(SECRET_CODE.length - 2),
     Validators.maxLength(SECRET_CODE.length + 2),
     Validators.required
