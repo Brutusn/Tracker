@@ -6,8 +6,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'tracker-client';
-
   ngOnInit () {
     setTimeout(() => window.scrollTo(0, 1), 10);
   }
