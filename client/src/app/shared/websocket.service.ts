@@ -35,7 +35,7 @@ export class SocketService {
     const query: any = {
       token,
       requestPositions: !limited,
-      admin_token: window.localStorage.getItem('admin_token'),
+      admin_token: window.localStorage.getItem('admin_token') ?? '',
     };
 
     if (nameAndPin) {
@@ -48,7 +48,7 @@ export class SocketService {
       q: encodeURI(JSON.stringify(query))
     }
 
-    // TODO SEND auth token via auth.token
+    // TODO SEND auth token via auth.token QUERY is te groot en dan faalt het.
     this.socket = socketIo(environment.ws_url, { query: stringified });
 
     // TODO Notify to the tracker for offline states..
