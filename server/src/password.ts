@@ -1,7 +1,9 @@
-const { createHash } = require('crypto');
-const jwt = require('jsonwebtoken');
+import { createHash } from 'crypto';
+import jwt = require('jsonwebtoken');
 
-const _config = require('../../config/server');
+import _config = require('../../config/server');
+
+// TODO Create class!
 
 const hashString = (string: string): string => {
   const hash = createHash('sha256');
@@ -15,7 +17,7 @@ const hashedPassword = hashString(_config.password);
  * @param { string } password possible pass.
  * @returns { boolean }
  */
-exports.verifyPassword = (password?: string): boolean => {
+export function verifyPassword(password?: string): boolean {
   if (!password) {
     return false;
   }
@@ -29,7 +31,7 @@ exports.verifyPassword = (password?: string): boolean => {
  * @param { string } password correct password.
  * @returns { string }
  */
-exports.createToken = (password: string): string => {
+export function createToken(password: string): string {
   return jwt.sign({ password: hashString(password), date: new Date() }, _config.jwt_secret);
 }
 
@@ -46,7 +48,7 @@ const decode = (token, pass) => {
  * @param { string } token given token.
  * @returns { boolean }
  */
-exports.verifyToken = (token: string): boolean => {
+export function verifyToken(token: string): boolean {
   const asObject = decode(token, _config.jwt_secret);
 
   if (!asObject) {

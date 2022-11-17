@@ -1,9 +1,11 @@
 //@ts-check
-const { createHash } = require('crypto');
+import { createHash } from 'crypto';
 import {Socket} from "socket.io";
 
+// TODO Types!
+
 // Simple position class
-module.exports = class PositionCache {
+export class PositionCache {
   private positions: any = {};
   private readonly users = new Map<string, UserData>();
 

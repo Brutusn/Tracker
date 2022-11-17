@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, ReplaySubject } from 'rxjs';
-import { io as socketIo } from 'socket.io-client';
+import { io as socketIo, ManagerOptions } from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
 import { ToastService } from './toast/toast.service';
 import { switchMap, take, share } from 'rxjs/operators';
-import { Socket } from 'socket.io-client/build/esm/socket';
+import { Socket, SocketOptions } from 'socket.io-client/build/esm/socket';
 import { Toast } from '@shared/toast/toast.interface';
 
 @Injectable({
@@ -32,24 +32,26 @@ export class SocketService {
     }
 
     const token = limited ? environment.ws_key_lim : environment.ws_key;
-    const query: any = {
-      token,
-      requestPositions: !limited,
-      admin_token: window.localStorage.getItem('admin_token') ?? '',
-    };
+    const query: Record<string, any> = ;
 
-    if (nameAndPin) {
-      query.name = nameAndPin.username;
-      query.pinCode = nameAndPin.pinCode;
-      query.access_token = access_token;
+    const socketOptions: Partial<ManagerOptions & SocketOptions> = {
+      auth: {
+        token,
+        admin_token: window.localStorage.getItem('admin_token') ?? '',
+        access_token,
+      },
+      query: {
+        requestPositions: !limited,
+      },
     }
 
-    const stringified = {
-      q: encodeURI(JSON.stringify(query))
+    if (nameAndPin) {
+      socketOptions.query.name = nameAndPin.username;
+      socketOptions.query.pinCode = nameAndPin.pinCode;
     }
 
     // TODO SEND auth token via auth.token QUERY is te groot en dan faalt het.
-    this.socket = socketIo(environment.ws_url, { query: stringified });
+    this.socket = socketIo(environment.ws_url, socketOptions);
 
     // TODO Notify to the tracker for offline states..
     // this.onEvent('connect_error').subscribe((error: Error) => {

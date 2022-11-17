@@ -1,5 +1,4 @@
-
 /** Get the current time stamp in iso format */
-exports.currentTimeStamp = () => {
+export function currentTimeStamp() {
   return new Date().toISOString();
 }

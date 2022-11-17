@@ -1,20 +1,19 @@
 // Simple server that receives a location via a REST API and has a connected socket!
-//@ts-check
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http = require('http');
+import fs = require('fs');
+import path = require('path');
 
-const Logger = require('./logger');
+import { Logger } from './logger';
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const compression = require('compression');
-const { Server } = require('socket.io');
+import express = require('express');
+import bodyParser = require('body-parser');
+import compression = require('compression');
+import { Server } from 'socket.io';
 
-const config = require('../../config/server.js');
+import config = require('../../config/server.js');
 
-const PosCache = require('./PositionCache');
-const passwordHandler = require('./password');
+import { PositionCache } from './PositionCache';
+import passwordHandler = require('./password');
 
 const coreLog = new Logger('CORE');
 const appLog = new Logger('APP');
@@ -51,7 +50,7 @@ server.listen(config.port);
 coreLog.log(`Server listening on port: ${config.port}`);
 
 ///////////////////////////////////////////////////////////////////////////////
-const positions = new PosCache();
+const positions = new PositionCache();
 
 const broadcast = (event, data) => {
   io
@@ -128,7 +127,7 @@ if (config.serveClient === true) {
 io
 // Only users with the correct token are allowed to connect.
   .use((socket, next) => {
-    const { token, admin_token } = JSON.parse(socket.handshake.query).q;
+    const { token, admin_token } = socket.handshake.auth;
 
     if (token === config.ws_key || token === config.ws_key_lim) {
       if (token === config.ws_key_lim) {
@@ -145,12 +144,11 @@ io
   })
   .on('connection', (socket) => {
     socketLog.log(`A socket connected ${socket.id}, using ${socket.conn.transport}`);
-    const query = JSON.parse(socket.handshake.query).q;
+    const query = socket.handshake.query;
 
-    const { token, requestPositions, access_token } = query;
-
-    let name = query.name;
-    let pinCode = query.pinCode;
+    const { token, access_token } = socket.handshake.auth;
+    const { requestPositions } = query;
+    let { name, pinCode } = query;
 
     if (name && pinCode) {
       const nameData = positions.registerUser(name, pinCode, access_token, socket);
@@ -196,6 +194,6 @@ io
     });
     
     socket.on('disconnect', () => {
-      userLeft(name, pinCode);
+      userLeft(name as string, pinCode as string);
     });
   });
