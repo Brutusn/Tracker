@@ -4,7 +4,7 @@ import { EOL } from 'os';
 export class Logger {
   constructor(private readonly section: string) {}
 
-  log(...message: string[]): void {
+  log(...message: any[]): void {
     console.log(`[${currentTimeStamp()}][${this.section}]`, ...message, EOL);
   }
 

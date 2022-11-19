@@ -25,7 +25,11 @@ const rf = fs.readFileSync;
 // Set up
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server,   { cors:
+      {
+        origin: "http://localhost:4200", methods: ["GET", "POST"]
+      }
+    });
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -143,20 +147,24 @@ io
     next(new Error('Unable to authenticate.'));
   })
   .on('connection', (socket) => {
-    socketLog.log(`A socket connected ${socket.id}, using ${socket.conn.transport}`);
+    socketLog.log(`A socket connected ${socket.id}`);
     const query = socket.handshake.query;
 
     const { token, access_token } = socket.handshake.auth;
     const { requestPositions } = query;
-    let { name, pinCode } = query;
+    let { username, pinCode } = query;
 
-    if (name && pinCode) {
-      const nameData = positions.registerUser(name, pinCode, access_token, socket);
-      name = nameData.name;
+    if (username && pinCode) {
+      const nameData = positions.registerUser(username, pinCode, access_token, socket);
+      username = nameData.name;
 
-      appLog.log(`User joined: ${name}`);
-      broadcast('user-joined', name);
-      process.nextTick(() => socket.emit('final-name', nameData));
+      appLog.log(`User joined: ${username}`);
+      broadcast('user-joined', username);
+      process.nextTick(() => socket.emit('final-name', {
+        name: username,
+        access_token: nameData.access_token,
+        pinCode: nameData.pinCode
+      }));
     }
 
     if (token === config.ws_key) {
@@ -190,10 +198,10 @@ io
 
     socket.on('user-in-reach', ({ distance }) => {
       socket.emit('start-route', 0);
-      broadcast('growl', { style: 'info', message: `User: ${name} started it's route. Distance: ${distance}.`});
+      broadcast('growl', { style: 'info', message: `User: ${username} started it's route. Distance: ${distance}.`});
     });
     
     socket.on('disconnect', () => {
-      userLeft(name as string, pinCode as string);
+      userLeft(username as string, pinCode as string);
     });
   });

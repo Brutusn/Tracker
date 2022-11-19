@@ -8,8 +8,7 @@ export const environment = {
   production: false,
   map_url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 
-  ws_url: location.origin,
-  // ws_url: 'https://localhost',
+  ws_url: location.origin.replace('4200', config.port.toString(10)),
   ws_key: config.ws_key,
   ws_key_lim: config.ws_key_lim,
 };

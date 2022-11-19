@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, ReplaySubject } from 'rxjs';
 import { io as socketIo, ManagerOptions } from 'socket.io-client';
 
-import { environment } from '../../environments/environment';
+import { environment } from '@env/environment';
 import { ToastService } from './toast/toast.service';
 import { switchMap, take, share } from 'rxjs/operators';
 import { Socket, SocketOptions } from 'socket.io-client/build/esm/socket';
@@ -32,7 +32,6 @@ export class SocketService {
     }
 
     const token = limited ? environment.ws_key_lim : environment.ws_key;
-    const query: Record<string, any> = ;
 
     const socketOptions: Partial<ManagerOptions & SocketOptions> = {
       auth: {
@@ -46,7 +45,7 @@ export class SocketService {
     }
 
     if (nameAndPin) {
-      socketOptions.query.name = nameAndPin.username;
+      socketOptions.query.username = nameAndPin.username;
       socketOptions.query.pinCode = nameAndPin.pinCode;
     }
 

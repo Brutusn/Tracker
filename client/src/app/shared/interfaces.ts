@@ -1,5 +1,5 @@
 export interface NameData {
   name: string;
-  pin: string;
+  pinCode: string;
   access_token: string;
 }

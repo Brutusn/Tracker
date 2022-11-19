@@ -79,8 +79,9 @@ export class BodyComponent implements OnDestroy {
   }
 
   start (): void {
-    if (this.loginForm.controls.username.value.length < 4 || this.loginForm.controls.username.value.length > 25) {
-      this.toast.error('Naam moet tussen de 3 en 25 karakters lang zijn!');
+    // TODO: Mooier met form validation.
+    if (this.loginForm.controls.username.value.length < 4 || this.loginForm.controls.username.value.length > 35) {
+      this.toast.error('Naam moet tussen de 4 en 35 karakters lang zijn!');
       return;
     }
 
@@ -104,14 +105,14 @@ export class BodyComponent implements OnDestroy {
     }
   }
 
-  handleName ({ name, access_token, pin }: NameData): void {
+  handleName ({ name, access_token, pinCode }: NameData): void {
     window.localStorage.setItem('user-name', name);
-    window.localStorage.setItem('user-pin', pin);
+    window.localStorage.setItem('user-pin', pinCode);
     window.localStorage.setItem('access_token', access_token);
 
     this.loginForm.setValue({
       username: name,
-      pinCode: pin,
+      pinCode,
     });
     this.access_token = access_token;
   }

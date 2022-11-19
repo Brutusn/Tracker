@@ -8,11 +8,11 @@
       <form [formGroup]="loginForm" (ngSubmit)="start()">
         <span>
           <label class='body-label' for="name">Vul je naam in:</label><br />
-          <input class='body-input' type="text" id="name" name="username" formControlName="username">
+          <input class='body-input' minlength="4" maxlength="35" type="text" id="name" name="username" formControlName="username">
         </span>
         <span>
           <label class='body-label' for="pin">Vul een pincode in:</label><br />
-          <input class='body-input' type="text" id="pin" name="pin-code" formControlName="pinCode">
+          <input class='body-input' minlength="3" maxlength="10" type="text" id="pin" name="pin-code" formControlName="pinCode">
         </span>
         <button class='body-button' type="submit" id="send-name">Start</button>
       </form>
