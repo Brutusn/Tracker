@@ -6,7 +6,7 @@ RUN npm install --production
 
 COPY ./client/dist ./client/dist
 COPY ./config ./config
-COPY ./compiled_server ./server
+COPY ./compiled_server/src ./server
 
 EXPOSE 8123
 
