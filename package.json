@@ -32,7 +32,7 @@
     "compression": "^1",
     "cryptr": "^6",
     "express": "^4",
-    "jsonwebtoken": "^8",
+    "jsonwebtoken": "^9",
     "socket.io": "^4.5.3"
   },
   "devDependencies": {
