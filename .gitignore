@@ -5,7 +5,7 @@
 /config/server-settings.ts
 
 !/compiled_server/
-/compiled_server/*.*
+/compiled_server/*
 !/compiled_server/.gitkeep
 
 /docker/*.*

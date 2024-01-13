@@ -27,11 +27,7 @@ const rf = fs.readFileSync;
 // Set up
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server,   { cors:
-      {
-        origin: "http://localhost:4200", methods: ["GET", "POST"]
-      }
-    });
+const io = new Server(server);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
