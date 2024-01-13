@@ -10,7 +10,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -19,9 +19,16 @@
       "dom"
     ],
     "paths": {
-      "@shared/*": ["app/shared/*"],
-      "@app/*": ["app/*"],
-      "@env/*": ["environments/*"]
-    }
+      "@shared/*": [
+        "app/shared/*"
+      ],
+      "@app/*": [
+        "app/*"
+      ],
+      "@env/*": [
+        "environments/*"
+      ]
+    },
+    "useDefineForClassFields": false
   }
 }

@@ -48,7 +48,7 @@ const routes: Routes = [{
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
+    RouterModule.forRoot(routes, {}),
   ],
   providers: [
     LocationService,
