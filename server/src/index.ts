@@ -14,6 +14,8 @@ import config = require('../../config/server.js');
 
 import { PositionCache } from './PositionCache';
 import passwordHandler = require('./password');
+import {UserDatabase} from "./users-db";
+import {NextFunction, Request, Response} from "express";
 
 const coreLog = new Logger('CORE');
 const appLog = new Logger('APP');
@@ -55,39 +57,58 @@ coreLog.log(`Server listening on port: ${config.port}`);
 
 ///////////////////////////////////////////////////////////////////////////////
 const positions = new PositionCache();
+const userDatabase = new UserDatabase();
 
-const broadcast = (event, data) => {
+const broadcast = (event: string, data: unknown) => {
   io
     .to('super-secret')
     .emit(event, data);
 }
 
-const sendPosition = (data, errorFn) => {
+const sendPosition = (data: {name:  string; pinCode: string, position: [number, number];}, errorFn: (message: string) => void) => {
   if (!data.name || !data.pinCode || !Array.isArray(data.position)) {
     return errorFn('Incomplete object. Send new like { name: "", pinCode: "", position: [] }');
   }
 
-  data.date = new Date();
+  const user = userDatabase.login(data.name, data.pinCode);
 
-  broadcast('new-position', data);
-  positions.addPosition(data);
+  if (user) {
+    const position = {
+      user,
+      date: new Date(),
+      position: data.position,
+    }
+
+    broadcast('new-position', position);
+    positions.addPosition(position);
+  }
+
 }
-const userLeft = (name = '__nameless__', pinCode = '') => {
+const userLeft = (name: string, pinCode: string) => {
   appLog.log(`User left: ${name}`);
-  positions.userOffline(name, pinCode);
-  broadcast('user-left', name);
+
+  const user = userDatabase.login(name, pinCode);
+
+  if (user) {
+    positions.userOffline(user);
+    broadcast('user-left', name);
+  }
 }
-const removeOfflineUser = (name, pinCode) => {
+const removeOfflineUser = (name: string, pinCode:  string): void => {
   appLog.log(`Removing offline user: ${name}`);
-  positions.removeUser(name, pinCode);
-  broadcast('user-destroyed', name);
+  const user = userDatabase.login(name, pinCode);
+
+  if (user) {
+    positions.removeUser(user);
+    broadcast('user-destroyed', user.name);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////
 // REST - API
 ////////////////////////////////////////////////////////////////////
 // Basic API token validation.
-const tokenValidator = (req, res, next) => {
+const tokenValidator = (req: Request, res: Response, next: NextFunction) => {
   const providedToken = req.get('Authorization');
 
   if (providedToken !== `Bearer ${config.ws_key}`) {
@@ -155,16 +176,27 @@ io
     let { username, pinCode } = query;
 
     if (username && pinCode) {
-      const nameData = positions.registerUser(username, pinCode, access_token, socket);
-      username = nameData.name;
+      const existingUser = access_token ? userDatabase.find(access_token) : userDatabase.login(username as string, pinCode as string);
 
-      appLog.log(`User joined: ${username}`);
-      broadcast('user-joined', username);
-      process.nextTick(() => socket.emit('final-name', {
-        name: username,
-        access_token: nameData.access_token,
-        pinCode: nameData.pinCode
-      }));
+      if (existingUser) {
+        appLog.log(`Existing user logged in ${existingUser.name}`)
+        process.nextTick(() => socket.emit('final-name', {
+          name: existingUser.name,
+          access_token: existingUser.accessToken,
+          pinCode: existingUser.pinCode
+        }));
+      } else {
+        const newUser = userDatabase.register(username as string, pinCode as string);
+
+        appLog.log(`User joined: ${newUser.name}`);
+        broadcast('user-joined', newUser.name);
+
+        process.nextTick(() => socket.emit('final-name', {
+          name: newUser.name,
+          access_token: newUser.accessToken,
+          pinCode: newUser.pinCode
+        }));
+      }
     }
 
     if (token === config.ws_key) {
@@ -175,10 +207,14 @@ io
       });
 
       socket.on('start-route', ({ name, pinCode, startAt = 0 }) => {
-        const userSocket = positions.getSocketOfUser(name, pinCode);
+        const user = userDatabase.login(name, pinCode);
 
-        if (userSocket) {
-          userSocket.emit('start-route', startAt);
+        if (user) {
+          const userSocket = positions.getSocketOfUser(user);
+
+          if (userSocket) {
+            userSocket.emit('start-route', startAt);
+          }
         } else {
           socket.emit('growl', { style: 'error', message: `User: ${name} not found.`});
         }
@@ -191,9 +227,7 @@ io
     }
 
     socket.on('send-position', (data) => {
-      const errorFn = (message) => socket.emit('growl', message);
-
-      sendPosition(data, errorFn);
+      sendPosition(data, (message) => socket.emit('growl', message));
     });
 
     socket.on('user-in-reach', ({ distance }) => {

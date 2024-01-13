@@ -1,82 +1,59 @@
 //@ts-check
 import { createHash } from 'crypto';
 import {Socket} from "socket.io";
+import {User} from "./user";
 
-// TODO Types!
+export class UserState {
+  isOnline = false;
+  lastPosition?: [number, number]
+  constructor(readonly user: User) {}
+}
+
 
 // Simple position class
 export class PositionCache {
-  private positions: any = {};
-  private readonly users = new Map<string, UserData>();
+  private readonly positions  = new Map<User, UserState>();
+  private readonly users = new Map<User, Socket>();
 
-  get getAll () {
+  get getAll(): UserState[] {
     // This is the fallback name... doesn't need to be sent to the front...
-    delete this.positions.__nameless__;
-
-    return this.positions;
+    return Array.from(this.positions.values());
   }
 
-  registerUser (name, pinCode, token = '', socket) {
-    const userToken = name + pinCode;
-
-    if (this.users.has(userToken)) {
-      const { socket, ...rest } = this.users.get(userToken);
-
-      return rest;
-    }
-
-    const access_token = this.hashString(userToken);
-
-    const nameObj = {
-      socket,
-      access_token,
-      name,
-      pinCode
-    };
-
-    this.users.set(userToken, nameObj);
-
-    return nameObj;
+  registerUser (user: User, socket: Socket): void {
+    this.users.set(user, socket);
   }
 
-  getSocketOfUser (user, pinCode) {
-    const { socket } = this.users.get(user + pinCode);
+  getSocketOfUser (user: User): Socket | null {
+    const socket = this.users.get(user);
 
-    if (!socket) {
-      return;
-    }
-
-    return socket;
+    return socket ?? null;
   }
 
-  userOffline (user, pinCode) {
-    if (this.positions[user + pinCode]) {
-      this.positions[user + pinCode].online = false;
+  userOffline (user: User): void {
+    const state = this.positions.get(user);
+
+    if (state) {
+      // TODO Kan met de socket toch?
+      state.isOnline = false;
     }
   }
 
-  addPosition (pos) {
+  addPosition (pos: { user: User, position: [number, number]; date: Date }) {
     // will add or update the position.
-    this.positions[pos.name + pos.pinCode] = pos;
-    this.positions[pos.name + pos.pinCode].online = true;
+    const state = this.positions.get(pos.user) ?? new UserState(pos.user);
+
+    state.isOnline = true;
+    state.lastPosition = pos.position;
+
+    this.positions.set(
+        pos.user,
+        state
+    )
   }
 
-  removeUser (user, pinCode) {
-    if (this.positions[user + pinCode] && this.positions[user + pinCode].online === false) {
-      delete this.positions[user + pinCode];
-    }
-    this.users.delete(user + pinCode);
+  removeUser (user: User): void {
+    this.positions.delete(user);
+    this.users.delete(user);
   }
-
-  private hashString (string) {
-    const hash = createHash('sha256');
-    return hash.update('Make a token: ' + new Date() + string).digest('hex');
-  }
-};
-
-interface UserData {
-  name: string;
-  pinCode: string;
-  access_token: string;
-  socket: Socket;
 }
