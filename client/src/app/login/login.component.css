@@ -1,18 +1,47 @@
-.login-wrap {
-  font-size: 150%;
+.centered {
+  padding: 2em 1em;
+  font-size: 14pt;
+  z-index: 1;
+  position: relative;
+  height: 100%;
+}
+.body-input-wrapper {
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  gap: 1rem;
 
-  padding: 1em;
-
-  background-color: #ffffff;
-
-  box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.16),
-    0 3px 6px rgba(0, 0, 0, 0.23);
-  border-radius: 0.25em;
-
-  border-top: 0.5em solid var(--header-color);
+  max-width: 600px;
+}
+.body-input-wrapper form {
+  display: contents;
 }
 
-.login-wrap input {
+.body-label {
+  grid-area: label;
+}
+.body-input {
+  grid-area: input;
+  width: 100%;
+}
+.body-button {
+  grid-area: button;
+  width: min(5rem, 50%);
+}
+
+.centered input,
+.centered button {
   font-size: inherit;
+}
+
+.names p:first-of-type {
+  margin-top: 0;
+}
+
+strong {
+  color: white;
+}
+
+.small {
+  font-size: 75%;
 }

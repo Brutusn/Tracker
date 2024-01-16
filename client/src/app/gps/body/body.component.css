@@ -6,51 +6,10 @@
   height: 100%;
 }
 
-.body-input-wrapper {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  gap: 1rem;
-
-  max-width: 600px;
-}
-.body-input-wrapper form {
-  display: contents;
-}
-
-.body-label {
-  grid-area: label;
-}
-.body-input {
-  grid-area: input;
-  width: 100%;
-}
-.body-button {
-  grid-area: button;
-  width: min(5rem, 50%);
-}
-
 .map-in-tracking-mode {
   background-color: rgba(0, 0, 0, 0.6);
 
   backdrop-filter: blur(3px) grayscale(1);
-}
-
-.centered input,
-.centered button {
-  font-size: inherit;
-}
-
-.names p:first-of-type {
-  margin-top: 0;
-}
-
-strong {
-  color: white;
-}
-
-.small {
-  font-size: 75%;
 }
 
 .dot-container {

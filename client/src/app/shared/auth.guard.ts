@@ -1,24 +1,24 @@
-import { Injectable } from "@angular/core";
-import { Route, Router, UrlSegment } from "@angular/router";
-import { Observable } from "rxjs";
+import { inject } from "@angular/core";
+import { CanActivateFn, CanMatchFn, Router } from "@angular/router";
 
-@Injectable({
-  providedIn: "root",
-})
-export class AuthGuard {
-  constructor(private router: Router) {}
+export const AdminAuthGuardFn: CanActivateFn | CanMatchFn = () => {
+  const router = inject(Router);
 
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | boolean {
-    // It's a basic check.
-    if (!window.localStorage.getItem("admin_token")) {
-      this.navigateToLogin();
-      return false;
-    }
-
-    return true;
+  if (!window.localStorage.getItem("admin_token")) {
+    router.navigate(["admin-login"]);
+    return false;
   }
 
-  private navigateToLogin() {
-    this.router.navigate(["login"]);
+  return true;
+};
+
+export const AuthGuardFn: CanActivateFn | CanMatchFn = () => {
+  const router = inject(Router);
+
+  if (!window.localStorage.getItem("access_token")) {
+    router.navigate(["login"]);
+    return false;
   }
-}
+
+  return true;
+};

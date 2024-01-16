@@ -1,7 +1,45 @@
-<div class="login-wrap">
-  <form (ngSubmit)="onSubmit()">
-    <label for="pw">Ultra secret password:</label><br /><br />
-    <input type="password" name="pass" id="pw" [(ngModel)]="pass" required />
-    <input type="submit" value="Log in" [disabled]="!pass" />
-  </form>
+<div class="centered">
+  <div class="names">
+    <p>
+      Vul hieronder je naam in om te beginnen. Je locatie wordt verstuurd naar
+      een server, zodat de blokhut kan zien waar je bent. De locatie word
+      <em>niet</em> opgeslagen.
+    </p>
+    <p>
+      <strong
+        >Vergeet niet om toestemming te geven voor het delen van de
+        locatie!</strong
+      >
+    </p>
+
+    <div class="body-input-wrapper">
+      <form [formGroup]="loginForm" (ngSubmit)="start()">
+        <span>
+          <label class="body-label" for="name">Vul je naam in*:</label><br />
+          <input
+            class="body-input"
+            minlength="4"
+            maxlength="35"
+            type="text"
+            id="name"
+            name="username"
+            formControlName="username"
+          />
+        </span>
+        <span>
+          <label class="body-label" for="pin">Vul een pincode in*:</label><br />
+          <input
+            class="body-input"
+            minlength="3"
+            maxlength="10"
+            type="text"
+            id="pin"
+            name="pin-code"
+            formControlName="pinCode"
+          />
+        </span>
+        <button class="body-button" type="submit" id="send-name">Start</button>
+      </form>
+    </div>
+  </div>
 </div>

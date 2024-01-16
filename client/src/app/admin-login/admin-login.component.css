@@ -1,0 +1,18 @@
+.login-wrap {
+  font-size: 150%;
+
+  padding: 1em;
+
+  background-color: #ffffff;
+
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 0.25em;
+
+  border-top: 0.5em solid var(--header-color);
+}
+
+.login-wrap input {
+  font-size: inherit;
+}

@@ -1,6 +1,8 @@
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 
 export class User {
+  readonly id = randomUUID();
+
   private _accessToken = "";
   private _isAdmin = false;
 
@@ -25,7 +27,16 @@ export class User {
   private generateAccessToken(): void {
     const hash = createHash("sha256");
     this._accessToken = hash
-      .update("Make a token: " + new Date() + this.name + this.pinCode)
+      .update("Make a token: " + this.name + this.pinCode)
       .digest("hex");
+  }
+
+  toJSON(): Record<string, any> {
+    return {
+      id: this.id,
+      access_token: this.accessToken,
+      name: this.name,
+      isAdmin: this.isAdmin,
+    }
   }
 }

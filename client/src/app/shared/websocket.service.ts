@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { Observable, ReplaySubject } from "rxjs";
-import { io as socketIo, ManagerOptions } from "socket.io-client";
+import { BehaviorSubject, Observable, ReplaySubject, fromEvent } from "rxjs";
+import { ManagerOptions, io as socketIo } from "socket.io-client";
 
 import { environment } from "@env/environment";
-import { ToastService } from "./toast/toast.service";
-import { switchMap, take, share } from "rxjs/operators";
-import { Socket, SocketOptions } from "socket.io-client/build/esm/socket";
 import { Toast } from "@shared/toast/toast.interface";
+import { switchMap, take } from "rxjs/operators";
+import { Socket, SocketOptions } from "socket.io-client/build/esm/socket";
+import { ToastService } from "./toast/toast.service";
 
 @Injectable({
   providedIn: "root",
@@ -18,18 +18,15 @@ export class SocketService {
   private socketAnnouncedSubject = new ReplaySubject<void>(1);
   socketAnnounced = this.socketAnnouncedSubject.asObservable();
 
-  private readonly socketMap = new Map<string, Observable<any>>();
+  private $isOnline = new BehaviorSubject(false);
+  readonly isOnline$ = this.$isOnline.asObservable();
 
   constructor(
     private toast: ToastService,
     private router: Router,
   ) {}
 
-  initSocket(
-    limited = true,
-    nameAndPin?: { username: string; pinCode: string },
-    access_token = "",
-  ): void {
+  initSocket(limited = true): void {
     console.count("Init socket");
     if (this.socket) {
       this.socket.close();
@@ -40,18 +37,13 @@ export class SocketService {
     const socketOptions: Partial<ManagerOptions & SocketOptions> = {
       auth: {
         token,
-        admin_token: window.localStorage.getItem("admin_token") ?? "",
-        access_token,
+        admin_token: window.localStorage.getItem("admin_token"),
+        access_token: window.localStorage.getItem("access_token"),
       },
       query: {
         requestPositions: !limited,
       },
     };
-
-    if (nameAndPin) {
-      socketOptions.query.username = nameAndPin.username;
-      socketOptions.query.pinCode = nameAndPin.pinCode;
-    }
 
     // TODO SEND auth token via auth.token QUERY is te groot en dan faalt het.
     this.socket = socketIo(environment.ws_url, socketOptions);
@@ -78,11 +70,11 @@ export class SocketService {
     this.socket.on("reconnect_attempt", () => {
       this.socket.io.opts.query = {
         ...this.socket.io.opts.query,
-
-        access_token: window.localStorage.getItem("access_token"),
-        admin_token: window.localStorage.getItem("admin_token"),
       };
     });
+
+    this.socket.on("connect", () => this.$isOnline.next(true));
+    this.socket.on("disconnect", () => this.$isOnline.next(false));
 
     this.announceSocket();
   }
@@ -94,28 +86,11 @@ export class SocketService {
   onEvent<T = unknown>(event: string): Observable<T> {
     return this.socketAnnounced.pipe(
       take(1),
-      switchMap(() => this.eventObservable<T>(event)),
+      switchMap(() => fromEvent<T>(this.socket, event)),
     );
   }
 
-  // This will stop adding multiple listeners for a single event.
-  private eventObservable<T = unknown>(event: string): Observable<T> {
-    if (this.socketMap.has(event)) {
-      return this.socketMap.get(event);
-    }
-
-    const observable = new Observable<T>((observer) => {
-      this.socket.on(event, (data: T) => {
-        console.log("Got message on:", event);
-        return observer.next(data);
-      });
-    }).pipe(share());
-
-    this.socketMap.set(event, observable);
-    return observable;
-  }
-
-  emit(event: string, data: any) {
+  emit(event: string, data: unknown) {
     console.log("Send message to:", event);
     this.socket.emit(event, data);
   }

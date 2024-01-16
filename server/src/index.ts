@@ -3,19 +3,19 @@ import http = require("http");
 import fs = require("fs");
 import path = require("path");
 
+import { Server } from "socket.io";
 import { Logger } from "./logger";
 
 import express = require("express");
 import bodyParser = require("body-parser");
 import compression = require("compression");
-import { Server } from "socket.io";
 
 import config = require("../../config/server.js");
 
-import { PositionCache } from "./PositionCache";
-import passwordHandler = require("./password");
-import { UserDatabase } from "./users-db";
 import { NextFunction, Request, Response } from "express";
+import { PositionCache } from "./PositionCache";
+import { UserDatabase } from "./users-db";
+import passwordHandler = require("./password");
 
 const coreLog = new Logger("CORE");
 const appLog = new Logger("APP");
@@ -66,16 +66,16 @@ const broadcast = (event: string, data: unknown) => {
 };
 
 const sendPosition = (
-  data: { name: string; pinCode: string; position: [number, number] },
+  data: { userId: string; position: [number, number] },
   errorFn: (message: string) => void,
 ) => {
-  if (!data.name || !data.pinCode || !Array.isArray(data.position)) {
+  if (!data.userId || !Array.isArray(data.position)) {
     return errorFn(
-      'Incomplete object. Send new like { name: "", pinCode: "", position: [] }',
+      "Incomplete object. Send new like { userId: string, position: [number, number] }",
     );
   }
 
-  const user = userDatabase.login(data.name, data.pinCode);
+  const user = userDatabase.find(data.userId);
 
   if (user) {
     const position = {
@@ -84,8 +84,8 @@ const sendPosition = (
       position: data.position,
     };
 
-    broadcast("new-position", position);
     positions.addPosition(position);
+    broadcast("new-position", position);
   }
 };
 const userLeft = (name: string, pinCode: string) => {
@@ -98,9 +98,9 @@ const userLeft = (name: string, pinCode: string) => {
     broadcast("user-left", name);
   }
 };
-const removeOfflineUser = (name: string, pinCode: string): void => {
+const removeOfflineUser = (userId: string): void => {
   appLog.log(`Removing offline user: ${name}`);
-  const user = userDatabase.login(name, pinCode);
+  const user = userDatabase.find(userId);
 
   if (user) {
     positions.removeUser(user);
@@ -128,14 +128,33 @@ app.all("/api/ping", tokenValidator, (req, res) => {
   res.send({ pong: new Date() });
 });
 
-app.post("/api/login", tokenValidator, (req, res) => {
+app.post("/api/login", (req, res) => {
+  const { username, pinCode } = req.body as {
+    username?: string;
+    pinCode?: string;
+  };
+
+  if (!username || !pinCode) {
+    return res.status(400).send("Missing username or pinCode");
+  }
+
+  const user = userDatabase.loginOrRegister(username, pinCode);
+
+  if (!user) {
+    return res.status(401).send("Wrong username or password");
+  }
+
+  res.send(user);
+});
+
+app.post("/api/admin-login", tokenValidator, (req, res) => {
   const givenPass = req.body.password;
 
   if (!givenPass || !passwordHandler.verifyPassword(givenPass)) {
     return res.status(401).send("Invalid password");
   }
 
-  res.send({ access_token: passwordHandler.createToken(givenPass) });
+  res.send({ admin_token: passwordHandler.createToken(givenPass) });
 });
 
 // If we also want this server to serve the client.
@@ -160,13 +179,15 @@ if (config.serveClient === true) {
 io
   // Only users with the correct token are allowed to connect.
   .use((socket, next) => {
-    const { token, admin_token } = socket.handshake.auth;
+    const { token, access_token, admin_token } = socket.handshake.auth;
 
     if (token === config.ws_key || token === config.ws_key_lim) {
-      if (token === config.ws_key_lim) {
+      // Normal user and it's found in the 'database'
+      if (token === config.ws_key_lim && userDatabase.find(access_token)) {
         return next();
       }
 
+      // Hopefully a s5 stam member.
       if (passwordHandler.verifyToken(admin_token)) {
         return next();
       }
@@ -181,69 +202,42 @@ io
 
     const { token, access_token } = socket.handshake.auth;
     const { requestPositions } = query;
-    let { username, pinCode } = query;
 
-    if (username && pinCode) {
-      const existingUser = access_token
-        ? userDatabase.find(access_token)
-        : userDatabase.login(username as string, pinCode as string);
-
-      if (existingUser) {
-        appLog.log(`Existing user logged in ${existingUser.name}`);
-        process.nextTick(() =>
-          socket.emit("final-name", {
-            name: existingUser.name,
-            access_token: existingUser.accessToken,
-            pinCode: existingUser.pinCode,
-          }),
-        );
-      } else {
-        const newUser = userDatabase.register(
-          username as string,
-          pinCode as string,
-        );
-
-        appLog.log(`User joined: ${newUser.name}`);
-        broadcast("user-joined", newUser.name);
-
-        process.nextTick(() =>
-          socket.emit("final-name", {
-            name: newUser.name,
-            access_token: newUser.accessToken,
-            pinCode: newUser.pinCode,
-          }),
-        );
-      }
-    }
+    const user = userDatabase.find(access_token);
 
     if (token === config.ws_key) {
       socket.join("super-secret");
 
-      socket.on("user-destroy", ({ username, pinCode }) => {
-        removeOfflineUser(username, pinCode);
+      socket.on("user-destroy", ({ userId }) => {
+        removeOfflineUser(userId);
       });
 
-      socket.on("start-route", ({ name, pinCode, startAt = 0 }) => {
-        const user = userDatabase.login(name, pinCode);
+      socket.on("start-route", ({ userId, startAt = 0 }) => {
+        const user = userDatabase.find(userId);
 
         if (user) {
           const userSocket = positions.getSocketOfUser(user);
 
           if (userSocket) {
             userSocket.emit("start-route", startAt);
+          } else {
+            socket.emit("growl", {
+              style: "error",
+              message: `User ${user.name} has no know socket connection.`,
+            });
           }
         } else {
           socket.emit("growl", {
             style: "error",
-            message: `User: ${name} not found.`,
+            message: `User with id ${userId} not found.`,
           });
         }
       });
-    }
 
-    // Send the last n amount of positions to the front-end
-    if (requestPositions && token === config.ws_key) {
-      socket.emit("initial-positions", positions.getAll);
+      if (requestPositions) {
+        // Send the last n amount of positions to the front-end
+        socket.emit("initial-positions", positions.getAll);
+      }
     }
 
     socket.on("send-position", (data) => {
@@ -254,11 +248,11 @@ io
       socket.emit("start-route", 0);
       broadcast("growl", {
         style: "info",
-        message: `User: ${username} started it's route. Distance: ${distance}.`,
+        message: `User: ${user.name} started it's route. Distance: ${distance}.`,
       });
     });
 
     socket.on("disconnect", () => {
-      userLeft(username as string, pinCode as string);
+      userLeft(user.name as string, user.pinCode as string);
     });
   });

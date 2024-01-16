@@ -1,4 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
+import { SocketService } from "@shared/websocket.service";
 
 @Component({
   selector: "app-root",
@@ -6,6 +7,8 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
+  protected readonly socketService = inject(SocketService);
+
   protected readonly thisYear = new Date().getFullYear();
 
   ngOnInit() {

@@ -1,71 +1,44 @@
-import { HttpClient, HttpResponse } from "@angular/common/http";
-import { Component, OnDestroy } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Component, inject } from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-
+import { environment } from "@env/environment";
 import { ToastService } from "@shared/toast/toast.service";
-import { Subscription } from "rxjs";
-import { environment } from "../../environments/environment";
 
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"],
+  styleUrl: "./login.component.css",
 })
-export class LoginComponent implements OnDestroy {
-  pass: string;
+export class LoginComponent {
+  private readonly toast = inject(ToastService);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  private httpSub: Subscription;
+  protected readonly loginForm = new FormGroup({
+    username: new FormControl<string | null>(null, Validators.required),
+    pinCode: new FormControl<string | null>(null, Validators.required),
+  });
 
-  constructor(
-    private ts: ToastService,
-    private http: HttpClient,
-    private router: Router,
-  ) {}
+  protected start(): void {
+    if (this.loginForm.invalid) {
+      this.toast.error("Vul een naam en pincode in.");
 
-  ngOnDestroy(): void {
-    this.unsub();
-  }
-
-  onSubmit() {
-    if (!this.pass) {
-      this.ts.error("Enter a password!");
+      return;
     }
 
-    this.ts.normal("Logging in..");
-
-    this.unsub();
-
-    this.httpSub = this.http
-      .post(
-        environment.ws_url + "/api/login",
-        {
-          password: this.pass,
+    this.http
+      .post<{
+        access_token: string;
+      }>(environment.ws_url + "/api/login", this.loginForm.value)
+      .subscribe({
+        next: ({ access_token }) => {
+          window.localStorage.setItem("access_token", access_token);
+          this.router.navigate(["/gps"]);
         },
-        {
-          headers: { Authorization: `Bearer ${environment.ws_key}` },
+        error: (error) => {
+          this.toast.error(error.error);
         },
-      )
-      .subscribe(
-        (response) => this.handleSuccess(response),
-        (error) => this.handleError(error),
-      );
-  }
-
-  private unsub(): void {
-    if (this.httpSub) {
-      this.httpSub.unsubscribe();
-    }
-  }
-
-  private handleSuccess(response) {
-    window.localStorage.setItem("admin_token", response.access_token);
-
-    this.ts.success("Loggin success!");
-    this.router.navigate(["tracker"]);
-  }
-
-  private handleError(error) {
-    console.error(error);
-    this.ts.error(error.error || error);
+      });
   }
 }

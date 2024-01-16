@@ -1,18 +1,20 @@
 import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule, Routes } from "@angular/router";
 
 import { LocationService } from "@shared/location.service";
 import { SocketService } from "@shared/websocket.service";
+import { AdminLoginComponent } from "./admin-login/admin-login.component";
 import { AppComponent } from "./app.component";
-import { LoginComponent } from "./login/login.component";
 
-import { AuthGuard } from "@shared/auth.guard";
+import { CommonModule } from "@angular/common";
+import { AdminAuthGuardFn, AuthGuardFn } from "@shared/auth.guard";
 import { ToastComponent } from "@shared/toast/toast.component";
 import { ToastService } from "@shared/toast/toast.service";
 import { HomeComponent } from "./home/home.component";
+import { LoginComponent } from "./login/login.component";
 
 const routes: Routes = [
   {
@@ -20,26 +22,31 @@ const routes: Routes = [
     component: HomeComponent,
     pathMatch: "full",
   },
-  {
-    path: "code",
-    loadChildren: () =>
-      import("./secret-code/secret-code.module").then(
-        (m) => m.SecretCodeModule,
-      ),
-  },
+  // {
+  //   path: "code",
+  //   loadChildren: () =>
+  //     import("./secret-code/secret-code.module").then(
+  //       (m) => m.SecretCodeModule,
+  //     ),
+  // },
   {
     path: "gps",
     loadChildren: () => import("./gps/gps.module").then((m) => m.GpsModule),
+    canMatch: [AuthGuardFn],
   },
   {
     path: "tracker",
     loadChildren: () =>
       import("./tracker/tracker.module").then((m) => m.TrackerModule),
-    canLoad: [AuthGuard],
+    canMatch: [AdminAuthGuardFn],
   },
   {
     path: "login",
     component: LoginComponent,
+  },
+  {
+    path: "admin-login",
+    component: AdminLoginComponent,
   },
   {
     path: "**",
@@ -48,10 +55,17 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, ToastComponent, HomeComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    AdminLoginComponent,
+    ToastComponent,
+    HomeComponent,
+  ],
   imports: [
+    CommonModule,
     BrowserModule,
-    FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     RouterModule.forRoot(routes, {}),
   ],
