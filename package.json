@@ -41,6 +41,7 @@
     "husky": "^4",
     "lint-staged": "^8.2.1",
     "nodemon": "^2.0.15",
+    "prettier": "^3.2.2",
     "ts-node": "^10.7.0",
     "typescript": "^5"
   }

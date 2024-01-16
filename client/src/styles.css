@@ -17,17 +17,20 @@
   --compass-red: hsla(var(--hue), var(--saturation), var(--lightness), 1);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #EEEEEE;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eeeeee;
   color: var(--dark-text);
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -82,7 +85,15 @@ app-body {
     linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
     linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
     linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
-    linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+    linear-gradient(
+      #1d1d1d 25%,
+      #1a1a1a 25%,
+      #1a1a1a 50%,
+      transparent 50%,
+      transparent 75%,
+      #242424 75%,
+      #242424
+    );
   background-color: #131313;
   background-size: 20px 20px;
 }

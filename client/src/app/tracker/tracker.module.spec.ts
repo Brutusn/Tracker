@@ -1,13 +1,13 @@
-import { TrackerModule } from './tracker.module';
+import { TrackerModule } from "./tracker.module";
 
-describe('TrackerModule', () => {
+describe("TrackerModule", () => {
   let trackerModule: TrackerModule;
 
   beforeEach(() => {
     trackerModule = new TrackerModule();
   });
 
-  it('should create an instance', () => {
+  it("should create an instance", () => {
     expect(trackerModule).toBeTruthy();
   });
 });

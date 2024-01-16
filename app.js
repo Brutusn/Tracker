@@ -1,1 +1,1 @@
-throw new Error('Use the server or client entry');
+throw new Error("Use the server or client entry");

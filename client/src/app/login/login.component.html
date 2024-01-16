@@ -2,6 +2,6 @@
   <form (ngSubmit)="onSubmit()">
     <label for="pw">Ultra secret password:</label><br /><br />
     <input type="password" name="pass" id="pw" [(ngModel)]="pass" required />
-    <input type="submit" value="Log in" [disabled]="!pass">
+    <input type="submit" value="Log in" [disabled]="!pass" />
   </form>
 </div>

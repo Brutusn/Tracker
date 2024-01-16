@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-tracker',
-  templateUrl: './tracker.component.html',
-  styleUrls: ['./tracker.component.css'],
+  selector: "app-tracker",
+  templateUrl: "./tracker.component.html",
+  styleUrls: ["./tracker.component.css"],
 })
 export class TrackerComponent {}

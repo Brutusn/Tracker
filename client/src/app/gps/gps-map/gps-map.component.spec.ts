@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { GpsMapComponent } from './gps-map.component';
+import { GpsMapComponent } from "./gps-map.component";
 
-describe('GpsMapComponent', () => {
+describe("GpsMapComponent", () => {
   let component: GpsMapComponent;
   let fixture: ComponentFixture<GpsMapComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GpsMapComponent ],
-    })
-    .compileComponents();
+      declarations: [GpsMapComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('GpsMapComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

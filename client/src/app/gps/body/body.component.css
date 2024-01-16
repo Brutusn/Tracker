@@ -31,13 +31,13 @@
 }
 
 .map-in-tracking-mode {
-
-  background-color: rgba(0,0,0,.6);
+  background-color: rgba(0, 0, 0, 0.6);
 
   backdrop-filter: blur(3px) grayscale(1);
 }
 
-.centered input, .centered button {
+.centered input,
+.centered button {
   font-size: inherit;
 }
 

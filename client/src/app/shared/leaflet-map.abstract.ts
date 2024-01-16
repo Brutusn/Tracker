@@ -1,12 +1,12 @@
-import { OnInit, OnDestroy, Directive } from '@angular/core';
-import { Position } from '@shared/position';
+import { OnInit, OnDestroy, Directive } from "@angular/core";
+import { Position } from "@shared/position";
 
-import { environment } from '@env/environment';
+import { environment } from "@env/environment";
 
-import * as L from 'leaflet';
-import { LocationService } from './location.service';
-import { ToastService } from './toast/toast.service';
-import { Subscription } from 'rxjs';
+import * as L from "leaflet";
+import { LocationService } from "./location.service";
+import { ToastService } from "./toast/toast.service";
+import { Subscription } from "rxjs";
 
 @Directive()
 export abstract class LeafletMap implements OnInit, OnDestroy {
@@ -15,7 +15,7 @@ export abstract class LeafletMap implements OnInit, OnDestroy {
   protected readonly subscriptions = new Subscription();
   protected readonly leaflet = L;
 
-  protected mapId = 'tracker-map';
+  protected mapId = "tracker-map";
   protected map: L.Map;
   protected markerLayer = this.leaflet.featureGroup();
   protected mapUrl = environment.map_url;
@@ -23,26 +23,24 @@ export abstract class LeafletMap implements OnInit, OnDestroy {
 
   autoZoom = true;
 
-  constructor (
-    protected readonly ts: ToastService,
-  ) {}
+  constructor(protected readonly ts: ToastService) {}
 
-  ngOnInit () {
+  ngOnInit() {
     // Base coordinates go to the blokhut of Scouting Veghel
     this.map = L.map(this.mapId).setView(LeafletMap.blokhut, 15);
 
     L.tileLayer(this.mapUrl, {
-        attribution: 'S5 StamTour Tracker',
+      attribution: "S5 StamTour Tracker",
     }).addTo(this.map);
   }
 
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  static speedStringFrom (data: Position): string {
+  static speedStringFrom(data: Position): string {
     const speed = Math.round(data.speed * 3.6);
 
     return `${data.name} (${speed} Km/h)`;
   }
- }
+}

@@ -11,23 +11,12 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2022",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2022", "dom"],
     "paths": {
-      "@shared/*": [
-        "app/shared/*"
-      ],
-      "@app/*": [
-        "app/*"
-      ],
-      "@env/*": [
-        "environments/*"
-      ]
+      "@shared/*": ["app/shared/*"],
+      "@app/*": ["app/*"],
+      "@env/*": ["environments/*"]
     },
     "useDefineForClassFields": false
   }

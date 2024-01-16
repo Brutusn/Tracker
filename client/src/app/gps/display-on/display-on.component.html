@@ -1,3 +1,9 @@
-<div class="display-on-container" [ngClass]="{ 'display-on': displayOn === true }">
-  <label><input type="checkbox" [(ngModel)]="displayOn" (change)="setDisplayOn()"/> Display always on.</label>
+<div
+  class="display-on-container"
+  [ngClass]="{ 'display-on': displayOn === true }"
+>
+  <label
+    ><input type="checkbox" [(ngModel)]="displayOn" (change)="setDisplayOn()" />
+    Display always on.</label
+  >
 </div>

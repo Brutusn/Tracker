@@ -6,8 +6,8 @@ RUN npm install --production
 
 COPY ./client/dist ./client/dist
 COPY ./config ./config
-COPY ./compiled_server/src ./server
+COPY ./compiled_server/src ./server/src
 
 EXPOSE 8111
 
-CMD ["node", "./server/index.js"]
+CMD ["node", "./server/src/index.js"]

@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { CompassComponent } from './compass.component';
+import { CompassComponent } from "./compass.component";
 
-describe('CompassComponent', () => {
+describe("CompassComponent", () => {
   let component: CompassComponent;
   let fixture: ComponentFixture<CompassComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CompassComponent ],
-    })
-    .compileComponents();
+      declarations: [CompassComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('CompassComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

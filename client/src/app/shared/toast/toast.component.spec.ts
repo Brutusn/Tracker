@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { ToastComponent } from './toast.component';
+import { ToastComponent } from "./toast.component";
 
-describe('ErrorComponent', () => {
+describe("ErrorComponent", () => {
   let component: ToastComponent;
   let fixture: ComponentFixture<ToastComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToastComponent ],
-    })
-    .compileComponents();
+      declarations: [ToastComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ErrorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

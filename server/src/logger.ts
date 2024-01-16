@@ -1,5 +1,5 @@
-import { currentTimeStamp } from './timestamp';
-import { EOL } from 'os';
+import { currentTimeStamp } from "./timestamp";
+import { EOL } from "os";
 
 export class Logger {
   constructor(private readonly section: string) {}

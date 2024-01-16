@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { DisplayOnComponent } from './display-on.component';
+import { DisplayOnComponent } from "./display-on.component";
 
-describe('DisplayOnComponent', () => {
+describe("DisplayOnComponent", () => {
   let component: DisplayOnComponent;
   let fixture: ComponentFixture<DisplayOnComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DisplayOnComponent ],
-    })
-    .compileComponents();
+      declarations: [DisplayOnComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('DisplayOnComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

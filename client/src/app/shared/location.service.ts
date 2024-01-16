@@ -1,30 +1,29 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
 
-import { SocketService } from './websocket.service';
+import { SocketService } from "./websocket.service";
 
-import { Position, PositionMapped } from '@shared/position';
+import { Position, PositionMapped } from "@shared/position";
 
 @Injectable()
 export class LocationService {
-
   positions: Position[] = [];
   mappedPositions: PositionMapped = {};
 
-  constructor (private ws: SocketService) {
+  constructor(private ws: SocketService) {
     this.ws.initSocket(false);
 
-    this.ws.onEvent<string>('user-left').subscribe((name) => {
+    this.ws.onEvent<string>("user-left").subscribe((name) => {
       if (this.mappedPositions[name]) {
         this.mappedPositions[name].online = false;
       }
     });
-    this.ws.onEvent<string>('user-destroyed').subscribe((name) => {
+    this.ws.onEvent<string>("user-destroyed").subscribe((name) => {
       delete this.mappedPositions[name];
     });
   }
 
-  mapPositions (pos: Position, keepOnlineState = false): PositionMapped {
+  mapPositions(pos: Position, keepOnlineState = false): PositionMapped {
     const newObject: PositionMapped = {};
 
     newObject[pos.name] = {
@@ -36,9 +35,10 @@ export class LocationService {
     return Object.assign(this.mappedPositions, newObject);
   }
 
-  getLocations (): Observable<PositionMapped> {
+  getLocations(): Observable<PositionMapped> {
     return new Observable<PositionMapped>((observer) => {
-      return this.ws.onEvent<PositionMapped>('initial-positions')
+      return this.ws
+        .onEvent<PositionMapped>("initial-positions")
         .subscribe((positions) => {
           Object.keys(positions).forEach((pos: string) => {
             const obj: Position = positions[pos];
@@ -51,12 +51,11 @@ export class LocationService {
     });
   }
 
-  getNewLocation (): Observable<PositionMapped> {
+  getNewLocation(): Observable<PositionMapped> {
     return new Observable<PositionMapped>((observer) => {
-      return this.ws.onEvent<Position>('new-position')
-        .subscribe((position) => {
-          observer.next(this.mapPositions(position));
-        });
+      return this.ws.onEvent<Position>("new-position").subscribe((position) => {
+        observer.next(this.mapPositions(position));
+      });
     });
   }
 }
