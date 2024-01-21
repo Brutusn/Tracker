@@ -1,14 +1,20 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { share, distinctUntilChanged } from "rxjs/operators";
+import { Observable, from } from "rxjs";
+import { distinctUntilChanged, map, share } from "rxjs/operators";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class GeoService {
   private geoOpts = {
     enableHighAccuracy: true,
     maximumAge: 2500,
     timeout: 5000,
   };
+
+  get geoPermissionStatus(): Observable<PermissionState> {
+    return from(navigator.permissions.query({ name: "geolocation" })).pipe(
+      map((status) => status.state),
+    );
+  }
 
   private readonly geo$ = new Observable<GeolocationPosition>((observer) => {
     let watchId: number;

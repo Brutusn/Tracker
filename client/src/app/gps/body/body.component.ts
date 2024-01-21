@@ -5,9 +5,14 @@ import { GeoService } from "@shared/geo.service";
 import { SocketService } from "@shared/websocket.service";
 
 import { ToastService } from "@shared/toast/toast.service";
+import { UserService } from "@shared/user.service";
 
 enum TrackingModes {
+  /** The gps of the user is not yet enabled */
+  NOT_STARTED,
+  /** We are just following the user, the game mode is off. */
   TRACKING,
+  /** Game mode on! */
   COMPASS,
 }
 
@@ -17,8 +22,8 @@ enum TrackingModes {
   styleUrls: ["./body.component.css"],
 })
 export class BodyComponent implements OnInit {
-  trackingModes = TrackingModes;
-  tracking: TrackingModes = TrackingModes.TRACKING;
+  readonly trackingModes = TrackingModes;
+  tracking: TrackingModes = TrackingModes.NOT_STARTED;
   currentPosition = "wacht op locatie..";
 
   // TODO: Get this from the compass..
@@ -38,6 +43,7 @@ export class BodyComponent implements OnInit {
     private ws: SocketService,
     private toast: ToastService,
     private readonly destroyRef: DestroyRef,
+    private readonly userService: UserService,
   ) {
     this.ws
       .onEvent("error")
@@ -70,17 +76,20 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.start();
+    // Init the socket with the given username.
+    this.ws.initSocket(true);
   }
 
   geoError(error: Error): void {
+    // Silent error.
     console.error(error);
-    this.toast.error(error.message || "GPS Error");
+    // this.toast.error(error.message || "GPS Error");
   }
 
   start(): void {
-    // Init the socket with the given username.
-    this.ws.initSocket(true);
+    this.tracking = TrackingModes.TRACKING;
+
+    this.sendPosition();
 
     this.ws
       .onEvent("start-route")
@@ -96,21 +105,23 @@ export class BodyComponent implements OnInit {
     }
   }
 
-  // TODO dit moet vanuit een gebruikers actie komen.
   sendPosition(): void {
-    this.geo.watch().subscribe({
-      next: ({ coords }) => {
-        this.ws.emit("send-position", {
-          userId: "TODO",
-          position: [coords.latitude, coords.longitude],
-          speed: coords.speed,
-          heading: coords.heading,
-          post: this.currentPost,
-          waypoint: parseInt(localStorage.getItem("waypoint"), 10) || 0,
-          gpsStarted: this.tracking === TrackingModes.COMPASS,
-        });
-      },
-      error: (error) => this.geoError(error),
-    });
+    this.geo
+      .watch()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ coords }) => {
+          this.ws.emit("send-position", {
+            userId: this.userService.user.id,
+            position: [coords.latitude, coords.longitude],
+            speed: coords.speed,
+            heading: coords.heading,
+            post: this.currentPost,
+            waypoint: parseInt(localStorage.getItem("waypoint"), 10) ?? 0,
+            gpsStarted: this.tracking === TrackingModes.COMPASS,
+          });
+        },
+        error: (error) => this.geoError(error),
+      });
   }
 }

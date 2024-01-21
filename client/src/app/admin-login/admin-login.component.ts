@@ -31,7 +31,7 @@ export class AdminLoginComponent {
 
     this.http
       .post(
-        environment.ws_url + "/api/login",
+        environment.ws_url + "/api/admin-login",
         {
           password: this.form.value.password!,
         },

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 
 import { LocationService } from "@shared/location.service";
 import { PositionMapped } from "@shared/position";
@@ -68,6 +68,7 @@ export class ListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe({
         next: (data: PositionMapped) => {
+          console.log(data);
           this.listData = data;
         },
         error: this.handleError,

@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, OnDestroy } from "@angular/core";
+import { Component, DestroyRef, Input, OnInit } from "@angular/core";
 import { getDistance } from "geolib";
 
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeoService } from "@shared/geo.service";
-import { Coordinate, Route, postArray } from "@shared/route";
+import { Coordinate, GeoRoute, postArray } from "@shared/route";
 import { SocketService } from "@shared/websocket.service";
-import { Subscription } from "rxjs";
 import { filter, tap } from "rxjs/operators";
 
 @Component({
@@ -12,26 +12,23 @@ import { filter, tap } from "rxjs/operators";
   templateUrl: "./compass.component.html",
   styleUrls: ["./compass.component.css"],
 })
-export class CompassComponent implements OnInit, OnDestroy {
-  @Input() readonly inGameMode: boolean = false;
+export class CompassComponent implements OnInit {
+  @Input({ required: true }) readonly inGameMode: boolean = false;
 
   private lastHeading = 0;
   private readonly cssVar = "--rotation";
 
-  private readonly triggerDistance = 50; // Meter
-  private triggerLocation: Route = postArray.find(
-    (post) => post.code === "Vrienden van Veghel",
-  );
-
-  private readonly subscriptions = new Subscription();
+  private readonly triggerDistance = 75; // Meter
+  private triggerLocation: GeoRoute = postArray.find((post) => post.isTrigger);
 
   constructor(
     private geo: GeoService,
     private ws: SocketService,
+    private readonly destroyRef: DestroyRef,
   ) {}
 
   ngOnInit() {
-    const geoSubscription = this.geo
+    this.geo
       .watch()
       .pipe(
         filter(() => !this.inGameMode),
@@ -39,16 +36,12 @@ export class CompassComponent implements OnInit, OnDestroy {
           this.handleCoords(coords);
           this.checkForRouteStart(coords);
         }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
-
-    this.subscriptions.add(geoSubscription);
-  }
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 
-  private handleCoords({ heading }: any) {
+  private handleCoords({ heading }: GeolocationCoordinates) {
     if (heading || heading === 0) {
       this.lastHeading = heading;
     }
@@ -59,7 +52,7 @@ export class CompassComponent implements OnInit, OnDestroy {
     );
   }
 
-  private checkForRouteStart(coords: Coordinate) {
+  private checkForRouteStart(coords: GeolocationCoordinates) {
     const _coords: Coordinate = {
       latitude: coords.latitude,
       longitude: coords.longitude,
@@ -69,7 +62,7 @@ export class CompassComponent implements OnInit, OnDestroy {
 
     if (distance < this.triggerDistance) {
       // Send emit message now.
-      setTimeout(() => this.ws.emit("user-in-reach", { distance }), 5000);
+      setTimeout(() => this.ws.emit("user-in-reach", { distance }), 1000);
     }
   }
 }

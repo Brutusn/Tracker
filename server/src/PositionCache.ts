@@ -1,5 +1,5 @@
 //@ts-check
-import { createHash } from "crypto";
+import { EventEmitter } from "node:events";
 import { Socket } from "socket.io";
 import { User } from "./user";
 
@@ -9,14 +9,24 @@ export class UserState {
   constructor(readonly user: User) {}
 }
 
+export enum PositionEvents {
+  StateUpdate = "state-update",
+}
+
 // Simple position class
 export class PositionCache {
   private readonly positions = new Map<User, UserState>();
   private readonly users = new Map<User, Socket>();
 
+  private readonly positionEvent = new EventEmitter();
+
   get getAll(): UserState[] {
     // This is the fallback name... doesn't need to be sent to the front...
     return Array.from(this.positions.values());
+  }
+
+  on(event: PositionEvents, action: () => void): void {
+    this.positionEvent.on(event, action);
   }
 
   registerUser(user: User, socket: Socket): void {
@@ -29,6 +39,13 @@ export class PositionCache {
     return socket ?? null;
   }
 
+  userLogin(user: User): void {
+    const state = this.positions.get(user) ?? new UserState(user);
+
+    this.positions.set(user, state);
+    this.positionEvent.emit(PositionEvents.StateUpdate);
+  }
+
   userOffline(user: User): void {
     const state = this.positions.get(user);
 
@@ -36,6 +53,7 @@ export class PositionCache {
       // TODO Kan met de socket toch?
       state.isOnline = false;
     }
+    this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 
   addPosition(pos: { user: User; position: [number, number]; date: Date }) {
@@ -46,10 +64,12 @@ export class PositionCache {
     state.lastPosition = pos.position;
 
     this.positions.set(pos.user, state);
+    this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 
   removeUser(user: User): void {
     this.positions.delete(user);
     this.users.delete(user);
+    this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 }

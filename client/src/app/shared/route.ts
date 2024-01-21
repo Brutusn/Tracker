@@ -1,18 +1,16 @@
 import { LeafletMap } from "./leaflet-map.abstract";
-import * as L from "leaflet";
 
-export interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
+export type Coordinate = Pick<GeolocationCoordinates, "latitude" | "longitude">;
 
-export interface Route {
+export interface GeoRoute {
   code: string;
   coord: Coordinate;
   skip?: boolean;
+  /** This location will start the route.  */
+  isTrigger?: boolean;
 }
 
-export const locationArray: Route[] = [
+export const locationArray: GeoRoute[] = [
   {
     code: "Maaskruising",
     coord: {
@@ -50,7 +48,7 @@ export const locationArray: Route[] = [
   },
 ];
 
-export const postArray: Route[] = [
+export const postArray: GeoRoute[] = [
   {
     // Start
     code: "Nistelrode",
@@ -86,17 +84,11 @@ export const postArray: Route[] = [
   {
     // Post 5
     code: "Vrienden van Veghel",
+    isTrigger: true,
     coord: {
       latitude: 51.669845,
       longitude: 6.154036,
     },
-    // }, {
-    //   // Post 6
-    //   code: 'Kruising',
-    //   coord: {
-    //     latitude: 51.6864023,
-    //     longitude: 5.944451,
-    //   },
   },
 ];
 

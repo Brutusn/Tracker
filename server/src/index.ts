@@ -27,7 +27,7 @@ const rf = fs.readFileSync;
 // Set up
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, { cors: { origin: "*" } });
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -144,6 +144,23 @@ app.post("/api/login", (req, res) => {
     return res.status(401).send("Wrong username or password");
   }
 
+  positions.userLogin(user);
+  res.send(user);
+});
+app.post("/api/user-refresh", (req, res) => {
+  const { access_token } = req.body;
+
+  if (!access_token || typeof access_token !== "string") {
+    return res.status(400).send("Invalid body");
+  }
+
+  const user = userDatabase.find(access_token);
+
+  if (!user) {
+    return res.status(401).send("Access token invalid");
+  }
+
+  positions.userLogin(user);
   res.send(user);
 });
 
@@ -205,6 +222,7 @@ io
 
     const user = userDatabase.find(access_token);
 
+    // Admin area.. in this if block.
     if (token === config.ws_key) {
       socket.join("super-secret");
 
@@ -253,6 +271,6 @@ io
     });
 
     socket.on("disconnect", () => {
-      userLeft(user.name as string, user.pinCode as string);
+      if (user) userLeft(user.name, user.pinCode);
     });
   });

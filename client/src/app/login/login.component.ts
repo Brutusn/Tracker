@@ -1,44 +1,44 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { environment } from "@env/environment";
 import { ToastService } from "@shared/toast/toast.service";
+import { UserService } from "@shared/user.service";
+import { tap } from "rxjs";
+import { GeoService } from "../shared/geo.service";
 
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.css",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private readonly toast = inject(ToastService);
-  private readonly http = inject(HttpClient);
+  private readonly userService = inject(UserService);
   private readonly router = inject(Router);
+  private readonly geoService = inject(GeoService);
 
   protected readonly loginForm = new FormGroup({
     username: new FormControl<string | null>(null, Validators.required),
     pinCode: new FormControl<string | null>(null, Validators.required),
   });
 
-  protected start(): void {
+  protected geoStatus = this.geoService.geoPermissionStatus;
+
+  protected login(): void {
     if (this.loginForm.invalid) {
       this.toast.error("Vul een naam en pincode in.");
 
       return;
     }
 
-    this.http
-      .post<{
-        access_token: string;
-      }>(environment.ws_url + "/api/login", this.loginForm.value)
+    const { username, pinCode } = this.loginForm.value;
+
+    this.userService
+      .login(username, pinCode)
+      .pipe(tap(() => this.router.navigate(["/gps"])))
       .subscribe({
-        next: ({ access_token }) => {
-          window.localStorage.setItem("access_token", access_token);
-          this.router.navigate(["/gps"]);
-        },
-        error: (error) => {
-          this.toast.error(error.error);
-        },
+        error: (error) => this.toast.error(error.error),
       });
   }
 }

@@ -1,22 +1,22 @@
 import {
   Component,
-  OnInit,
+  EventEmitter,
   Input,
   OnChanges,
-  SimpleChanges,
-  Output,
-  EventEmitter,
   OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
 } from "@angular/core";
-import { LeafletMap } from "@shared/leaflet-map.abstract";
-import { ToastService } from "@shared/toast/toast.service";
 import { GeoService } from "@shared/geo.service";
-import { Subscription } from "rxjs";
-import { map, tap, take } from "rxjs/operators";
-import { CircleMarker, LatLngTuple } from "leaflet";
-import { Route, locationArray, Coordinate } from "@shared/route";
+import { LeafletMap } from "@shared/leaflet-map.abstract";
+import { Coordinate, GeoRoute, locationArray } from "@shared/route";
+import { ToastService } from "@shared/toast/toast.service";
 import { SocketService } from "@shared/websocket.service";
-import { getDistance, convertDistance } from "geolib";
+import { convertDistance, getDistance } from "geolib";
+import { CircleMarker, LatLngTuple } from "leaflet";
+import { Subscription } from "rxjs";
+import { map, tap } from "rxjs/operators";
 
 @Component({
   selector: "app-gps-map",
@@ -99,7 +99,7 @@ export class GpsMapComponent
     this.subscriptions.unsubscribe();
   }
 
-  private getWaypoint(waypoint: string | number = 0): Route {
+  private getWaypoint(waypoint: string | number = 0): GeoRoute {
     const obj = this.locations[parseInt(waypoint as string, 10)];
 
     if (obj) {
@@ -139,7 +139,7 @@ export class GpsMapComponent
     this.map.removeLayer(this.markerLayer);
   }
 
-  private placeGoToMarker(route: Route) {
+  private placeGoToMarker(route: GeoRoute) {
     this.placeMarker(
       [route.coord.latitude, route.coord.longitude],
       this.goToMarker,

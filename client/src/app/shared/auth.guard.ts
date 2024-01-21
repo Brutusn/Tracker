@@ -1,5 +1,6 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, CanMatchFn, Router } from "@angular/router";
+import { UserService } from "./user.service";
 
 export const AdminAuthGuardFn: CanActivateFn | CanMatchFn = () => {
   const router = inject(Router);
@@ -14,8 +15,9 @@ export const AdminAuthGuardFn: CanActivateFn | CanMatchFn = () => {
 
 export const AuthGuardFn: CanActivateFn | CanMatchFn = () => {
   const router = inject(Router);
+  const userService = inject(UserService);
 
-  if (!window.localStorage.getItem("access_token")) {
+  if (!userService.user) {
     router.navigate(["login"]);
     return false;
   }

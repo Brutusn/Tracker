@@ -4,6 +4,7 @@
   z-index: 1;
   position: relative;
   height: 100%;
+  max-width: 600px;
 }
 .body-input-wrapper {
   display: flex;
@@ -36,10 +37,6 @@
 
 .names p:first-of-type {
   margin-top: 0;
-}
-
-strong {
-  color: white;
 }
 
 .small {

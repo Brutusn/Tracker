@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, DestroyRef, OnInit } from "@angular/core";
 
 import { LocationService } from "@shared/location.service";
 
@@ -6,17 +6,17 @@ import { Position, PositionMapped } from "@shared/position";
 import { SocketService } from "@shared/websocket.service";
 import * as L from "leaflet";
 
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LeafletMap } from "@shared/leaflet-map.abstract";
-import { locationArray, postArray, Route } from "@shared/route";
+import { GeoRoute, locationArray, postArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
-import { Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: "app-map",
   templateUrl: "./map.component.html",
   styleUrls: ["./map.component.css"],
 })
-export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
+export class MapComponent extends LeafletMap implements OnInit {
   private onlineCirle = {
     radius: 8,
     fillOpacity: 0.75,
@@ -27,17 +27,16 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
     color: "#F22613",
   };
 
-  private readonly onDestroy$ = new Subject<void>();
-
   constructor(
     private readonly loc: LocationService,
     private readonly ws: SocketService,
     protected readonly ts: ToastService,
+    private readonly destroyRef: DestroyRef,
   ) {
     super(ts);
     this.ws
       .onEvent("user-destroyed")
-      .pipe(takeUntil(this.onDestroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((name: string) => {
         this.markerLayer.removeLayer(this.markers[name]);
 
@@ -48,7 +47,7 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
 
     this.ws
       .onEvent("user-left")
-      .pipe(takeUntil(this.onDestroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((name: string) => {
         const marker = this.markers[name];
 
@@ -89,7 +88,7 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
 
     // Show the locations
     const filteredArray = locationArray.filter((i) => i.skip !== true);
-    locationArray.forEach((item: Route) => {
+    locationArray.forEach((item: GeoRoute) => {
       const coord: L.LatLngExpression = [
         item.coord.latitude,
         item.coord.longitude,
@@ -103,7 +102,7 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
       this.addPostCircle(coord, code, indexOfFiltered, "#f89406");
     });
 
-    postArray.forEach((item: Route) => {
+    postArray.forEach((item: GeoRoute) => {
       const coord: L.LatLngExpression = [
         item.coord.latitude,
         item.coord.longitude,
@@ -112,10 +111,6 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
 
       this.addPostCircle(coord, code, "", "#e47833");
     });
-  }
-
-  ngOnDestroy(): void {
-    this.onDestroy$.next();
   }
 
   private addPostCircle(
@@ -148,6 +143,8 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
   }
 
   markerHandler([key, item]) {
+    if (!item.position) return;
+
     // Only create a new marker if it's not yet known.
     const marker = this.markers[item.name];
     if (!marker) {
@@ -178,7 +175,7 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
   listenToPositions() {
     this.loc
       .getLocations()
-      .pipe(takeUntil(this.onDestroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data: PositionMapped) => {
           this.handleCoordinates(data);
@@ -187,7 +184,7 @@ export class MapComponent extends LeafletMap implements OnInit, OnDestroy {
       });
     this.loc
       .getNewLocation()
-      .pipe(takeUntil(this.onDestroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data: PositionMapped) => {
           this.handleCoordinates(data);

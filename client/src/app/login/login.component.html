@@ -5,15 +5,17 @@
       een server, zodat de blokhut kan zien waar je bent. De locatie word
       <em>niet</em> opgeslagen.
     </p>
-    <p>
-      <strong
-        >Vergeet niet om toestemming te geven voor het delen van de
-        locatie!</strong
-      >
-    </p>
+    @if ((geoStatus | async) !== "granted") {
+      <p>
+        <strong
+          >Vergeet niet om toestemming te geven voor het delen van de
+          locatie!</strong
+        >
+      </p>
+    }
 
     <div class="body-input-wrapper">
-      <form [formGroup]="loginForm" (ngSubmit)="start()">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
         <span>
           <label class="body-label" for="name">Vul je naam in*:</label><br />
           <input
@@ -38,7 +40,7 @@
             formControlName="pinCode"
           />
         </span>
-        <button class="body-button" type="submit" id="send-name">Start</button>
+        <button class="body-button" type="submit" id="send-name">Login</button>
       </form>
     </div>
   </div>
