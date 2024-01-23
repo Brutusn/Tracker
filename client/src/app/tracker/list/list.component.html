@@ -1,32 +1,34 @@
 <ul>
-  <li *ngIf="objectKeys(listData).length === 0">No connected users.</li>
+  <ng-container *ngIf="listData$ | async as list">
+    <li *ngIf="list.length === 0">No connected users.</li>
 
-  <li
-    *ngFor="let position of objectKeys(listData)"
-    [ngClass]="{
-      'off-line': listData[position].online === false,
-      'gps-started': listData[position].gpsStarted === true
-    }"
-    (contextmenu)="removeOffline(listData[position].name, $event)"
-  >
-    <div class="pos-rel">
-      <p class="primary">{{ listData[position].name }}</p>
-      <p class="secondary">
-        Last update: {{ listData[position].date | date: "HH:mm:ss" }}, post:
-        {{ listData[position].waypoint }}/{{ totalPost }}
-      </p>
-      <button
-        *ngIf="listData[position].online === false"
-        (click)="removeOffline(listData[position].name)"
-      >
-        DEL
-      </button>
-      <button
-        *ngIf="listData[position].online === true"
-        (click)="startRouteFor(listData[position].name)"
-      >
-        START
-      </button>
-    </div>
-  </li>
+    <li
+      *ngFor="let position of list"
+      [ngClass]="{
+        'off-line': position.isOnline === false,
+        'gps-started': position.gpsStarted === true
+      }"
+      (contextmenu)="removeOffline(position.user, $event)"
+    >
+      <div class="pos-rel">
+        <p class="primary">{{ position.user.name }}</p>
+        <p class="secondary">
+          Last update: {{ position.date | date: "HH:mm:ss" }}, post:
+          {{ position.waypoint }}/{{ totalPost }}
+        </p>
+        <button
+          *ngIf="position.isOnline === false"
+          (click)="removeOffline(position.user, $event)"
+        >
+          DEL
+        </button>
+        <button
+          *ngIf="position.isOnline === true"
+          (click)="startRouteFor(position.user)"
+        >
+          START
+        </button>
+      </div>
+    </li>
+  </ng-container>
 </ul>

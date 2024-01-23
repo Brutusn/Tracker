@@ -1,30 +1,40 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 
 import { LocationService } from "@shared/location.service";
-import { PositionMapped } from "@shared/position";
 import { SocketService } from "@shared/websocket.service";
 
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { locationArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
-import { Subject, takeUntil } from "rxjs";
+import { User } from "@shared/user.service";
+
+interface UserState {
+  user: User;
+  isOnline: boolean;
+  // TODO: Share interface.
+  lastPosition: {
+    user: User;
+    /** Latitude, longitude */
+    position: [number, number];
+    speed: number;
+    heading: number;
+    post: number;
+    waypoint: number;
+    gpsStarted: boolean;
+    date: Date;
+  };
+}
 
 @Component({
   selector: "app-list",
   templateUrl: "./list.component.html",
   styleUrls: ["./list.component.css"],
 })
-export class ListComponent implements OnInit, OnDestroy {
-  listData: PositionMapped = {};
-  objectKeys = Object.keys;
+export class ListComponent implements OnInit {
+  readonly listData$ = this.loc.getLocations();
 
   private locations = locationArray.filter((i) => i.skip !== true);
   totalPost = this.locations.length;
-
-  private handleError(error) {
-    this.ts.error(error.message || error);
-  }
-
-  private readonly onDestroy$ = new Subject<void>();
 
   constructor(
     private loc: LocationService,
@@ -32,28 +42,8 @@ export class ListComponent implements OnInit, OnDestroy {
     private ts: ToastService,
   ) {
     this.ws
-      .onEvent("user-destroyed")
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe({
-        next: (name: string) => {
-          delete this.listData[name];
-
-          this.ts.success("User deleted from the list.", `Deleted ${name}`);
-        },
-      });
-    this.ws
-      .onEvent("user-left")
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe({
-        next: (name: string) => {
-          if (this.listData[name]) {
-            this.listData[name].online = false;
-          }
-        },
-      });
-    this.ws
       .onEvent("user-joined")
-      .pipe(takeUntil(this.onDestroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe({
         next: (name: string) => {
           this.ts.info(`Welcome "${name}"!`, "User joined!");
@@ -61,47 +51,22 @@ export class ListComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnInit() {
-    // Get all the data once... keep the
-    this.loc
-      .getLocations()
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe({
-        next: (data: PositionMapped) => {
-          console.log(data);
-          this.listData = data;
-        },
-        error: this.handleError,
-      });
-    // TODO: Als ik tijd heb dit een keer echt mooi maken, zouden geen subscriptions hoeven te hebben.
-    this.loc
-      .getNewLocation()
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe({
-        next: (data: PositionMapped) => {
-          this.listData = data;
-        },
-        error: this.handleError,
-      });
+  ngOnInit(): void {
+    this.ws.emit("request-initial-users", null);
   }
-
-  ngOnDestroy(): void {
-    this.onDestroy$.next();
-  }
-
-  removeOffline(name: string, event?: Event): void {
-    const del = confirm(`Deleting ${name}.. You sure mate?!`);
+  removeOffline(user: User, event?: Event): void {
+    const del = confirm(`Deleting ${user.name}.. You sure mate?!`);
 
     if (event) {
       event.preventDefault();
     }
 
     if (del) {
-      this.ws.emit("user-destroy", name);
+      this.ws.emit("user-destroy", user.id);
     }
   }
 
-  startRouteFor(name: string): void {
+  startRouteFor(user: User): void {
     const start = prompt("Vanaf welke post moet er gestart worden?", "0");
     const parsed = parseInt(start, 10);
 
@@ -116,7 +81,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
     if (correct) {
       this.ws.emit("start-route", {
-        name,
+        userId: user.id,
         startAt: parsed,
       });
     }

@@ -19,5 +19,9 @@
       "@env/*": ["environments/*"]
     },
     "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "preserveWhitespaces": true
   }
 }

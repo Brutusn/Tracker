@@ -13,6 +13,7 @@ import compression = require("compression");
 import config = require("../../config/server.js");
 
 import { NextFunction, Request, Response } from "express";
+import { PositionDto } from "../dtos.interface";
 import { PositionCache } from "./PositionCache";
 import { UserDatabase } from "./users-db";
 import passwordHandler = require("./password");
@@ -66,7 +67,7 @@ const broadcast = (event: string, data: unknown) => {
 };
 
 const sendPosition = (
-  data: { userId: string; position: [number, number] },
+  data: PositionDto,
   errorFn: (message: string) => void,
 ) => {
   if (!data.userId || !Array.isArray(data.position)) {
@@ -78,14 +79,14 @@ const sendPosition = (
   const user = userDatabase.find(data.userId);
 
   if (user) {
-    const position = {
-      user,
-      date: new Date(),
-      position: data.position,
-    };
+    positions.addPosition(user, data);
 
-    positions.addPosition(position);
-    broadcast("new-position", position);
+    const { userId, ...rest } = data;
+
+    broadcast("new-position", {
+      ...rest,
+      user,
+    });
   }
 };
 const userLeft = (name: string, pinCode: string) => {
@@ -95,7 +96,7 @@ const userLeft = (name: string, pinCode: string) => {
 
   if (user) {
     positions.userOffline(user);
-    broadcast("user-left", name);
+    broadcast("user-left", user);
   }
 };
 const removeOfflineUser = (userId: string): void => {
@@ -104,7 +105,7 @@ const removeOfflineUser = (userId: string): void => {
 
   if (user) {
     positions.removeUser(user);
-    broadcast("user-destroyed", user.name);
+    broadcast("user-destroyed", user);
   }
 };
 
@@ -226,7 +227,7 @@ io
     if (token === config.ws_key) {
       socket.join("super-secret");
 
-      socket.on("user-destroy", ({ userId }) => {
+      socket.on("user-destroy", (userId) => {
         removeOfflineUser(userId);
       });
 
@@ -254,11 +255,27 @@ io
 
       if (requestPositions) {
         // Send the last n amount of positions to the front-end
-        socket.emit("initial-positions", positions.getAll);
+        socket.emit(
+          "initial-positions",
+          positions.getAll.map((item) => ({
+            ...item.lastPosition,
+            user: item.user,
+          })),
+        );
       }
+      socket.on("request-inital-users", () => {
+        console.log(positions);
+        socket.emit(
+          "initial-positions",
+          positions.getAll.map((item) => ({
+            ...item.lastPosition,
+            user: item.user,
+          })),
+        );
+      });
     }
 
-    socket.on("send-position", (data) => {
+    socket.on("send-position", (data: PositionDto) => {
       sendPosition(data, (message) => socket.emit("growl", message));
     });
 

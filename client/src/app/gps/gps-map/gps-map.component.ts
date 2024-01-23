@@ -1,13 +1,14 @@
 import {
   Component,
+  DestroyRef,
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeoService } from "@shared/geo.service";
 import { LeafletMap } from "@shared/leaflet-map.abstract";
 import { Coordinate, GeoRoute, locationArray } from "@shared/route";
@@ -23,10 +24,7 @@ import { map, tap } from "rxjs/operators";
   templateUrl: "./gps-map.component.html",
   styleUrls: ["./gps-map.component.css"],
 })
-export class GpsMapComponent
-  extends LeafletMap
-  implements OnInit, OnChanges, OnDestroy
-{
+export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
   @Input() inGameMode = false;
   @Output() endFound = new EventEmitter<boolean>();
 
@@ -58,6 +56,7 @@ export class GpsMapComponent
     protected readonly ts: ToastService,
     private readonly geo: GeoService,
     private ws: SocketService,
+    private readonly destroyRef: DestroyRef,
   ) {
     super(ts);
   }
@@ -70,7 +69,7 @@ export class GpsMapComponent
 
   ngOnInit() {
     super.ngOnInit();
-    this.subscriptions.add(this.geoPositionSubscription());
+    this.geoPositionSubscription();
 
     this.map.removeControl(this.map.zoomControl);
 
@@ -80,23 +79,18 @@ export class GpsMapComponent
     this.setMode();
     this.placeGoToMarker(this.getWaypoint(0));
 
-    this.subscriptions.add(
-      this.ws
-        .onEvent<number>("start-route")
-        .pipe(
-          tap((start) => this.setWaypoint(start)),
-          map((start) => this.getWaypoint(start)),
-          tap((route) => {
-            this.codeWord = route.code;
-            this.placeGoToMarker(route);
-          }),
-        )
-        .subscribe(),
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.ws
+      .onEvent<number>("start-route")
+      .pipe(
+        tap((start) => this.setWaypoint(start)),
+        map((start) => this.getWaypoint(start)),
+        tap((route) => {
+          this.codeWord = route.code;
+          this.placeGoToMarker(route);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
   private getWaypoint(waypoint: string | number = 0): GeoRoute {
@@ -179,6 +173,7 @@ export class GpsMapComponent
             this.centerMapOnCoordinate(coords);
           }
         }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

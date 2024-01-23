@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeoService } from "@shared/geo.service";
 import { SocketService } from "@shared/websocket.service";
 
+import { PositionDto } from "@shared/position";
 import { ToastService } from "@shared/toast/toast.service";
 import { UserService } from "@shared/user.service";
 
@@ -119,7 +120,8 @@ export class BodyComponent implements OnInit {
             post: this.currentPost,
             waypoint: parseInt(localStorage.getItem("waypoint"), 10) ?? 0,
             gpsStarted: this.tracking === TrackingModes.COMPASS,
-          });
+            date: new Date(),
+          } satisfies PositionDto);
         },
         error: (error) => this.geoError(error),
       });

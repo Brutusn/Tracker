@@ -1,11 +1,12 @@
 //@ts-check
 import { EventEmitter } from "node:events";
 import { Socket } from "socket.io";
+import { BroadcastPositionDto, PositionDto } from "../dtos.interface";
 import { User } from "./user";
 
 export class UserState {
   isOnline = false;
-  lastPosition?: [number, number];
+  lastPosition?: BroadcastPositionDto;
   constructor(readonly user: User) {}
 }
 
@@ -56,14 +57,18 @@ export class PositionCache {
     this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 
-  addPosition(pos: { user: User; position: [number, number]; date: Date }) {
+  addPosition(user: User, pos: PositionDto) {
     // will add or update the position.
-    const state = this.positions.get(pos.user) ?? new UserState(pos.user);
+    const state = this.positions.get(user) ?? new UserState(user);
+    const { userId, ...rest } = pos;
 
     state.isOnline = true;
-    state.lastPosition = pos.position;
+    state.lastPosition = {
+      ...rest,
+      user,
+    };
 
-    this.positions.set(pos.user, state);
+    this.positions.set(user, state);
     this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 

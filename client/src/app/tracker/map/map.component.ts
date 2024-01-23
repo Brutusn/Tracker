@@ -2,7 +2,7 @@ import { Component, DestroyRef, OnInit } from "@angular/core";
 
 import { LocationService } from "@shared/location.service";
 
-import { Position, PositionMapped } from "@shared/position";
+import { BroadcastPositionDto } from "@shared/position";
 import { SocketService } from "@shared/websocket.service";
 import * as L from "leaflet";
 
@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LeafletMap } from "@shared/leaflet-map.abstract";
 import { GeoRoute, locationArray, postArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
+import { User } from "@shared/user.service";
 
 @Component({
   selector: "app-map",
@@ -37,19 +38,19 @@ export class MapComponent extends LeafletMap implements OnInit {
     this.ws
       .onEvent("user-destroyed")
       .pipe(takeUntilDestroyed())
-      .subscribe((name: string) => {
-        this.markerLayer.removeLayer(this.markers[name]);
+      .subscribe((user: User) => {
+        this.markerLayer.removeLayer(this.markers[user.id]);
 
         this.setBounds();
 
-        delete this.markers[name];
+        delete this.markers[user.id];
       });
 
     this.ws
       .onEvent("user-left")
       .pipe(takeUntilDestroyed())
-      .subscribe((name: string) => {
-        const marker = this.markers[name];
+      .subscribe((user: User) => {
+        const marker = this.markers[user.id];
 
         if (marker) {
           marker.setStyle(this.returnMarkerOpts(false));
@@ -61,10 +62,10 @@ export class MapComponent extends LeafletMap implements OnInit {
     this.ts.error(error.message || error);
   }
 
-  private tooltipString(data: Position): string {
+  private tooltipString(data: BroadcastPositionDto): string {
     const speed = Math.round(data.speed * 3.6);
 
-    return `${data.name} (${speed} Km/h)`;
+    return `${data.user.name} (${speed} Km/h)`;
   }
 
   private returnMarkerOpts(online: boolean) {
@@ -131,30 +132,30 @@ export class MapComponent extends LeafletMap implements OnInit {
     this.map.setView(event.latlng, 17);
   }
 
-  createMarker(data: Position): any {
-    const opts = data.online ? this.onlineCirle : this.offLineCircle;
+  createMarker(data: BroadcastPositionDto): any {
+    const opts = data.isOnline ? this.onlineCirle : this.offLineCircle;
 
-    this.markers[data.name] = L.circleMarker(data.position, opts).bindTooltip(
-      this.tooltipString(data),
-      { permanent: true },
-    );
+    this.markers[data.user.id] = L.circleMarker(
+      data.position,
+      opts,
+    ).bindTooltip(this.tooltipString(data), { permanent: true });
 
-    return this.markers[data.name];
+    return this.markers[data.user.id];
   }
 
-  markerHandler([key, item]) {
-    if (!item.position) return;
+  markerHandler(pos: BroadcastPositionDto) {
+    if (!pos.position) return;
 
     // Only create a new marker if it's not yet known.
-    const marker = this.markers[item.name];
+    const marker = this.markers[pos.user.id];
     if (!marker) {
-      this.markerLayer.addLayer(this.createMarker(item));
+      this.markerLayer.addLayer(this.createMarker(pos));
     } else {
       // Update the tooltip with the new speed.
       marker
-        .setTooltipContent(this.tooltipString(item))
-        .setLatLng(item.position)
-        .setStyle(this.returnMarkerOpts(item.online));
+        .setTooltipContent(this.tooltipString(pos))
+        .setLatLng(pos.position)
+        .setStyle(this.returnMarkerOpts(pos.isOnline));
     }
   }
 
@@ -166,8 +167,8 @@ export class MapComponent extends LeafletMap implements OnInit {
     }
   }
 
-  handleCoordinates(data: PositionMapped) {
-    Object.entries(data).forEach((entry) => this.markerHandler(entry));
+  handleCoordinates(data: BroadcastPositionDto[]) {
+    data.forEach((entry) => this.markerHandler(entry));
 
     this.setBounds();
   }
@@ -177,16 +178,7 @@ export class MapComponent extends LeafletMap implements OnInit {
       .getLocations()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (data: PositionMapped) => {
-          this.handleCoordinates(data);
-        },
-        error: this.handleError,
-      });
-    this.loc
-      .getNewLocation()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data: PositionMapped) => {
+        next: (data) => {
           this.handleCoordinates(data);
         },
         error: this.handleError,

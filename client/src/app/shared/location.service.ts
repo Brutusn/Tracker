@@ -1,61 +1,62 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, map, merge, scan, switchMap, tap } from "rxjs";
 
 import { SocketService } from "./websocket.service";
 
-import { Position, PositionMapped } from "@shared/position";
+import { BroadcastPositionDto } from "@shared/position";
 
 @Injectable()
 export class LocationService {
-  positions: Position[] = [];
-  mappedPositions: PositionMapped = {};
-
   constructor(private ws: SocketService) {
     this.ws.initSocket(false);
-
-    this.ws.onEvent<string>("user-left").subscribe((name) => {
-      if (this.mappedPositions[name]) {
-        this.mappedPositions[name].online = false;
-      }
-    });
-    this.ws.onEvent<string>("user-destroyed").subscribe((name) => {
-      delete this.mappedPositions[name];
-    });
   }
 
-  mapPositions(pos: Position, keepOnlineState = false): PositionMapped {
-    const newObject: PositionMapped = {};
+  getLocations(): Observable<BroadcastPositionDto[]> {
+    const initialList$ =
+      this.ws.onEvent<BroadcastPositionDto[]>("initial-positions");
 
-    newObject[pos.name] = {
-      ...pos,
-      online: keepOnlineState ? pos.online : true,
-    };
+    const userRemoved$ = this.ws
+      .onEvent<BroadcastPositionDto>("user-destroyed")
+      .pipe(map((pos) => ({ pos, type: "remove" })));
+    const userLeft$ = this.ws
+      .onEvent<BroadcastPositionDto>("user-left")
+      .pipe(map((pos) => ({ pos, type: "left" })));
 
-    // Merges the new data so no duplicates come in...
-    return Object.assign(this.mappedPositions, newObject);
-  }
+    const newPosition$ = this.ws
+      .onEvent<BroadcastPositionDto>("new-position")
+      .pipe(map((pos) => ({ pos, type: "new" })));
 
-  getLocations(): Observable<PositionMapped> {
-    return new Observable<PositionMapped>((observer) => {
-      return this.ws
-        .onEvent<PositionMapped>("initial-positions")
-        .subscribe((positions) => {
-          Object.keys(positions).forEach((pos: string) => {
-            const obj: Position = positions[pos];
+    return initialList$.pipe(
+      tap(console.warn),
+      switchMap((initialList) => {
+        const combined = merge(userRemoved$, newPosition$, userLeft$);
 
-            this.mapPositions(obj, true);
-          });
+        return combined.pipe(
+          scan((list, newPosition) => {
+            if (newPosition.type === "new") {
+              return list.map((item) => {
+                return item.user.id === newPosition.pos.user.id
+                  ? { ...newPosition.pos, isOnline: true }
+                  : item;
+              });
+            }
+            if (newPosition.type === "left") {
+              return list.map((item) => {
+                return item.user.id === newPosition.pos.user.id
+                  ? { ...item, isOnline: false }
+                  : item;
+              });
+            }
+            if (newPosition.type === "remove") {
+              return list.filter(
+                (item) => item.user.id === newPosition.pos.user.id,
+              );
+            }
 
-          observer.next(this.mappedPositions);
-        });
-    });
-  }
-
-  getNewLocation(): Observable<PositionMapped> {
-    return new Observable<PositionMapped>((observer) => {
-      return this.ws.onEvent<Position>("new-position").subscribe((position) => {
-        observer.next(this.mapPositions(position));
-      });
-    });
+            return list;
+          }, initialList),
+        );
+      }),
+    );
   }
 }
