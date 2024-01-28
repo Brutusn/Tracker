@@ -40,10 +40,11 @@ export class SocketService {
         admin_token: window.localStorage.getItem("admin_token"),
         access_token: window.localStorage.getItem("access_token"),
       },
-      query: {
-        requestPositions: !limited,
-      },
     };
+
+    if (this.socket) {
+      this.socket.disconnect();
+    }
 
     // TODO SEND auth token via auth.token QUERY is te groot en dan faalt het.
     this.socket = socketIo(environment.ws_url, socketOptions);

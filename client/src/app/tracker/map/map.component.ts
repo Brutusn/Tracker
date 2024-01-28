@@ -2,7 +2,6 @@ import { Component, DestroyRef, OnInit } from "@angular/core";
 
 import { LocationService } from "@shared/location.service";
 
-import { BroadcastPositionDto } from "@shared/position";
 import { SocketService } from "@shared/websocket.service";
 import * as L from "leaflet";
 
@@ -10,7 +9,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { LeafletMap } from "@shared/leaflet-map.abstract";
 import { GeoRoute, locationArray, postArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
-import { User } from "@shared/user.service";
+import { BroadcastPositionDto } from "../../../../../models/src/position-dto";
+import { UserDto } from "../../../../../models/src/user";
 
 @Component({
   selector: "app-map",
@@ -36,9 +36,9 @@ export class MapComponent extends LeafletMap implements OnInit {
   ) {
     super(ts);
     this.ws
-      .onEvent("user-destroyed")
+      .onEvent<UserDto>("user-destroyed")
       .pipe(takeUntilDestroyed())
-      .subscribe((user: User) => {
+      .subscribe((user) => {
         this.markerLayer.removeLayer(this.markers[user.id]);
 
         this.setBounds();
@@ -47,9 +47,9 @@ export class MapComponent extends LeafletMap implements OnInit {
       });
 
     this.ws
-      .onEvent("user-left")
+      .onEvent<UserDto>("user-left")
       .pipe(takeUntilDestroyed())
-      .subscribe((user: User) => {
+      .subscribe((user) => {
         const marker = this.markers[user.id];
 
         if (marker) {
@@ -133,7 +133,7 @@ export class MapComponent extends LeafletMap implements OnInit {
   }
 
   createMarker(data: BroadcastPositionDto): any {
-    const opts = data.isOnline ? this.onlineCirle : this.offLineCircle;
+    const opts = this.onlineCirle;
 
     this.markers[data.user.id] = L.circleMarker(
       data.position,
@@ -155,7 +155,7 @@ export class MapComponent extends LeafletMap implements OnInit {
       marker
         .setTooltipContent(this.tooltipString(pos))
         .setLatLng(pos.position)
-        .setStyle(this.returnMarkerOpts(pos.isOnline));
+        .setStyle(this.returnMarkerOpts(true));
     }
   }
 

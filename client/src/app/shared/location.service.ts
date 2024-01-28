@@ -1,9 +1,17 @@
 import { Injectable } from "@angular/core";
-import { Observable, map, merge, scan, switchMap, tap } from "rxjs";
+import {
+  Observable,
+  map,
+  merge,
+  scan,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from "rxjs";
 
+import { BroadcastPositionDto } from "../../../../models/src/position-dto";
 import { SocketService } from "./websocket.service";
-
-import { BroadcastPositionDto } from "@shared/position";
 
 @Injectable()
 export class LocationService {
@@ -26,14 +34,29 @@ export class LocationService {
       .onEvent<BroadcastPositionDto>("new-position")
       .pipe(map((pos) => ({ pos, type: "new" })));
 
-    return initialList$.pipe(
-      tap(console.warn),
-      switchMap((initialList) => {
-        const combined = merge(userRemoved$, newPosition$, userLeft$);
+    console.log("Listening for initial positions");
+    return this.ws.socketAnnounced.pipe(
+      switchMap(() => initialList$),
+      tap((v) => console.log("initial", v)),
+      switchMap((initialList = []) => {
+        console.log("initial list", initialList);
+        const combined = merge(userRemoved$, newPosition$, userLeft$).pipe(
+          tap((c) => console.log("from merge", c)),
+        );
 
         return combined.pipe(
           scan((list, newPosition) => {
             if (newPosition.type === "new") {
+              // New user or new position of existing user;
+              const existingUser = list.find(
+                (item) => item.user.id === newPosition.pos.user.id,
+              );
+
+              if (!existingUser) {
+                list.push(newPosition.pos);
+                return list;
+              }
+
               return list.map((item) => {
                 return item.user.id === newPosition.pos.user.id
                   ? { ...newPosition.pos, isOnline: true }
@@ -55,8 +78,13 @@ export class LocationService {
 
             return list;
           }, initialList),
+          startWith(initialList),
+          map((list) =>
+            list.sort((a, b) => a.user.name.localeCompare(b.user.name)),
+          ),
         );
       }),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
   }
 }

@@ -1,7 +1,7 @@
 <div class="flex-container">
-  <header class="carbon">
+  <header class="cameron">
     <h1>Stamtour {{ thisYear }} GPS tracker!</h1>
-    <i class="socket-icon">{{
+    <i aria-hidden="true" class="socket-icon">{{
       (socketService.isOnline$ | async) === false ? "✖️" : "✔️"
     }}</i>
   </header>

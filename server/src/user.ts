@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "crypto";
+import { UserDto } from "../../models/src/user";
 
 export class User {
   readonly id = randomUUID();
@@ -31,12 +32,12 @@ export class User {
       .digest("hex");
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UserDto {
     return {
       id: this.id,
       access_token: this.accessToken,
       name: this.name,
       isAdmin: this.isAdmin,
-    }
+    };
   }
 }

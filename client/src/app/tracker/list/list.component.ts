@@ -6,24 +6,8 @@ import { SocketService } from "@shared/websocket.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { locationArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
-import { User } from "@shared/user.service";
-
-interface UserState {
-  user: User;
-  isOnline: boolean;
-  // TODO: Share interface.
-  lastPosition: {
-    user: User;
-    /** Latitude, longitude */
-    position: [number, number];
-    speed: number;
-    heading: number;
-    post: number;
-    waypoint: number;
-    gpsStarted: boolean;
-    date: Date;
-  };
-}
+import { tap } from "rxjs";
+import { UserDto } from "../../../../../models/src/user";
 
 @Component({
   selector: "app-list",
@@ -52,9 +36,11 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ws.emit("request-initial-users", null);
+    this.ws.socketAnnounced.pipe(
+      tap(() => this.ws.emit("request-initial-users", null)),
+    );
   }
-  removeOffline(user: User, event?: Event): void {
+  removeOffline(user: UserDto, event?: Event): void {
     const del = confirm(`Deleting ${user.name}.. You sure mate?!`);
 
     if (event) {
@@ -66,7 +52,7 @@ export class ListComponent implements OnInit {
     }
   }
 
-  startRouteFor(user: User): void {
+  startRouteFor(user: UserDto): void {
     const start = prompt("Vanaf welke post moet er gestart worden?", "0");
     const parsed = parseInt(start, 10);
 

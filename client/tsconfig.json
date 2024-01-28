@@ -16,7 +16,8 @@
     "paths": {
       "@shared/*": ["app/shared/*"],
       "@app/*": ["app/*"],
-      "@env/*": ["environments/*"]
+      "@env/*": ["environments/*"],
+      "@models": ["../models/public-api.ts"]
     },
     "useDefineForClassFields": false
   },

@@ -1,5 +1,6 @@
 <ul>
   <ng-container *ngIf="listData$ | async as list">
+    {{ list }}
     <li *ngIf="list.length === 0">No connected users.</li>
 
     <li

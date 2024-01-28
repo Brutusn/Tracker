@@ -1,0 +1,2 @@
+openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout ./TrackerCA.key -out ./TrackerCA.pem -subj "//C=NL/CN=Tracker-Root-CA"
+openssl x509 -outform pem -in ./TrackerCA.pem -out ./TrackerCA.crt

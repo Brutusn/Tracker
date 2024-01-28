@@ -4,9 +4,9 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeoService } from "@shared/geo.service";
 import { SocketService } from "@shared/websocket.service";
 
-import { PositionDto } from "@shared/position";
 import { ToastService } from "@shared/toast/toast.service";
 import { UserService } from "@shared/user.service";
+import { ClientPositionDto } from "../../../../../models/src/position-dto";
 
 enum TrackingModes {
   /** The gps of the user is not yet enabled */
@@ -83,7 +83,7 @@ export class BodyComponent implements OnInit {
 
   geoError(error: Error): void {
     // Silent error.
-    console.error(error);
+    console.error("SOCKET GEO", error);
     // this.toast.error(error.message || "GPS Error");
   }
 
@@ -121,7 +121,7 @@ export class BodyComponent implements OnInit {
             waypoint: parseInt(localStorage.getItem("waypoint"), 10) ?? 0,
             gpsStarted: this.tracking === TrackingModes.COMPASS,
             date: new Date(),
-          } satisfies PositionDto);
+          } satisfies ClientPositionDto);
         },
         error: (error) => this.geoError(error),
       });

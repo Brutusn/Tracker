@@ -1,27 +1,42 @@
 //@ts-check
 import { EventEmitter } from "node:events";
 import { Socket } from "socket.io";
-import { BroadcastPositionDto, PositionDto } from "../dtos.interface";
+import {
+  BroadcastPositionDto,
+  ClientPositionDto,
+} from "../../models/src/position-dto";
+import { UserDto } from "../../models/src/user";
 import { User } from "./user";
-
-export class UserState {
-  isOnline = false;
-  lastPosition?: BroadcastPositionDto;
-  constructor(readonly user: User) {}
-}
 
 export enum PositionEvents {
   StateUpdate = "state-update",
 }
 
+class DummyPosition implements BroadcastPositionDto {
+  user: UserDto;
+  constructor(_user: User) {
+    this.user = _user.toJSON();
+  }
+
+  isOnline = false;
+  // De blokhut :)
+  position = [51.6267702062721, 5.522872209548951] as [number, number];
+  speed = 0;
+  heading = 0;
+  post = 0;
+  waypoint = 0;
+  gpsStarted: false;
+  date = new Date();
+}
+
 // Simple position class
 export class PositionCache {
-  private readonly positions = new Map<User, UserState>();
+  private readonly positions = new Map<User, BroadcastPositionDto>();
   private readonly users = new Map<User, Socket>();
 
   private readonly positionEvent = new EventEmitter();
 
-  get getAll(): UserState[] {
+  get getAll(): BroadcastPositionDto[] {
     // This is the fallback name... doesn't need to be sent to the front...
     return Array.from(this.positions.values());
   }
@@ -41,7 +56,7 @@ export class PositionCache {
   }
 
   userLogin(user: User): void {
-    const state = this.positions.get(user) ?? new UserState(user);
+    const state = this.positions.get(user) ?? new DummyPosition(user);
 
     this.positions.set(user, state);
     this.positionEvent.emit(PositionEvents.StateUpdate);
@@ -57,18 +72,16 @@ export class PositionCache {
     this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 
-  addPosition(user: User, pos: PositionDto) {
-    // will add or update the position.
-    const state = this.positions.get(user) ?? new UserState(user);
+  addPosition(user: User, pos: ClientPositionDto) {
     const { userId, ...rest } = pos;
 
-    state.isOnline = true;
-    state.lastPosition = {
+    const newState = {
+      user: user.toJSON(),
+      isOnline: true,
       ...rest,
-      user,
     };
 
-    this.positions.set(user, state);
+    this.positions.set(user, newState);
     this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 

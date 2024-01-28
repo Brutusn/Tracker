@@ -59,7 +59,10 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "tracker-client:build"
+            "buildTarget": "tracker-client:build",
+            "ssl": true,
+            "sslKey": "../dev-ssl/TrackerCA.key",
+            "sslCert": "../dev-ssl/TrackerCA.crt"
           },
           "configurations": {
             "production": {
