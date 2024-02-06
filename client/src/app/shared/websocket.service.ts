@@ -27,7 +27,6 @@ export class SocketService {
   ) {}
 
   initSocket(limited = true): void {
-    console.count("Init socket");
     if (this.socket) {
       this.socket.close();
     }

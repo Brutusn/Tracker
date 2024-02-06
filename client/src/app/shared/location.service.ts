@@ -7,11 +7,21 @@ import {
   shareReplay,
   startWith,
   switchMap,
-  tap,
 } from "rxjs";
 
 import { BroadcastPositionDto } from "../../../../models/src/position-dto";
+import { UserDto } from "../../../../models/src/user";
 import { SocketService } from "./websocket.service";
+
+type SocketPosEvent =
+  | {
+      pos: { user: UserDto };
+      type: "remove" | "left";
+    }
+  | {
+      pos: BroadcastPositionDto;
+      type: "new";
+    };
 
 @Injectable()
 export class LocationService {
@@ -24,24 +34,31 @@ export class LocationService {
       this.ws.onEvent<BroadcastPositionDto[]>("initial-positions");
 
     const userRemoved$ = this.ws
-      .onEvent<BroadcastPositionDto>("user-destroyed")
-      .pipe(map((pos) => ({ pos, type: "remove" })));
+      .onEvent<UserDto>("user-destroyed")
+      .pipe(
+        map(
+          (user) =>
+            ({ pos: { user }, type: "remove" }) satisfies SocketPosEvent,
+        ),
+      );
     const userLeft$ = this.ws
-      .onEvent<BroadcastPositionDto>("user-left")
-      .pipe(map((pos) => ({ pos, type: "left" })));
-
+      .onEvent<UserDto>("user-left")
+      .pipe(
+        map(
+          (user) => ({ pos: { user }, type: "left" }) satisfies SocketPosEvent,
+        ),
+      );
     const newPosition$ = this.ws
       .onEvent<BroadcastPositionDto>("new-position")
-      .pipe(map((pos) => ({ pos, type: "new" })));
+      .pipe(map((pos) => ({ pos, type: "new" }) satisfies SocketPosEvent));
 
-    console.log("Listening for initial positions");
     return this.ws.socketAnnounced.pipe(
       switchMap(() => initialList$),
-      tap((v) => console.log("initial", v)),
       switchMap((initialList = []) => {
-        console.log("initial list", initialList);
-        const combined = merge(userRemoved$, newPosition$, userLeft$).pipe(
-          tap((c) => console.log("from merge", c)),
+        const combined = merge<SocketPosEvent[]>(
+          userRemoved$,
+          newPosition$,
+          userLeft$,
         );
 
         return combined.pipe(
@@ -72,7 +89,7 @@ export class LocationService {
             }
             if (newPosition.type === "remove") {
               return list.filter(
-                (item) => item.user.id === newPosition.pos.user.id,
+                (item) => item.user.id !== newPosition.pos.user.id,
               );
             }
 

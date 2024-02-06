@@ -4,6 +4,26 @@
   z-index: 1;
   position: relative;
   height: 100%;
+  text-align: center;
+}
+
+button {
+  font-size: 2rem;
+  margin: 10vh auto;
+  padding: 0.5em 0.75em;
+  border: 2px solid currentColor;
+  color: white;
+  border-radius: 10px;
+
+  transition: filter 0.2s ease-in-out;
+
+  background-image: url('assets/cameron-of-erracht.svg');
+  background-size: 200px;
+}
+button:hover,
+button:active,
+button:focus {
+  filter: grayscale(0.7);
 }
 
 .map-in-tracking-mode {

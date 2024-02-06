@@ -33,17 +33,17 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  height: 100dvh;
 }
 
 body {
-  height: 100vh;
+  height: 100dvh;
 }
 
 .flex-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
 }
 .flex-container > *:last-child {
   flex: 1 1 auto;

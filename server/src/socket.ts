@@ -42,10 +42,14 @@ export function initSocketApi(
       const { token, access_token } = socket.handshake.auth;
       const user = userDatabase.find(access_token);
 
-      socket.emit("growl", {
-        style: "info",
-        message: `Welcome ${user?.name}.`,
-      });
+      if (user) {
+        // Join its own channel to easily send messages to a specific socket(s)
+        socket.join(user.id);
+        socket.emit("growl", {
+          style: "info",
+          message: `Welcome ${user.name}.`,
+        });
+      }
 
       socket.on("send-position", (data: ClientPositionDto) => {
         sendPosition(data, (message) => socket.emit("growl", message));
@@ -73,19 +77,10 @@ export function initSocketApi(
         });
 
         socket.on("start-route", ({ userId, startAt = 0 }) => {
-          const user = userDatabase.find(userId);
+          const gpsUser = userDatabase.find(userId);
 
-          if (user) {
-            const userSocket = positions.getSocketOfUser(user);
-
-            if (userSocket) {
-              userSocket.emit("start-route", startAt);
-            } else {
-              socket.emit("growl", {
-                style: "error",
-                message: `User ${user.name} has no know socket connection.`,
-              });
-            }
+          if (gpsUser) {
+            io.to(gpsUser.id).emit("start-route", startAt);
           } else {
             socket.emit("growl", {
               style: "error",
@@ -119,7 +114,7 @@ export function initSocketApi(
 
     const user = userDatabase.find(data.userId);
 
-    socketLog.log(`Received position from: ${user.name ?? "<unknown user>"}`);
+    socketLog.log(`Received position from: ${user?.name ?? "<unknown user>"}`);
 
     if (user) {
       positions.addPosition(user, data);
@@ -143,10 +138,10 @@ export function initSocketApi(
     }
   };
   const removeOfflineUser = (userId: string): void => {
-    appLog.log(`Removing offline user: ${name}`);
     const user = userDatabase.find(userId);
 
     if (user) {
+      appLog.log(`Removing offline user: ${user.name}`);
       positions.removeUser(user);
       broadcast("user-destroyed", user);
     }

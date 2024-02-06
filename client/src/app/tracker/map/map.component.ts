@@ -59,7 +59,8 @@ export class MapComponent extends LeafletMap implements OnInit {
   }
 
   private handleError(error) {
-    this.ts.error(error.message || error);
+    console.log("handleError", error);
+    this.ts.error(error?.message ?? error ?? "Unknown error occured");
   }
 
   private tooltipString(data: BroadcastPositionDto): string {

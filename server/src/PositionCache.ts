@@ -1,6 +1,5 @@
 //@ts-check
 import { EventEmitter } from "node:events";
-import { Socket } from "socket.io";
 import {
   BroadcastPositionDto,
   ClientPositionDto,
@@ -32,8 +31,6 @@ class DummyPosition implements BroadcastPositionDto {
 // Simple position class
 export class PositionCache {
   private readonly positions = new Map<User, BroadcastPositionDto>();
-  private readonly users = new Map<User, Socket>();
-
   private readonly positionEvent = new EventEmitter();
 
   get getAll(): BroadcastPositionDto[] {
@@ -43,16 +40,6 @@ export class PositionCache {
 
   on(event: PositionEvents, action: () => void): void {
     this.positionEvent.on(event, action);
-  }
-
-  registerUser(user: User, socket: Socket): void {
-    this.users.set(user, socket);
-  }
-
-  getSocketOfUser(user: User): Socket | null {
-    const socket = this.users.get(user);
-
-    return socket ?? null;
   }
 
   userLogin(user: User): void {
@@ -87,7 +74,6 @@ export class PositionCache {
 
   removeUser(user: User): void {
     this.positions.delete(user);
-    this.users.delete(user);
     this.positionEvent.emit(PositionEvents.StateUpdate);
   }
 }

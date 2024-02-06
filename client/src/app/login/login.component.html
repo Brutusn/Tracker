@@ -27,6 +27,12 @@
             name="username"
             formControlName="username"
           />
+          <ng-container
+            [ngTemplateOutlet]="controlError"
+            [ngTemplateOutletContext]="{
+              $implicit: loginForm.controls.username
+            }"
+          ></ng-container>
         </span>
         <span>
           <label class="body-label" for="pin">Vul een pincode in*:</label><br />
@@ -39,9 +45,39 @@
             name="pin-code"
             formControlName="pinCode"
           />
+          @if (
+            loginForm.controls.pinCode.valid ||
+            loginForm.controls.pinCode.untouched
+          ) {
+            <span class="input-hint">
+              Gebruik niet je normale wachtwoord, gewoon een simpel getal is
+              voldoende.
+            </span>
+          }
+          <ng-container
+            [ngTemplateOutlet]="controlError"
+            [ngTemplateOutletContext]="{
+              $implicit: loginForm.controls.pinCode
+            }"
+          ></ng-container>
         </span>
         <button class="body-button" type="submit" id="send-name">Login</button>
       </form>
     </div>
   </div>
 </div>
+
+<<ng-template #controlError let-control>
+  <span class="input-error">
+    @if (control.touched && control.errors) {
+      @if (control.hasError("required")) {
+        Veld is verplicht.
+      } @else {
+        @if (control.hasError("minlength")) {
+          Minimaal {{ control.errors.minlength.requiredLength }} karakters
+          nodig.
+        }
+      }
+    }
+  </span>
+</ng-template>
