@@ -10,4 +10,4 @@ COPY ./compiled_server/src ./server/src
 
 EXPOSE 8111
 
-CMD ["node", "./server/src/index.js"]
+CMD ["node", "./server/src/server/src/index.js"]
