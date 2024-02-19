@@ -97,3 +97,6 @@ app-body {
   background-color: #131313;
   background-size: 20px 20px;
 } */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

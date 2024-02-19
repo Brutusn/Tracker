@@ -7,6 +7,8 @@ import { ToastService } from "./toast/toast.service";
 
 @Directive()
 export abstract class LeafletMap implements OnInit {
+  protected readonly mapOptions: L.MapOptions = {};
+
   static blokhut: L.LatLngExpression = [51.6267702062721, 5.522872209548951];
   protected readonly leaflet = L;
 
@@ -22,7 +24,10 @@ export abstract class LeafletMap implements OnInit {
 
   ngOnInit() {
     // Base coordinates go to the blokhut of Scouting Veghel
-    this.map = L.map(this.mapId).setView(LeafletMap.blokhut, 15);
+    this.map = L.map(this.mapId, this.mapOptions).setView(
+      LeafletMap.blokhut,
+      15,
+    );
 
     L.tileLayer(this.mapUrl, {
       attribution: "S5 StamTour Tracker",

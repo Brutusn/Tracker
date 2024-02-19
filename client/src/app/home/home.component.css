@@ -4,3 +4,11 @@
   width: fit-content;
   padding: 1rem;
 }
+
+.call-to-action {
+  font-size: 2rem;
+  padding: 0.5em 0.75em;
+  border-radius: 3px;
+  background-color: white;
+  border: 1px solid rgba(0,0,0,0.45)
+}

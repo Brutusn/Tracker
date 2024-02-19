@@ -14,7 +14,7 @@
         <p class="primary">{{ position.user.name }}</p>
         <p class="secondary">
           Last update: {{ position.date | date: "HH:mm:ss" }}, post:
-          {{ position.waypoint }}/{{ totalPost }}
+          {{ position.waypoint ?? "?" }}/{{ totalPost }}
         </p>
         <button
           *ngIf="position.isOnline === false"

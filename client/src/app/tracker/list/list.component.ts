@@ -4,10 +4,13 @@ import { LocationService } from "@shared/location.service";
 import { SocketService } from "@shared/websocket.service";
 
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MatDialog } from "@angular/material/dialog";
 import { locationArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
 import { tap } from "rxjs";
 import { UserDto } from "../../../../../models/src/user";
+import { DeleteUserDialogComponent } from "../delete-user-dialog/delete-user-dialog.component";
+import { StartRouteDialogComponent } from "../start-route-dialog/start-route-dialog.component";
 
 @Component({
   selector: "app-list",
@@ -24,6 +27,7 @@ export class ListComponent implements OnInit {
     private loc: LocationService,
     private ws: SocketService,
     private ts: ToastService,
+    private readonly matDialog: MatDialog,
   ) {
     this.ws
       .onEvent("user-joined")
@@ -41,35 +45,36 @@ export class ListComponent implements OnInit {
     );
   }
   removeOffline(user: UserDto, event?: Event): void {
-    const del = confirm(`Deleting ${user.name}.. You sure mate?!`);
-
     if (event) {
       event.preventDefault();
     }
-
-    if (del) {
-      this.ws.emit("user-destroy", user.id);
-    }
+    this.matDialog
+      .open(DeleteUserDialogComponent, { data: user })
+      .afterClosed()
+      .pipe(
+        tap((response?: "yes" | "no") => {
+          if (response === "yes") {
+            this.ws.emit("user-destroy", user.id);
+          }
+        }),
+      )
+      .subscribe();
   }
 
   startRouteFor(user: UserDto): void {
-    const start = prompt("Vanaf welke post moet er gestart worden?", "0");
-    const parsed = parseInt(start, 10);
-
-    if (!start || isNaN(parsed)) {
-      return;
-    }
-
-    const code = this.locations[parsed]
-      ? this.locations[parsed].code.toUpperCase()
-      : "Onbekend";
-    const correct = confirm(`Dat is post: ${code}`);
-
-    if (correct) {
-      this.ws.emit("start-route", {
-        userId: user.id,
-        startAt: parsed,
-      });
-    }
+    this.matDialog
+      .open(StartRouteDialogComponent)
+      .afterClosed()
+      .pipe(
+        tap((response: number) => {
+          if (response != null) {
+            this.ws.emit("start-route", {
+              userId: user.id,
+              startAt: response,
+            });
+          }
+        }),
+      )
+      .subscribe();
   }
 }

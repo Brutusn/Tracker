@@ -1,9 +1,14 @@
 <div class="flex-container">
   <header class="cameron">
-    <h1>Stamtour {{ thisYear }} GPS tracker!</h1>
-    <i aria-hidden="true" class="socket-icon">{{
-      (socketService.isOnline$ | async) === false ? "✖️" : "✔️"
-    }}</i>
+    <h1 [routerLink]="'/'">Stamtour {{ thisYear }} GPS tracker!</h1>
+    <mat-icon
+      class="socket-icon"
+      [fontIcon]="
+        (socketService.isOnline$ | async) === false
+          ? 'signal_cellular_null'
+          : 'cell_tower'
+      "
+    ></mat-icon>
   </header>
 
   <router-outlet></router-outlet>

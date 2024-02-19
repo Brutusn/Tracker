@@ -1,5 +1,3 @@
-import { LeafletMap } from "./leaflet-map.abstract";
-
 export type Coordinate = Pick<GeolocationCoordinates, "latitude" | "longitude">;
 
 export interface GeoRoute {
@@ -11,85 +9,61 @@ export interface GeoRoute {
 }
 
 export const locationArray: GeoRoute[] = [
+  // Start
   {
-    code: "Maaskruising",
+    code: "Blauwebessenland",
+    isTrigger: true,
     coord: {
-      latitude: 51.685693,
-      longitude: 6.053263,
+      latitude: 51.44499849958186,
+      longitude: 5.950007300000001,
     },
   },
   {
-    code: "Van het padje",
+    code: "🇩🇪 de Duitsers 🇩🇪",
     coord: {
-      latitude: 51.686674,
-      longitude: 5.944226,
+      latitude: 51.4687930862947,
+      longitude: 5.890098108373127,
     },
   },
   {
-    code: "Hanenwaterval",
+    code: "Oude bult bankert",
     coord: {
-      latitude: 51.634953,
-      longitude: 5.820189,
+      latitude: 51.49901639345777,
+      longitude: 5.817237601057829,
     },
   },
   {
-    code: "Kapel",
+    code: "Golf",
     coord: {
-      latitude: 51.63784,
-      longitude: 5.707294,
+      latitude: 51.51238654144119,
+      longitude: 5.7591420586453195,
     },
   },
   {
-    code: "De BBQ blokhut 🥩🍺",
+    code: "Hans Kazandpad",
     coord: {
-      latitude: LeafletMap.blokhut[0],
-      longitude: LeafletMap.blokhut[1],
+      latitude: 51.536576196198084,
+      longitude: 5.676695821221787,
+    },
+  },
+  {
+    code: "Put weg?",
+    coord: {
+      latitude: 51.563193008448444,
+      longitude: 5.653393774068273,
+    },
+  },
+  // Einde post
+  {
+    code: "Pluk van de Pannenkoek",
+    coord: {
+      latitude: 51.532955124112526,
+      longitude: 5.634459481725554,
     },
   },
 ];
 
-export const postArray: GeoRoute[] = [
-  {
-    // Start
-    code: "Nistelrode",
-    coord: {
-      latitude: 51.68828,
-      longitude: 5.565392,
-    },
-  },
-  {
-    // Post 2
-    code: "Pannenkoekenrestaurant",
-    coord: {
-      latitude: 51.819452,
-      longitude: 5.943595,
-    },
-  },
-  {
-    // Post 3
-    code: "CHAAARGE!",
-    coord: {
-      latitude: 51.769025,
-      longitude: 6.147237,
-    },
-  },
-  {
-    // Post 4
-    code: "Noob camper",
-    coord: {
-      latitude: 51.668885,
-      longitude: 6.453046,
-    },
-  },
-  {
-    // Post 5
-    code: "Vrienden van Veghel",
-    isTrigger: true,
-    coord: {
-      latitude: 51.669845,
-      longitude: 6.154036,
-    },
-  },
-];
+// This year, no luck for this :)
+export const postArray: GeoRoute[] = [];
 
 export const SECRET_CODE = "51411553354";

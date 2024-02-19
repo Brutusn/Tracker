@@ -1,6 +1,7 @@
 import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { MatIconModule } from "@angular/material/icon";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule, Routes } from "@angular/router";
 
@@ -10,6 +11,7 @@ import { AdminLoginComponent } from "./admin-login/admin-login.component";
 import { AppComponent } from "./app.component";
 
 import { CommonModule } from "@angular/common";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { AdminAuthGuardFn, AuthGuardFn } from "@shared/auth.guard";
 import { ToastComponent } from "@shared/toast/toast.component";
 import { ToastService } from "@shared/toast/toast.service";
@@ -68,8 +70,14 @@ const routes: Routes = [
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule.forRoot(routes, {}),
+    MatIconModule,
   ],
-  providers: [LocationService, SocketService, ToastService],
+  providers: [
+    LocationService,
+    SocketService,
+    ToastService,
+    provideAnimationsAsync(),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

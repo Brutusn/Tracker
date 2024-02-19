@@ -15,7 +15,7 @@ import { Coordinate, GeoRoute, locationArray } from "@shared/route";
 import { ToastService } from "@shared/toast/toast.service";
 import { SocketService } from "@shared/websocket.service";
 import { convertDistance, getDistance } from "geolib";
-import { CircleMarker, LatLngTuple } from "leaflet";
+import { CircleMarker, LatLngTuple, MapOptions } from "leaflet";
 import { Subscription } from "rxjs";
 import { map, tap } from "rxjs/operators";
 
@@ -25,6 +25,14 @@ import { map, tap } from "rxjs/operators";
   styleUrls: ["./gps-map.component.css"],
 })
 export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
+  protected readonly mapOptions: MapOptions = {
+    boxZoom: false,
+    doubleClickZoom: false,
+    dragging: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+  };
+
   @Input() inGameMode = false;
   @Output() endFound = new EventEmitter<boolean>();
 
@@ -48,9 +56,10 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
     this.goToCircle,
   );
 
-  private findRadius = 25;
+  private findRadius = 50;
   private waypoint = 0;
   private locations = locationArray;
+  private readonly triggerLocation = locationArray.find((loc) => loc.isTrigger);
 
   constructor(
     protected readonly ts: ToastService,
@@ -74,7 +83,7 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
     this.map.removeControl(this.map.zoomControl);
 
     this.markerLayer.addLayer(this.userMarker);
-    this.markerLayer.addLayer(this.goToMarker);
+    this.markerLayer.addTo(this.map);
 
     this.setMode();
     this.placeGoToMarker(this.getWaypoint(0));
@@ -118,7 +127,7 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
   }
 
   private placeMarker(latlng: LatLngTuple, marker: CircleMarker) {
-    marker.setLatLng(latlng as any);
+    marker.setLatLng(latlng);
   }
 
   private setMode() {
@@ -126,11 +135,13 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
   }
 
   private setGameMode() {
-    this.markerLayer.addTo(this.map);
+    if (!this.markerLayer.hasLayer(this.goToMarker)) {
+      this.markerLayer.addLayer(this.goToMarker);
+    }
   }
 
   private clearGameMode() {
-    this.map.removeLayer(this.markerLayer);
+    this.markerLayer.removeLayer(this.goToMarker);
   }
 
   private placeGoToMarker(route: GeoRoute) {
@@ -163,9 +174,17 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
       .watch()
       .pipe(
         map((position) => position.coords),
+        map((coords) => {
+          // Have to create the object. If passed on it results in a NaN
+          return {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+          };
+        }),
         tap((coords) => {
           this.placeUserMarker(coords);
           this.handleCoords(coords);
+          this.handleTriggerLocation(coords);
 
           if (this.inGameMode) {
             this.fitMapToBounds();
@@ -198,14 +217,19 @@ export class GpsMapComponent extends LeafletMap implements OnInit, OnChanges {
     }
   }
 
+  private handleTriggerLocation(coords: Coordinate): void {
+    const distance = getDistance(coords, this.triggerLocation.coord);
+
+    if (distance < this.findRadius) {
+      // Send emit message now.
+      setTimeout(() => this.ws.emit("user-in-reach", { distance }), 500);
+    }
+  }
+
   handleCoords(coords: Coordinate) {
     const toLocation = this.getWaypoint(this.waypoint);
     // Have to create the object. If passed on it results in a NaN
-    const _coords = {
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    };
-    const distance = getDistance(_coords, toLocation.coord);
+    const distance = getDistance(coords, toLocation.coord);
 
     this.remainingDistance = GpsMapComponent.distanceToGo(distance);
 

@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Vanaf welke post moet er gestart worden?</h2>
+<mat-dialog-content>
+  <div class="button-list">
+    <ng-container *ngFor="let loc of locations; let index = index">
+      <button type="button" [mat-dialog-close]="index">
+        {{ loc.code }}
+        <ng-container *ngIf="loc.isTrigger">Post/Startpunt</ng-container>
+      </button>
+    </ng-container>
+  </div>
+</mat-dialog-content>
