@@ -33,7 +33,7 @@
     "cryptr": "^6",
     "express": "^4",
     "jsonwebtoken": "^9",
-    "socket.io": "^4"
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.5",
