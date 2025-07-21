@@ -29,7 +29,7 @@
   "homepage": "https://github.com/Brutusn/Tracker#readme",
   "dependencies": {
     "body-parser": "^1",
-    "compression": "^1",
+    "compression": "^1.8.1",
     "cryptr": "^6",
     "express": "^4",
     "jsonwebtoken": "^9",
